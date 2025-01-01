@@ -6,7 +6,7 @@ class TTexts {
   static const String and = "và";
   static const String skip = "Bỏ qua";
   static const String done = "Hoàn tất";
-  static const String submit = "Đăng nhập";
+  static const String submit = "Gửi";
   static const String appName = "E-Learning";
   static const String tContinue = "Tiếp tục";
 
@@ -31,7 +31,7 @@ class TTexts {
   static const String phoneNo = "Số điện thoại";
   static const String rememberMe = "Ghi nhớ tôi";
   static const String forgetPassword = "Quên mật khẩu?";
-  static const String signIn = "Đăng ký";
+  static const String signIn = "Đăng nhập";
   static const String createAccount = "Tạo tại khoản";
   static const String orSignInWith = "hoặc đăng ký với";
   static const String orSignUpWith = "hoặc đăng nhập mới";
