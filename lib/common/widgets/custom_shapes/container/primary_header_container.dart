@@ -13,13 +13,12 @@ class TPrimaryHeaderContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TCurvedEdgeWidget(
-      child: Container(
-        color: TColors.primary,
-        padding: const EdgeInsets.only(bottom: 0),
-
-        // --If [size.isFinite': is not true in Stack] error occurred
-        child: SizedBox(
-          height: 400,
+      child: SizedBox(
+        height: 400,
+        child: Container(
+          color: TColors.primary,
+        
+          /// -- [size.isFinite': is not true in Stack] error occurred -> Read README.md file at [DESIGN ERRORS] # 1
           child: Stack(
             children: [
               /// -- Background Custom Shapes
