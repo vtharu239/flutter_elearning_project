@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_elearning_project/common/widgets/custom_shapes/container/primary_header_container.dart';
 import 'package:flutter_elearning_project/features/shop/screens/home/widgets/home_appbar.dart';
+import 'package:flutter_elearning_project/utils/constants/sizes.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -19,8 +20,11 @@ class HomeScreen extends StatelessWidget {
                   THomeAppBar(),
 
                   /// -- SearchBar
+                  
+                  const SizedBox(height: TSizes.spaceBtwSections + 64.0)
               ],
-            )),
+            ),
+          ),
           ],
         ),
       ),
