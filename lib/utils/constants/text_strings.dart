@@ -37,7 +37,7 @@ class TTexts {
   static const String orSignUpWith = "hoặc đăng nhập mới";
   static const String iAgreeTo = "Tôi đồng ý với";
   static const String privacyPolicy = "Chính sách bảo mật";
-  static const String termsOfUse = "Điều khoản sử dụng";
+  static const String termsOfUse = "Điều khoản";
   static const String verificationCode = "mã xác minh";
   static const String resendEmail = "Gửi lại Email";
   static const String resendEmailIn = "Resend email in";
@@ -63,8 +63,8 @@ class TTexts {
   static const String popularProducts = "Popular Products";
 
   // -- Home
-  static const String homeAppbarTitle = "Bắt đầu học học ngay hôm nay";
-  static const String homeAppbarSubTitle = "Mừng bạn quay lại";
+  static const String homeAppbarTitle = "Mừng bạn quay lại";
+  static const String homeAppbarSubTitle = "Bắt đầu học học ngay hôm nay";
 
 
 }
