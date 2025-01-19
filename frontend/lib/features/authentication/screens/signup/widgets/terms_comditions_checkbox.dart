@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_elearning_project/utils/constants/colors.dart';
-import 'package:flutter_elearning_project/utils/constants/sizes.dart';
 import 'package:flutter_elearning_project/utils/constants/text_strings.dart';
 import 'package:flutter_elearning_project/utils/helpers/helper_functions.dart';
 
