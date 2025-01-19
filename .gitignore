@@ -1,0 +1,3 @@
+# Ignore APK files
+*.apk
+build/app/outputs/flutter-apk/

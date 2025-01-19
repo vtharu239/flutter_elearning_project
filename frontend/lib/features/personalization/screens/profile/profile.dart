@@ -1,0 +1,91 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_elearning_project/common/styles/section_heading.dart';
+import 'package:flutter_elearning_project/common/widgets/appbar/appbar.dart';
+import 'package:flutter_elearning_project/common/widgets/images/t_circular_images.dart';
+import 'package:flutter_elearning_project/features/personalization/screens/profile/widgets/profile_menu.dart';
+import 'package:flutter_elearning_project/utils/constants/image_strings.dart';
+import 'package:flutter_elearning_project/utils/constants/sizes.dart';
+import 'package:iconsax/iconsax.dart';
+
+class ProfileScreen extends StatelessWidget {
+  const ProfileScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: const TAppBar(showBackArrow: true, title: Text('Profile')),
+
+      /// -- Body
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(TSizes.defaultSpace),
+          child: Column(
+            children: [
+              /// Profile Picture
+              SizedBox(
+                width: double.infinity,
+                child: Column(
+                  children: [
+                    const TCircularImages(
+                        image: TImages.user, width: 80, height: 80),
+                    TextButton(
+                        onPressed: () {},
+                        child: const Text('Change Profile Picture')),
+                  ],
+                ),
+              ),
+
+              /// Details
+              const SizedBox(height: TSizes.spaceBtwItems / 2),
+              const Divider(),
+              const SizedBox(height: TSizes.spaceBtwItems),
+
+              /// Heading Profile Info
+              const TSectionHeading(
+                  title: "Thông tin hồ sơ", showActionButton: false),
+              const SizedBox(height: TSizes.spaceBtwItems),
+
+              TProfileMenu(title: 'Tên', value: "Palm", onPressed: () {}),
+              TProfileMenu(
+                  title: 'Tên người dùng', value: "pamela", onPressed: () {}),
+
+              const SizedBox(height: TSizes.spaceBtwItems),
+              const Divider(),
+              const SizedBox(height: TSizes.spaceBtwItems),
+
+              /// Heading Personal Info
+              const TSectionHeading(
+                  title: "Thông tin cá nhân", showActionButton: false),
+              const SizedBox(height: TSizes.spaceBtwItems),
+
+              TProfileMenu(
+                  title: 'ID người dùng',
+                  value: "223344",
+                  icon: Iconsax.copy,
+                  onPressed: () {}),
+              TProfileMenu(title: 'E-mail', value: "pamela", onPressed: () {}),
+              TProfileMenu(
+                  title: 'Số điện thoại',
+                  value: "+84-909123123",
+                  onPressed: () {}),
+              TProfileMenu(title: 'Giới tính', value: "Nữ", onPressed: () {}),
+              TProfileMenu(
+                  title: 'Ngày sinh', value: "20/01/2000", onPressed: () {}),
+
+              const Divider(),
+              const SizedBox(height: TSizes.spaceBtwItems),
+
+              // Center(
+              //   child: TextButton(
+              //     onPressed: () {},
+              //     child: const Text('Xóa tài khoản',
+              //         style: TextStyle(color: Colors.red)),
+              //   ),
+              // ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
