@@ -4,6 +4,8 @@ import 'package:flutter_elearning_project/common/widgets/custom_shapes/container
 import 'package:flutter_elearning_project/common/widgets/custom_shapes/container/search_container.dart';
 import 'package:flutter_elearning_project/features/shop/screens/home/widgets/home_appbar.dart';
 import 'package:flutter_elearning_project/features/shop/screens/home/widgets/home_categories.dart';
+import 'package:flutter_elearning_project/features/shop/screens/home/widgets/promo_slider.dart';
+import 'package:flutter_elearning_project/utils/constants/image_strings.dart';
 import 'package:flutter_elearning_project/utils/constants/sizes.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -49,6 +51,13 @@ class HomeScreen extends StatelessWidget {
                 ],
               ),
             ),
+
+            /// Body
+            Padding(
+                padding: EdgeInsets.all(TSizes.defaultSpace),
+                child: TPromoSlider(
+                  banners: [TImages.banner6, TImages.banner3, TImages.banner4],
+                ))
           ],
         ),
       ),
