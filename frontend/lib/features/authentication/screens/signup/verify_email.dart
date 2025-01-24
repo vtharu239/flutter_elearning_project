@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_elearning_project/common/widgets/success_screen/success_screen.dart';
 import 'package:flutter_elearning_project/features/authentication/screens/login/login.dart';
+import 'package:flutter_elearning_project/features/authentication/screens/signup/widgets/signup_form.dart';
 import 'package:flutter_elearning_project/utils/constants/image_strings.dart';
 import 'package:flutter_elearning_project/utils/constants/sizes.dart';
 import 'package:flutter_elearning_project/utils/constants/text_strings.dart';
@@ -12,6 +13,7 @@ import 'dart:convert';
 
 class VerifyEmailScreen extends StatelessWidget {
   final String? userEmail;
+  // Thêm baseUrl để có thể dễ dàng thay đổi giữa localhost và ngrok
   const VerifyEmailScreen({super.key, this.userEmail});
 
   Future<void> sendConfirmationEmail(BuildContext context) async {
@@ -22,22 +24,29 @@ class VerifyEmailScreen extends StatelessWidget {
 
     try {
       final response = await http.post(
-        Uri.parse('http://localhost:4000/send-confirmation-email'),
-        headers: {'Content-Type': 'application/json'},
+        Uri.parse(ApiConstants.getUrl(ApiConstants.sendConfirmationEndpoint)),
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning':
+              'true', // Thêm header để tránh cảnh báo của ngrok
+        },
         body: jsonEncode({'email': userEmail}),
       );
 
       if (response.statusCode == 200) {
         Get.snackbar('Thành công', 'Email xác nhận đã được gửi.');
       } else {
-        Get.snackbar('Lỗi', 'Không thể gửi email xác nhận.');
+        final errorMessage = json.decode(response.body)['message'] ??
+            'Không thể gửi email xác nhận.';
+        Get.snackbar('Lỗi', errorMessage);
       }
     } catch (e) {
-      Get.snackbar('Lỗi', 'Đã xảy ra lỗi khi gửi email.');
+      // ignore: avoid_print
+      print('Error sending confirmation email: $e'); // Thêm log để debug
+      Get.snackbar('Lỗi', 'Đã xảy ra lỗi khi gửi email. Vui lòng thử lại sau.');
     }
   }
 
-  // Thêm hàm để kiểm tra xác nhận email
   Future<void> checkEmailVerification(BuildContext context) async {
     if (userEmail == null || userEmail!.isEmpty) {
       Get.snackbar('Lỗi', 'Email không hợp lệ.');
@@ -46,27 +55,39 @@ class VerifyEmailScreen extends StatelessWidget {
 
     try {
       final response = await http.post(
-        Uri.parse('http://localhost:4000/check-email-verification'),
-        headers: {'Content-Type': 'application/json'},
+        Uri.parse(ApiConstants.getUrl(ApiConstants.verifyEmailEndpoint)),
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true',
+        },
         body: jsonEncode({'email': userEmail}),
       );
 
       if (response.statusCode == 200) {
-        // Nếu email đã được xác nhận, chuyển đến màn hình thành công
+        // Email đã được xác nhận
         Get.to(() => SuccessScreen(
               image: TImages.staticSuccessIllustration,
               title: TTexts.yourAccountCreatedTitle,
               subTitle: TTexts.yourAccountCreatedSubTitle,
               onPressed: () => Get.to(() => const LoginScreen()),
             ));
-      } else {
+      } else if (response.statusCode == 400) {
+        // Email chưa được xác nhận
         Get.snackbar(
           'Thông báo',
           'Email chưa được xác nhận. Vui lòng kiểm tra email của bạn.',
+          duration: const Duration(seconds: 5),
         );
+      } else {
+        final errorMessage =
+            json.decode(response.body)['message'] ?? 'Có lỗi xảy ra.';
+        Get.snackbar('Lỗi', errorMessage);
       }
     } catch (e) {
-      Get.snackbar('Lỗi', 'Đã xảy ra lỗi khi kiểm tra xác nhận email.');
+      // ignore: avoid_print
+      print('Error checking email verification: $e');
+      Get.snackbar('Lỗi',
+          'Đã xảy ra lỗi khi kiểm tra xác nhận email. Vui lòng thử lại sau.');
     }
   }
 
