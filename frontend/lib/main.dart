@@ -3,6 +3,7 @@
 // import 'package:flutter_elearning_project/screens/onboarding/onboarding_screen.dart';
 // import 'package:flutter_elearning_project/theme/theme_provider.dart';
 // import 'package:provider/provider.dart';
+import 'package:flutter_elearning_project/features/personalization/screens/settings/UserAuthController.dart';
 
 // void main() {
 //   runApp(
@@ -36,7 +37,6 @@
 //   }
 // }
 
-
 import 'package:flutter/material.dart';
 import 'package:flutter_elearning_project/providers/auth_provider.dart';
 import 'package:flutter_elearning_project/providers/theme_provider.dart';
@@ -49,8 +49,9 @@ void main() {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (context) => UserAuthController()),
       ],
-      child: App(),
+      child: const App(),
     ),
   );
 }

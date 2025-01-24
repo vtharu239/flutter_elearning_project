@@ -4,9 +4,13 @@ import 'package:flutter_elearning_project/common/widgets/appbar/appbar.dart';
 import 'package:flutter_elearning_project/common/widgets/custom_shapes/container/primary_header_container.dart';
 import 'package:flutter_elearning_project/common/widgets/list_tiles/settings_menu_tile.dart';
 import 'package:flutter_elearning_project/common/widgets/list_tiles/user_profile_tile.dart';
+import 'package:flutter_elearning_project/features/authentication/screens/login/login.dart';
+import 'package:flutter_elearning_project/features/personalization/screens/settings/UserAuthController.dart';
 import 'package:flutter_elearning_project/utils/constants/colors.dart';
 import 'package:flutter_elearning_project/utils/constants/sizes.dart';
+import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:provider/provider.dart';
 
 class SettingScreen extends StatelessWidget {
   const SettingScreen({super.key});
@@ -31,7 +35,7 @@ class SettingScreen extends StatelessWidget {
                   const SizedBox(height: TSizes.spaceBtwSections),
 
                   /// User Profile Card
-                  TUserProfileTile(),
+                  const TUserProfileTile(),
                   const SizedBox(height: TSizes.spaceBtwSections)
                 ],
               ),
@@ -39,7 +43,7 @@ class SettingScreen extends StatelessWidget {
 
             /// -- Body
             Padding(
-              padding: EdgeInsets.all(TSizes.defaultSpace),
+              padding: const EdgeInsets.all(TSizes.defaultSpace),
               child: Column(
                 children: [
                   /// -- Account Settings
@@ -72,11 +76,11 @@ class SettingScreen extends StatelessWidget {
                   ),
 
                   /// -- App Settings
-                  SizedBox(height: TSizes.spaceBtwSections),
-                  TSectionHeading(
+                  const SizedBox(height: TSizes.spaceBtwSections),
+                  const TSectionHeading(
                       title: 'App Settings', showActionButton: false),
-                  SizedBox(height: TSizes.spaceBtwItems),
-                  TSettingsMenuTile(
+                  const SizedBox(height: TSizes.spaceBtwItems),
+                  const TSettingsMenuTile(
                       icon: Iconsax.document_upload,
                       title: 'Load Data',
                       subTitle: 'Upload Data to your Database'),
@@ -99,7 +103,7 @@ class SettingScreen extends StatelessWidget {
                     trailing: Switch(value: true, onChanged: (value) {}),
                   ),
 
-                  TSettingsMenuTile(
+                  const TSettingsMenuTile(
                       icon: Iconsax.document_upload,
                       title: 'Load Data',
                       subTitle: 'Upload Data to your Database'),
@@ -109,9 +113,18 @@ class SettingScreen extends StatelessWidget {
                   SizedBox(
                     width: double.infinity,
                     child: OutlinedButton(
-                        onPressed: () {}, child: const Text('Đăng xuất')),
+                        onPressed: () {
+                          // Use the authentication controller to logout
+                          final authController =
+                              Provider.of<UserAuthController>(context,
+                                  listen: false);
+                          authController.logout();
+
+                          // Navigate to login screen
+                          Get.offAll(() => const LoginScreen());
+                        },
+                        child: const Text('Đăng xuất')),
                   ),
-                  const SizedBox(height: TSizes.spaceBtwSections),
                 ],
               ),
             )

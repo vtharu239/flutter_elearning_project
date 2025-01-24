@@ -14,8 +14,8 @@ class AuthProvider with ChangeNotifier {
       notifyListeners();
 
       // Simulate API call
-      await Future.delayed(Duration(seconds: 2));
-      
+      await Future.delayed(const Duration(seconds: 2));
+
       if (email.isEmpty || password.isEmpty) {
         throw Exception('Email và mật khẩu không được để trống');
       }
