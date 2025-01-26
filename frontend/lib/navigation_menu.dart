@@ -26,10 +26,11 @@ class NavigationMenu extends StatelessWidget {
           indicatorColor: darkMode ? TColors.white.withOpacity(0.1) : TColors.black.withOpacity(0.1),
           
           destinations: const [
-            NavigationDestination(icon: Icon(Iconsax.home), label: "Home"),
-            NavigationDestination(icon: Icon(Iconsax.element_35), label: "Course"),
-            NavigationDestination(icon: Icon(Iconsax.book), label: "Practice"),
-            NavigationDestination(icon: Icon(Iconsax.user), label: "Profile"),
+            NavigationDestination(icon: Icon(Iconsax.home), label: "Trang chủ"),
+            NavigationDestination(icon: Icon(Iconsax.element_3), label: "Khóa học"),
+            NavigationDestination(icon: Icon(Iconsax.task_square), label: "Luyện thi"),
+            NavigationDestination(icon: Icon(Iconsax.folder_2), label: "Tài liệu"),
+            NavigationDestination(icon: Icon(Iconsax.user), label: "Cá nhân"),
           ],
         ),
       ),
@@ -43,5 +44,5 @@ class NavigationController extends GetxController{ // class từ GetX giúp qu�
   final Rx<int> selectedIndex = 0.obs; // Rx là kiểu dữ liệu phản ứng (reactive)
                                        // .obs giúp GetX tự động cập nhật UI khi giá trị thay đổi
 
-  final screens = [const HomeScreen(), Container(color: Colors.purple), Container(color: Colors.orange), const SettingScreen()];
+  final screens = [const HomeScreen(), Container(color: Colors.red), Container(color: Colors.orange), Container(color: Colors.yellow),const SettingScreen()];
 }

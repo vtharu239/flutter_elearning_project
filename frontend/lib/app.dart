@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_elearning_project/features/authentication/screens/onboarding/onboarding.dart';
+import 'package:flutter_elearning_project/navigation_menu.dart';
 import 'package:flutter_elearning_project/utils/theme/theme.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 
@@ -15,7 +16,7 @@ class App extends StatelessWidget {
       themeMode: ThemeMode.system,
       theme: TAppTheme.lightTheme,
       darkTheme: TAppTheme.darkTheme,
-      home: const OnBoardingScreen(),
+      home: const NavigationMenu(),
     );
   }
 }
