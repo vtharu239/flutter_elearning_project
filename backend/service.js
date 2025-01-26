@@ -60,7 +60,9 @@ app.post('/signup', async (req, res) => {
       // Automatically send confirmation email after successful registration
       try {
         const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '1h' });
-        const confirmationLink = `https://efb4-2402-800-63b9-9991-ad7a-7bd7-b69-9945.ngrok-free.app/verify-email?token=${token}`;
+        const confirmationLink = `https://clear-tomcat-informally.ngrok-free.app/verify-email?token=${token}`;
+        // -- Xuan
+        // const confirmationLink = `https://resolved-sawfish-equally.ngrok-free.app/verify-email?token=${token}`;
 
         await transporter.sendMail({
           from: "bobacoderohyeah@gmail.com",
@@ -97,6 +99,8 @@ app.post('/send-confirmation-email', async (req, res) => {
   try {
     const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '1h' });
     const confirmationLink = `https://clear-tomcat-informally.ngrok-free.app/verify-email?token=${token}`;
+    // -- Xuan
+    // const confirmationLink = `https://resolved-sawfish-equally.ngrok-free.app/verify-email?token=${token}`;
 
     await transporter.sendMail({
       from: "bobacoderohyeah@gmail.com",
