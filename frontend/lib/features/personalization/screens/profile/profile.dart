@@ -2,9 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_elearning_project/common/styles/section_heading.dart';
 import 'package:flutter_elearning_project/common/widgets/appbar/appbar.dart';
 import 'package:flutter_elearning_project/common/widgets/images/t_circular_images.dart';
+import 'package:flutter_elearning_project/features/personalization/screens/profile/widgets/change_birthday.dart';
+import 'package:flutter_elearning_project/features/personalization/screens/profile/widgets/change_email.dart';
+import 'package:flutter_elearning_project/features/personalization/screens/profile/widgets/change_gender.dart';
+import 'package:flutter_elearning_project/features/personalization/screens/profile/widgets/change_name.dart';
+import 'package:flutter_elearning_project/features/personalization/screens/profile/widgets/change_phone_number.dart';
+import 'package:flutter_elearning_project/features/personalization/screens/profile/widgets/change_username.dart';
 import 'package:flutter_elearning_project/features/personalization/screens/profile/widgets/profile_menu.dart';
 import 'package:flutter_elearning_project/utils/constants/image_strings.dart';
 import 'package:flutter_elearning_project/utils/constants/sizes.dart';
+import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -45,9 +52,9 @@ class ProfileScreen extends StatelessWidget {
                   title: "Thông tin hồ sơ", showActionButton: false),
               const SizedBox(height: TSizes.spaceBtwItems),
 
-              TProfileMenu(title: 'Tên', value: "Palm", onPressed: () {}),
+              TProfileMenu(title: 'Tên', value: "Palm", onPressed: () => Get.to(ChangeName())),
               TProfileMenu(
-                  title: 'Tên người dùng', value: "pamela", onPressed: () {}),
+                  title: 'Tên người dùng', value: "pamela", onPressed: () => Get.to(ChangeUsername())),
 
               const SizedBox(height: TSizes.spaceBtwItems),
               const Divider(),
@@ -63,14 +70,14 @@ class ProfileScreen extends StatelessWidget {
                   value: "223344",
                   icon: Iconsax.copy,
                   onPressed: () {}),
-              TProfileMenu(title: 'E-mail', value: "pamela", onPressed: () {}),
+              TProfileMenu(title: 'E-mail', value: "pamela", onPressed: () => Get.to(ChangeEmail())),
               TProfileMenu(
                   title: 'Số điện thoại',
                   value: "+84-909123123",
-                  onPressed: () {}),
-              TProfileMenu(title: 'Giới tính', value: "Nữ", onPressed: () {}),
+                  onPressed: () => Get.to(ChangePhoneNumber())),
+              TProfileMenu(title: 'Giới tính', value: "Nữ", onPressed: () => Get.to(ChangeGender())),
               TProfileMenu(
-                  title: 'Ngày sinh', value: "20/01/2000", onPressed: () {}),
+                  title: 'Ngày sinh', value: "20/01/2000", onPressed: () => Get.to(ChangeBirthdate())),
 
               const Divider(),
               const SizedBox(height: TSizes.spaceBtwItems),
