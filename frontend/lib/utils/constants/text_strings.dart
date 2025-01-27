@@ -69,5 +69,9 @@ class TTexts {
   // -- Home
   static const String homeAppbarTitle = "Mừng bạn quay lại, Palm.";
   static const String homeAppbarSubTitle = "Hãy cùng học ngay nào!";
+
+  // -- Exam
+  static const String examAppbarTitle = "Thư viện luyện thi";
+  static const String examAppbarSubTitle = "Ôn luyện kiến thức qua các đề thi";
 }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_elearning_project/features/exam/screens/practice_test.dart';
 import 'package:flutter_elearning_project/features/personalization/screens/settings/settings.dart';
 import 'package:flutter_elearning_project/features/shop/screens/home/home.dart';
 import 'package:flutter_elearning_project/utils/constants/colors.dart';
@@ -44,5 +45,5 @@ class NavigationController extends GetxController{ // class từ GetX giúp qu�
   final Rx<int> selectedIndex = 0.obs; // Rx là kiểu dữ liệu phản ứng (reactive)
                                        // .obs giúp GetX tự động cập nhật UI khi giá trị thay đổi
 
-  final screens = [const HomeScreen(), Container(color: Colors.red), Container(color: Colors.orange), Container(color: Colors.yellow),const SettingScreen()];
+  final screens = [const HomeScreen(), Container(color: Colors.red), const PracticeTestScreen(), Container(color: Colors.yellow),const SettingScreen()];
 }
