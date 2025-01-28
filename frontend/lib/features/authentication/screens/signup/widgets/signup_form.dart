@@ -14,15 +14,17 @@ import 'dart:convert';
 class ApiConstants {
   static const String baseUrl =
       'https://clear-tomcat-informally.ngrok-free.app';
-      // -- Xuan
-      // 'https://resolved-sawfish-equally.ngrok-free.app';
+  // -- Xuan
+  // 'https://resolved-sawfish-equally.ngrok-free.app';
 
   // API endpoints
   static const String signupEndpoint = '/signup';
   static const String checkUserEmailEndpoint = '/check-username-email';
   static const String sendConfirmationEndpoint = '/send-confirmation-email';
   static const String verifyEmailEndpoint = '/verify-email-token';
-
+  static const String sendOTP = '/send-otp';
+  static const String verifyOTP = '/verify-otp';
+  static const String resetPassword = '/reset-password';
   // Hàm tiện ích để lấy full URL
   static String getUrl(String endpoint) => baseUrl + endpoint;
 }

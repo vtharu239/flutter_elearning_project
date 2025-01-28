@@ -279,6 +279,141 @@ app.post('/login', async (req, res) => {
     res.status(500).json({ message: 'Lỗi server!' });
   }
 });
+
+
+const generateOTP = () => crypto.randomInt(100000, 999999).toString();
+
+//send Otp
+app.post('/send-otp', (req, res) => {
+  const { email } = req.body;
+  if (!email) {
+    return res.status(400).json({ message: 'Email không được để trống!' });
+  }
+
+  const query = 'SELECT id FROM users WHERE email = ?';
+  db.query(query, [email], (err, results) => {
+    if (err) {
+      return res.status(500).json({ message: 'Lỗi server!' });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ message: 'Email không tồn tại!' });
+    }
+
+    const userId = results[0].id;
+    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // OTP hết hạn sau 10 phút
+
+    const insertQuery = 'INSERT INTO otp_tokens (user_id, otp_code, expires_at) VALUES (?, ?, ?)';
+    db.query(insertQuery, [userId, otpCode, expiresAt], (err) => {
+      if (err) {
+        return res.status(500).json({ message: 'Không thể tạo mã OTP!' });
+      }
+
+      // Gửi OTP qua email
+      const mailOptions = {
+        from: 'bobacoderohyeah@gmail.com',
+        to: email,
+        subject: 'Mã OTP của bạn',
+        text: `Mã OTP của bạn là: ${otpCode}. Mã này sẽ hết hạn sau 10 phút.`,
+      };
+
+      transporter.sendMail(mailOptions, (error) => {
+        if (error) {
+          return res.status(500).json({ message: 'Không thể gửi email!' });
+        }
+
+        res.status(200).json({ message: 'Mã OTP đã được gửi!' });
+      });
+    });
+  });
+});
+
+app.post('/verify-otp', (req, res) => {
+  const { email, otp } = req.body;
+  if (!email || !otp) {
+    return res.status(400).json({ message: 'Vui lòng nhập email và mã OTP!' });
+  }
+
+  const userQuery = 'SELECT id FROM users WHERE email = ?';
+  db.query(userQuery, [email], (err, results) => {
+    if (err) {
+      return res.status(500).json({ message: 'Lỗi server!' });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ message: 'Email không tồn tại!' });
+    }
+
+    const userId = results[0].id;
+    const otpQuery = `
+      SELECT * FROM otp_tokens 
+      WHERE user_id = ? AND otp_code = ? AND expires_at > NOW() AND is_used = 0
+    `;
+    db.query(otpQuery, [userId, otp], (err, results) => {
+      if (err) {
+        return res.status(500).json({ message: 'Lỗi server!' });
+      }
+
+      if (results.length === 0) {
+        return res.status(400).json({ message: 'OTP không hợp lệ hoặc đã hết hạn!' });
+      }
+
+      const updateQuery = 'UPDATE otp_tokens SET is_used = 1 WHERE id = ?';
+      db.query(updateQuery, [results[0].id], (err) => {
+        if (err) {
+          return res.status(500).json({ message: 'Không thể cập nhật trạng thái OTP!' });
+        }
+
+        res.status(200).json({ message: 'Xác thực OTP thành công!' });
+      });
+    });
+  });
+});
+
+app.post('/reset-password', async (req, res) => {
+  const { email, newPassword } = req.body;
+
+  if (!email || !newPassword) {
+    return res.status(400).json({ message: 'Vui lòng nhập đầy đủ thông tin!' });
+  }
+
+  const query = 'SELECT password FROM users WHERE email = ?';
+  db.query(query, [email], async (err, results) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.status(500).json({ message: 'Lỗi khi truy vấn cơ sở dữ liệu!' });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ message: 'Email không tồn tại!' });
+    }
+
+    const oldPasswordHash = results[0].password;
+    console.log("Old hashed password:", oldPasswordHash);
+
+    // So sánh mật khẩu mới với mật khẩu cũ
+    const isSamePassword = await bcrypt.compare(newPassword, oldPasswordHash);
+    console.log("Is new password same as old password:", isSamePassword);
+
+    if (isSamePassword) {
+      return res.status(400).json({ message: 'Mật khẩu mới không được trùng với mật khẩu cũ!' });
+    }
+
+    // Hash mật khẩu mới và cập nhật cơ sở dữ liệu
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const updateQuery = 'UPDATE users SET password = ? WHERE email = ?';
+    db.query(updateQuery, [hashedPassword, email], (err) => {
+      if (err) {
+        console.error("Database update error:", err);
+        return res.status(500).json({ message: 'Không thể đặt lại mật khẩu!' });
+      }
+
+      res.status(200).json({ message: 'Đặt lại mật khẩu thành công!' });
+    });
+  });
+});
+
 app.listen(80, '0.0.0.0', () => {
   console.log('Server running on http://0.0.0.0:80');
 });

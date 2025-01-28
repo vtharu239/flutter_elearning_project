@@ -145,7 +145,7 @@ class _TLoginFormState extends State<TLoginForm> {
 
                 // Forget Password
                 TextButton(
-                  onPressed: () => Get.to(() => const ForgetPassword()),
+                  onPressed: () => Get.to(() => ForgetPassword()),
                   child: const Text(TTexts.forgetPassword),
                 ),
               ],
