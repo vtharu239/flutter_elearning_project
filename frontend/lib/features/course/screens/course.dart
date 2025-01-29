@@ -24,7 +24,6 @@ class CourseScreen extends StatelessWidget {
             const TPrimaryHeaderContainer(
               child: Column(
                 children: [
-                  SizedBox(height: TSizes.spaceBtwSections),
                   TCourseAppBar(),
                   SizedBox(height: TSizes.spaceBtwSections),
                 ],
@@ -38,37 +37,31 @@ class CourseScreen extends StatelessWidget {
                 children: [
                   // Popular Course Categories
                   const TSectionHeading(title: 'Thể loại'),
-                  const SizedBox(height: TSizes.spaceBtwItems),
                   PopularCategoriesGrid(controller: controller),
                   const SizedBox(height: TSizes.spaceBtwSections),
 
                   // Featured Courses
                   const TSectionHeading(title: 'Khóa học nổi bật'),
-                  const SizedBox(height: TSizes.spaceBtwItems),
                   FeaturedCoursesSection(controller: controller),
                   const SizedBox(height: TSizes.spaceBtwSections),
 
                   // Combo Courses
                   const TSectionHeading(title: 'Combo khóa học'),
-                  const SizedBox(height: TSizes.spaceBtwItems),
                   CourseListSection(controller: controller, type: 'combo'),
                   const SizedBox(height: TSizes.spaceBtwSections),
 
                   // TOEIC Courses
                   const TSectionHeading(title: 'Khóa học TOEIC'),
-                  const SizedBox(height: TSizes.spaceBtwItems),
                   CourseListSection(controller: controller, type: 'toeic'),
                   const SizedBox(height: TSizes.spaceBtwSections),
 
                   // IELTS Courses
                   const TSectionHeading(title: 'Khóa học IELTS'),
-                  const SizedBox(height: TSizes.spaceBtwItems),
                   CourseListSection(controller: controller, type: 'ielts'),
                   const SizedBox(height: TSizes.spaceBtwSections),
 
                   // Basic English Courses
                   const TSectionHeading(title: 'Khóa học Tiếng Anh cơ bản'),
-                  const SizedBox(height: TSizes.spaceBtwItems),
                   CourseListSection(controller: controller, type: 'basic'),
                   const SizedBox(height: TSizes.spaceBtwSections),
                 ],

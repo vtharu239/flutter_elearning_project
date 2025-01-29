@@ -43,8 +43,8 @@ class CourseListCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(TSizes.cardRadiusMd),
             child: Image.asset(
               imageUrl,
-              width: 120,
-              height: 120,
+              width: MediaQuery.of(context).size.width * 0.25, // 25% màn hình
+              height: MediaQuery.of(context).size.width * 0.25,
               fit: BoxFit.cover,
             ),
           ),
@@ -64,14 +64,46 @@ class CourseListCard extends StatelessWidget {
                 const SizedBox(height: TSizes.sm),
 
                 // Rating and Students
-                Row(
-                  children: [
-                    RatingStars(rating: rating, ratingCount: ratingCount),
-                    const Spacer(),
-                    Icon(Iconsax.user, size: 16, color: Colors.grey[600]),
-                    const SizedBox(width: TSizes.xs),
-                    Text('$students học viên'),
-                  ],
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    // Kiểm tra nếu chiều rộng đủ lớn (bạn có thể điều chỉnh giá trị này)
+                    if (constraints.maxWidth > 260) {
+                      return Row(
+                        children: [
+                          RatingStars(rating: rating, ratingCount: ratingCount),
+                          const SizedBox(width: TSizes.xs),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Iconsax.user,
+                                  size: 16, color: Colors.grey[600]),
+                              const SizedBox(width: TSizes.xs),
+                              Text('$students học viên'),
+                            ],
+                          ),
+                        ],
+                      );
+                    } else {
+                      // Nếu màn hình nhỏ, sử dụng Wrap
+                      return Wrap(
+                        spacing: TSizes.sm,
+                        runSpacing: TSizes.xs,
+                        alignment: WrapAlignment.spaceBetween,
+                        children: [
+                          RatingStars(rating: rating, ratingCount: ratingCount),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Iconsax.user,
+                                  size: 16, color: Colors.grey[600]),
+                              const SizedBox(width: TSizes.xs),
+                              Text('$students học viên'),
+                            ],
+                          ),
+                        ],
+                      );
+                    }
+                  },
                 ),
                 const SizedBox(height: TSizes.sm),
 

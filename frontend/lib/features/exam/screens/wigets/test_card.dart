@@ -5,6 +5,25 @@ import 'package:flutter_elearning_project/utils/constants/sizes.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:iconsax/iconsax.dart';
 
+class TestListSection extends StatelessWidget {
+  final PracticeTestController controller;
+
+  const TestListSection({super.key, required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.separated(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: 5,
+      separatorBuilder: (_, __) => const SizedBox(height: TSizes.spaceBtwItems),
+      itemBuilder: (context, index) {
+        return TestCard(controller: controller, testId: 'test_$index');
+      },
+    );
+  }
+}
+
 class TestCard extends StatelessWidget {
   final PracticeTestController controller;
   final String testId;
@@ -25,29 +44,37 @@ class TestCard extends StatelessWidget {
         boxShadow: [TShadowStyle.verticalProductShadow],
       ),
       child: Row(
+        crossAxisAlignment:
+            CrossAxisAlignment.start, // Giúp canh chỉnh theo nội dung
         children: [
           Container(
-            width: 80,
-            height: 80,
+            width: MediaQuery.of(context).size.width * 0.25, // 20% màn hình
+            height: MediaQuery.of(context).size.width * 0.25, // 20% màn hình
             decoration: BoxDecoration(
               color: Colors.blue.withOpacity(0.1),
               borderRadius: BorderRadius.circular(TSizes.cardRadiusMd),
             ),
-            child: const Center(
-              child: Icon(Iconsax.document, size: 30, color: Colors.blue),
-            ),
+            child: Icon(Iconsax.document, size: 30, color: Colors.blue),
           ),
           const SizedBox(width: TSizes.spaceBtwItems),
           Expanded(
+            // Giúp nội dung không tràn ra ngoài
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'Đề thi TOEIC ETS 2024 - Test 01',
                   style: Theme.of(context).textTheme.titleMedium,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: TSizes.xs),
-                Row(
+
+                // Sử dụng Wrap thay vì Row để tự động xuống dòng nếu không đủ chỗ
+                Wrap(
+                  spacing: TSizes.sm,
+                  runSpacing: TSizes.xs,
+                  crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
                     Container(
                       padding: const EdgeInsets.symmetric(
@@ -61,7 +88,6 @@ class TestCard extends StatelessWidget {
                         style: TextStyle(color: Colors.green, fontSize: 12),
                       ),
                     ),
-                    const SizedBox(width: TSizes.xs),
                     Text(
                       '2 phần • 120 phút',
                       style: Theme.of(context).textTheme.bodySmall,
@@ -69,27 +95,46 @@ class TestCard extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: TSizes.xs),
-                Row(
+
+                // Sử dụng Wrap thay vì Row
+                Wrap(
+                  spacing: TSizes.sm,
+                  runSpacing: TSizes.xs,
+                  crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
-                    Icon(Iconsax.user, size: 16, color: Colors.grey[600]),
-                    const SizedBox(width: TSizes.xs),
-                    Text(
-                      '1.2k lượt thi',
-                      style: Theme.of(context).textTheme.bodySmall,
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Iconsax.user, size: 16, color: Colors.grey[600]),
+                        const SizedBox(width: TSizes.xs),
+                        Text(
+                          '1.2k lượt thi',
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: TSizes.md),
-                    Icon(Iconsax.level, size: 16, color: Colors.amber[600]),
-                    const SizedBox(width: TSizes.xs),
-                    Text(
-                      'Trung bình',
-                      style: Theme.of(context).textTheme.bodySmall,
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Iconsax.level, size: 16, color: Colors.amber[600]),
+                        const SizedBox(width: TSizes.xs),
+                        Text(
+                          'Trung bình',
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: TSizes.md),
-                    Icon(Iconsax.message, size: 16, color: Colors.grey[600]),
-                    const SizedBox(width: TSizes.xs),
-                    Text(
-                      '24',
-                      style: Theme.of(context).textTheme.bodySmall,
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Iconsax.message,
+                            size: 16, color: Colors.grey[600]),
+                        const SizedBox(width: TSizes.xs),
+                        Text(
+                          '24',
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -117,25 +162,6 @@ class TestCard extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class TestListSection extends StatelessWidget {
-  final PracticeTestController controller;
-
-  const TestListSection({super.key, required this.controller});
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.separated(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: 5,
-      separatorBuilder: (_, __) => const SizedBox(height: TSizes.spaceBtwItems),
-      itemBuilder: (context, index) {
-        return TestCard(controller: controller, testId: 'test_$index');
-      },
     );
   }
 }
