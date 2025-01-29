@@ -24,7 +24,7 @@ class LatestTestResultsSection extends StatelessWidget {
             TextButton(
               onPressed: () {},
               child: Text(
-                'Xem tất cả >>',
+                'Xem tất cả',
                 style: TextStyle(color: Colors.blue[700]),
               ),
             ),

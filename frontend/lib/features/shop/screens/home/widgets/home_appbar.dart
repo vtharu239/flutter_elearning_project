@@ -21,6 +21,9 @@ class THomeAppBar extends StatelessWidget {
                 .textTheme
                 .titleMedium
                 ?.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
+            softWrap: true, // Ensure the text wraps
+            overflow: TextOverflow
+                .visible, // Allow text to overflow into next line if necessary
           ),
           Text(
             TTexts.homeAppbarSubTitle,
@@ -28,6 +31,9 @@ class THomeAppBar extends StatelessWidget {
                 .textTheme
                 .bodyMedium
                 ?.copyWith(color: Colors.white70),
+            softWrap: true, // Ensure the text wraps
+            overflow: TextOverflow
+                .visible, // Allow text to overflow into next line if necessary
           ),
         ],
       ),
