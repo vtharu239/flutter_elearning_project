@@ -19,6 +19,9 @@ class TCourseAppBar extends StatelessWidget {
                 .textTheme
                 .titleMedium
                 ?.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
+            softWrap: true, // Ensure the text wraps
+            overflow: TextOverflow
+                .visible, // Allow text to overflow into next line if necessary
           ),
           Text(
             TTexts.courseAppbarSubTitle,
@@ -26,6 +29,9 @@ class TCourseAppBar extends StatelessWidget {
                 .textTheme
                 .bodyMedium
                 ?.copyWith(color: Colors.white70),
+            softWrap: true, // Ensure the text wraps
+            overflow: TextOverflow
+                .visible, // Allow text to overflow into next line if necessary
           ),
         ],
       ),

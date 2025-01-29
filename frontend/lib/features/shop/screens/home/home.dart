@@ -35,7 +35,6 @@ class HomeScreen extends StatelessWidget {
               child: Column(
                 children: [
                   /// -- AppBar
-                  const SizedBox(height: TSizes.spaceBtwSections),
                   const THomeAppBar(),
                   const SizedBox(height: TSizes.spaceBtwSections),
 
@@ -76,7 +75,7 @@ class HomeScreen extends StatelessWidget {
                   const MyCourseSection(),
                   const SizedBox(height: TSizes.spaceBtwSections),
 
-                  // Section Kết quả luyện thi mới nhấ
+                  // Section Kết quả luyện thi mới nhất
                   const LatestTestResultsSection(),
                   const SizedBox(height: TSizes.spaceBtwSections),
 

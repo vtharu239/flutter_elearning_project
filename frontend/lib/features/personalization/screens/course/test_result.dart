@@ -24,7 +24,7 @@ class LatestTestResultsSection extends StatelessWidget {
             TextButton(
               onPressed: () {},
               child: Text(
-                'Xem tất cả >>',
+                'Xem tất cả',
                 style: TextStyle(color: Colors.blue[700]),
               ),
             ),
@@ -81,15 +81,13 @@ class TestResultDetailCard extends StatelessWidget {
         children: [
           // Ảnh bên trái
           Container(
-            width: 120,
-            height: 150,
+            width: MediaQuery.of(context).size.width * 0.2, // 20% màn hình
+            height: MediaQuery.of(context).size.width * 0.2, // 20% màn hình
             decoration: BoxDecoration(
               color: Colors.blue.withOpacity(0.1),
               borderRadius: BorderRadius.circular(TSizes.cardRadiusMd),
             ),
-            child: const Center(
-              child: Icon(Iconsax.document, size: 30, color: Colors.blue),
-            ),
+            child: const Icon(Iconsax.document, size: 30, color: Colors.blue),
           ),
           const SizedBox(width: TSizes.md),
           // Nội dung bên phải
@@ -145,7 +143,10 @@ class TestResultDetailCard extends StatelessWidget {
                 Text('Thời gian hoàn thành: $duration',
                     style: Theme.of(context).textTheme.bodyMedium),
                 const SizedBox(height: TSizes.xs),
-                Row(
+                Wrap(
+                  spacing: TSizes.sm,
+                  runSpacing: TSizes.xs, // Tự động xuống dòng nếu không đủ chỗ
+                  crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
                     Text('Kết quả: ',
                         style: Theme.of(context).textTheme.bodyMedium),
@@ -155,7 +156,6 @@ class TestResultDetailCard extends StatelessWidget {
                             fontWeight: FontWeight.bold,
                           ),
                     ),
-                    const Spacer(),
                     TextButton(
                       onPressed: () {},
                       child: Text(

@@ -26,7 +26,6 @@ class PracticeTestScreen extends StatelessWidget {
               child: Column(
                 children: [
                   /// -- AppBar
-                  SizedBox(height: TSizes.spaceBtwSections),
                   TExamAppBar(),
                   SizedBox(height: TSizes.spaceBtwSections),
                 ],
