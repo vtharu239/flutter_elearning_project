@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_elearning_project/common/styles/shadows.dart';
 import 'package:flutter_elearning_project/features/exam/controller/practice_test_controller.dart';
+import 'package:flutter_elearning_project/utils/constants/colors.dart';
 import 'package:flutter_elearning_project/utils/constants/sizes.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:iconsax/iconsax.dart';
@@ -36,10 +37,12 @@ class TestCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final darkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.all(TSizes.md),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: darkMode ? TColors.darkerGrey : Colors.white,
         borderRadius: BorderRadius.circular(TSizes.cardRadiusLg),
         boxShadow: [TShadowStyle.verticalProductShadow],
       ),

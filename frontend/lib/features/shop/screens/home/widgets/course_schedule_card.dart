@@ -35,12 +35,15 @@ class _CourseScheduleCardState extends State<CourseScheduleCard> {
 
   @override
   Widget build(BuildContext context) {
+    // Kiểm tra chế độ sáng/tối
+    bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDarkMode ? Colors.grey[850] : Colors.white, 
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(color: isDarkMode ? Colors.grey[700]! : Colors.grey.shade200), 
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -49,11 +52,14 @@ class _CourseScheduleCardState extends State<CourseScheduleCard> {
             children: [
               Text(
                 'Khóa học: ',
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: isDarkMode ? Colors.white : Colors.black, 
+                ),
               ),
               Text(
                 widget.courseName,
-                style: TextStyle(color: Colors.blue[700]),
+                style: TextStyle(color: isDarkMode ? Colors.blue[300] : Colors.blue[700]), 
               ),
             ],
           ),
@@ -62,9 +68,17 @@ class _CourseScheduleCardState extends State<CourseScheduleCard> {
             children: [
               Text(
                 '${widget.courseType}: ',
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: isDarkMode ? Colors.white : Colors.black, 
+                ),
               ),
-              Text(widget.frequency),
+              Text(
+                widget.frequency,
+                style: TextStyle(
+                  color: isDarkMode ? Colors.white : Colors.black,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 8),
@@ -80,8 +94,8 @@ class _CourseScheduleCardState extends State<CourseScheduleCard> {
                   padding: EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     color: _taskCompleted[index]
-                        ? Colors.green[100]
-                        : Colors.white,
+                        ? (isDarkMode ? Colors.green[700] : Colors.green[100]) // Màu nền khi task hoàn thành
+                        : (isDarkMode ? Colors.grey[800] : Colors.white), // Màu nền khi task chưa hoàn thành
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Row(
@@ -92,8 +106,8 @@ class _CourseScheduleCardState extends State<CourseScheduleCard> {
                         decoration: BoxDecoration(
                           color: _taskCompleted[index]
                               ? Colors.green
-                              : Colors.white,
-                          border: Border.all(color: Colors.grey),
+                              : (isDarkMode ? Colors.grey[700]! : Colors.white),
+                          border: Border.all(color: isDarkMode ? Colors.grey[600]! : Colors.grey),
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: _taskCompleted[index]
@@ -106,8 +120,8 @@ class _CourseScheduleCardState extends State<CourseScheduleCard> {
                           widget.tasks[index],
                           style: TextStyle(
                             color: _taskCompleted[index]
-                                ? Colors.green[800]
-                                : Colors.black,
+                                ? (isDarkMode ? Colors.green[200] : Colors.green[800]) // Màu chữ khi task hoàn thành
+                                : (isDarkMode ? Colors.white : Colors.black), // Màu chữ khi task chưa hoàn thành
                             fontWeight: _taskCompleted[index]
                                 ? FontWeight.bold
                                 : FontWeight.normal,

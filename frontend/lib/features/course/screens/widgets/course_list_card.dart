@@ -29,12 +29,19 @@ class CourseListCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Kiểm tra dark mode
+    bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.all(TSizes.sm),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDarkMode ? Colors.grey[900] : Colors.white,
         borderRadius: BorderRadius.circular(TSizes.cardRadiusLg),
-        boxShadow: [TShadowStyle.verticalProductShadow],
+        boxShadow: isDarkMode
+            ? []
+            : [
+                TShadowStyle.verticalProductShadow
+              ], // Tắt shadow trong dark mode
       ),
       child: Row(
         children: [
@@ -57,7 +64,9 @@ class CourseListCard extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: Theme.of(context).textTheme.titleMedium,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: isDarkMode ? Colors.white : Colors.black,
+                      ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -66,7 +75,6 @@ class CourseListCard extends StatelessWidget {
                 // Rating and Students
                 LayoutBuilder(
                   builder: (context, constraints) {
-                    // Kiểm tra nếu chiều rộng đủ lớn (bạn có thể điều chỉnh giá trị này)
                     if (constraints.maxWidth > 260) {
                       return Row(
                         children: [
@@ -76,15 +84,24 @@ class CourseListCard extends StatelessWidget {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(Iconsax.user,
-                                  size: 16, color: Colors.grey[600]),
+                                  size: 16,
+                                  color: isDarkMode
+                                      ? Colors.grey[400]
+                                      : Colors.grey[600]),
                               const SizedBox(width: TSizes.xs),
-                              Text('$students học viên'),
+                              Text(
+                                '$students học viên',
+                                style: TextStyle(
+                                  color: isDarkMode
+                                      ? Colors.grey[400]
+                                      : Colors.black,
+                                ),
+                              ),
                             ],
                           ),
                         ],
                       );
                     } else {
-                      // Nếu màn hình nhỏ, sử dụng Wrap
                       return Wrap(
                         spacing: TSizes.sm,
                         runSpacing: TSizes.xs,
@@ -95,9 +112,19 @@ class CourseListCard extends StatelessWidget {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(Iconsax.user,
-                                  size: 16, color: Colors.grey[600]),
+                                  size: 16,
+                                  color: isDarkMode
+                                      ? Colors.grey[400]
+                                      : Colors.grey[600]),
                               const SizedBox(width: TSizes.xs),
-                              Text('$students học viên'),
+                              Text(
+                                '$students học viên',
+                                style: TextStyle(
+                                  color: isDarkMode
+                                      ? Colors.grey[400]
+                                      : Colors.black,
+                                ),
+                              ),
                             ],
                           ),
                         ],

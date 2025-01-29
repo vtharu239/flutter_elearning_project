@@ -127,7 +127,6 @@ class HomeScreen extends StatelessWidget {
 
                   // Quick Stats Section
                   const QuickStatsSection(),
-                  const SizedBox(height: TSizes.spaceBtwSections),
 
                   // // Latest Updates Section
                   // const LatestUpdatesSection(),

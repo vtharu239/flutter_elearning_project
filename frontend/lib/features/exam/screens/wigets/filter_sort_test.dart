@@ -11,14 +11,17 @@ class FilterSortSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Kiểm tra chế độ sáng tối
+    bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.all(TSizes.sm),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDarkMode ? Colors.grey[850] : Colors.white,
         borderRadius: BorderRadius.circular(TSizes.cardRadiusMd),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: isDarkMode ? Colors.grey[700]! : Colors.grey.withOpacity(0.1),
             blurRadius: 10,
             offset: const Offset(0, 5),
           ),
@@ -26,20 +29,23 @@ class FilterSortSection extends StatelessWidget {
       ),
       child: Obx(
         () => Column(
-          // Thay đổi Row thành Column
           children: [
             // Phần sắp xếp
             Row(
               children: [
                 const Icon(Iconsax.sort, size: 20),
                 const SizedBox(width: TSizes.sm),
-                const Text('Sắp xếp theo:'),
+                Text(
+                  'Sắp xếp theo:',
+                  style: TextStyle(
+                    color: isDarkMode ? Colors.white : Colors.black,
+                  ),
+                ),
                 const SizedBox(width: TSizes.sm),
                 Expanded(
-                  // Wrap DropdownButton trong Expanded
                   child: DropdownButton<String>(
                     value: controller.selectedSort.value,
-                    isExpanded: true, // Thêm thuộc tính này
+                    isExpanded: true,
                     items: const [
                       DropdownMenuItem(
                           value: 'newest', child: Text('Mới nhất')),
@@ -51,15 +57,18 @@ class FilterSortSection extends StatelessWidget {
                     onChanged: (value) =>
                         controller.selectedSort.value = value!,
                     underline: const SizedBox(),
+                    style: TextStyle(
+                      color: isDarkMode ? Colors.white : Colors.black, 
+                    ),
+                    dropdownColor: isDarkMode ? Colors.grey[850] : Colors.white, 
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: TSizes.sm), // Khoảng cách giữa 2 hàng
+            const SizedBox(height: TSizes.sm),
 
             // Phần filter
             Wrap(
-              // Sử dụng Wrap cho các FilterChip
               spacing: TSizes.xs, // Khoảng cách giữa các chip theo chiều ngang
               runSpacing: TSizes.xs, // Khoảng cách giữa các hàng
               children: [
@@ -67,11 +76,21 @@ class FilterSortSection extends StatelessWidget {
                   label: const Text('Đã làm'),
                   selected: controller.selectedFilters.contains('done'),
                   onSelected: (_) => controller.toggleFilter('done'),
+                  selectedColor: Colors.green[700], // Màu nền khi được chọn
+                  backgroundColor: isDarkMode ? Colors.grey[700] : Colors.grey[200], // Màu nền khi chưa chọn
+                  labelStyle: TextStyle(
+                    color: isDarkMode ? Colors.white : Colors.black, // Màu chữ của filter chip
+                  ),
                 ),
                 FilterChip(
                   label: const Text('Chưa làm'),
                   selected: controller.selectedFilters.contains('notDone'),
                   onSelected: (_) => controller.toggleFilter('notDone'),
+                  selectedColor: Colors.orange[700], // Màu nền khi được chọn
+                  backgroundColor: isDarkMode ? Colors.grey[700] : Colors.grey[200], // Màu nền khi chưa chọn
+                  labelStyle: TextStyle(
+                    color: isDarkMode ? Colors.white : Colors.black, // Màu chữ của filter chip
+                  ),
                 ),
               ],
             ),
