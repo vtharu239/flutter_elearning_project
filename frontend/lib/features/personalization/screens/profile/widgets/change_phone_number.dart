@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_elearning_project/common/widgets/appbar/appbar.dart';
 import 'package:flutter_elearning_project/features/personalization/screens/profile/profile.dart';
 import 'package:flutter_elearning_project/utils/constants/sizes.dart';
 import 'package:get/get.dart';
@@ -10,13 +11,10 @@ class ChangePhoneNumber extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Thay đổi Số điện thoại',
+      appBar: TAppBar(
+        showBackArrow: true,
+        title: Text('Thay đổi số điện thoại',
             style: Theme.of(context).textTheme.headlineSmall),
-        leading: IconButton(
-          icon: const Icon(Iconsax.arrow_left),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(TSizes.defaultSpace),

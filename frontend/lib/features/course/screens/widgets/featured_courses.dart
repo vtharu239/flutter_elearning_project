@@ -11,6 +11,8 @@ class FeaturedCoursesSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final darkMode = Theme.of(context).brightness == Brightness.dark;
+
     return SizedBox(
       height: 320,
       child: ListView.builder(
@@ -27,7 +29,7 @@ class FeaturedCoursesSection extends StatelessWidget {
               originalPrice: 1289000,
               discountPrice: 989000,
               discountPercentage: 25,
-              imageUrl: TImages.productImage1,
+              imageUrl: darkMode ? TImages.productImage1Dark: TImages.productImage1,
               onTap: () {},
             ),
           );

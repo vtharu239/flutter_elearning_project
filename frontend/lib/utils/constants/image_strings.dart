@@ -5,8 +5,8 @@
 class TImages {
 
   // -- App Logos
-  static const String darkAppLogo = "assets/logos/e-learning.png";
-  static const String lightAppLogo = "assets/logos/e-learning.png";
+  static const String darkAppLogo = "assets/logos/e-learning-logo.png";
+  static const String lightAppLogo = "assets/logos/e-learning-logo.png";
 
   // -- Social Logos
   static const String google = "assets/logos/google-icon.png";
@@ -52,6 +52,7 @@ class TImages {
 
   // -- Products
   static const String productImage1 = "assets/images/products/complete_toeic.png";
+  static const String productImage1Dark = "assets/images/products/complete_toeic_dark.png";
   static const String productImage2 = "assets/images/products/fundamentals_ielts.png";
   static const String productImage3 = "assets/images/products/intensive-listening_ielts.png";
   static const String productImage4 = "assets/images/products/intensive-reading_ielts.png";

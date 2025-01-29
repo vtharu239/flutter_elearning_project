@@ -8,6 +8,9 @@ class LatestTestResultsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Kiểm tra chế độ sáng tối
+    bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -17,7 +20,7 @@ class LatestTestResultsSection extends StatelessWidget {
             Text(
               'Kết quả luyện thi mới nhất',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: Colors.blue[700],
+                    color: isDarkMode ? Colors.white : Colors.blue[700],
                     fontWeight: FontWeight.bold,
                   ),
             ),
@@ -25,7 +28,9 @@ class LatestTestResultsSection extends StatelessWidget {
               onPressed: () {},
               child: Text(
                 'Xem tất cả',
-                style: TextStyle(color: Colors.blue[700]),
+                style: TextStyle(
+                  color: isDarkMode ? Colors.blue[300] : Colors.blue[700],
+                ),
               ),
             ),
           ],
@@ -69,12 +74,21 @@ class TestResultDetailCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Kiểm tra chế độ sáng tối
+    bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.all(TSizes.md),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDarkMode
+            ? Colors.grey[850]
+            : Colors.white, 
         borderRadius: BorderRadius.circular(TSizes.cardRadiusMd),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(
+          color: isDarkMode
+              ? Colors.grey[700]!
+              : Colors.grey.shade200, 
+        ),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -97,7 +111,11 @@ class TestResultDetailCard extends StatelessWidget {
               children: [
                 Text(
                   testName,
-                  style: Theme.of(context).textTheme.titleMedium,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: isDarkMode
+                            ? Colors.white
+                            : Colors.black, 
+                      ),
                 ),
                 const SizedBox(height: TSizes.sm),
                 Wrap(
@@ -137,23 +155,44 @@ class TestResultDetailCard extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: TSizes.sm),
-                Text('Ngày làm bài: $date',
-                    style: Theme.of(context).textTheme.bodyMedium),
+                Text(
+                  'Ngày làm bài: $date',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: isDarkMode
+                            ? Colors.white
+                            : Colors.black,
+                      ),
+                ),
                 const SizedBox(height: TSizes.xs),
-                Text('Thời gian hoàn thành: $duration',
-                    style: Theme.of(context).textTheme.bodyMedium),
+                Text(
+                  'Thời gian hoàn thành: $duration',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: isDarkMode
+                            ? Colors.white
+                            : Colors.black, 
+                      ),
+                ),
                 const SizedBox(height: TSizes.xs),
                 Wrap(
                   spacing: TSizes.sm,
                   runSpacing: TSizes.xs, // Tự động xuống dòng nếu không đủ chỗ
                   crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
-                    Text('Kết quả: ',
-                        style: Theme.of(context).textTheme.bodyMedium),
+                    Text(
+                      'Kết quả: ',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: isDarkMode
+                                ? Colors.white
+                                : Colors.black,
+                          ),
+                    ),
                     Text(
                       score,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             fontWeight: FontWeight.bold,
+                            color: isDarkMode
+                                ? Colors.white
+                                : Colors.black, 
                           ),
                     ),
                     TextButton(
@@ -161,7 +200,10 @@ class TestResultDetailCard extends StatelessWidget {
                       child: Text(
                         '[Xem chi tiết]',
                         style: TextStyle(
-                          color: Colors.blue[700],
+                          color: isDarkMode
+                              ? Colors.blue[300]
+                              : Colors
+                                  .blue[700], 
                         ),
                       ),
                     ),

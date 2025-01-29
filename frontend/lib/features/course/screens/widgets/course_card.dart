@@ -31,14 +31,19 @@ class CourseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Kiểm tra dark mode
+    bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
         width: 310,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: isDarkMode ? Colors.grey[900] : Colors.white,
           borderRadius: BorderRadius.circular(TSizes.cardRadiusLg),
-          boxShadow: [TShadowStyle.verticalProductShadow],
+          boxShadow: isDarkMode
+              ? []
+              : [TShadowStyle.verticalProductShadow], // Bỏ shadow nếu dark mode
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -64,7 +69,9 @@ class CourseCard extends StatelessWidget {
                   // Title
                   Text(
                     title,
-                    style: Theme.of(context).textTheme.titleMedium,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: isDarkMode ? Colors.white : Colors.black,
+                        ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -78,11 +85,21 @@ class CourseCard extends StatelessWidget {
                   ),
                   const SizedBox(height: TSizes.sm),
 
+                  // Students Count
                   Row(
                     children: [
-                      Icon(Iconsax.user, size: 16, color: Colors.grey[600]),
+                      Icon(
+                        Iconsax.user,
+                        size: 16,
+                        color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+                      ),
                       const SizedBox(width: TSizes.xs),
-                      Text('$students học viên'),
+                      Text(
+                        '$students học viên',
+                        style: TextStyle(
+                          color: isDarkMode ? Colors.grey[400] : Colors.black,
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: TSizes.sm),
@@ -102,4 +119,3 @@ class CourseCard extends StatelessWidget {
     );
   }
 }
-

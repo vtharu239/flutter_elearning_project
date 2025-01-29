@@ -16,13 +16,15 @@ class CourseListSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final darkMode = Theme.of(context).brightness == Brightness.dark;
+
     return ListView.separated(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: 3,
       separatorBuilder: (_, __) => const SizedBox(height: TSizes.spaceBtwItems),
       itemBuilder: (context, index) {
-        return const CourseListCard(
+        return CourseListCard(
           title: 'Complete IELTS Course 2024',
           rating: 4.7,
           ratingCount: 1234,
@@ -30,7 +32,7 @@ class CourseListSection extends StatelessWidget {
           originalPrice: 1289000,
           discountPrice: 989000,
           discountPercentage: 25,
-          imageUrl: TImages.productImage1,
+          imageUrl: darkMode? TImages.productImage1Dark : TImages.productImage1,
         );
       },
     );

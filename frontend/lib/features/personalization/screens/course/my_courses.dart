@@ -7,6 +7,9 @@ class MyCourseSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Kiểm tra chế độ sáng tối
+    bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -16,7 +19,7 @@ class MyCourseSection extends StatelessWidget {
             Text(
               'Khóa học của tôi',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: Colors.blue[700],
+                    color: isDarkMode ? Colors.white : Colors.blue[700],
                     fontWeight: FontWeight.bold,
                   ),
             ),
@@ -24,7 +27,7 @@ class MyCourseSection extends StatelessWidget {
               onPressed: () {},
               child: Text(
                 'Xem tất cả',
-                style: TextStyle(color: Colors.blue[700]),
+                style: TextStyle(color: isDarkMode ? Colors.blue[300] : Colors.blue[700]),
               ),
             ),
           ],
@@ -82,12 +85,15 @@ class EnrolledCourseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Kiểm tra chế độ sáng tối
+    bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.all(TSizes.md),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDarkMode ? Colors.grey[850] : Colors.white,
         borderRadius: BorderRadius.circular(TSizes.cardRadiusMd),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(color: isDarkMode ? Colors.grey[700]! : Colors.grey.shade200), // Màu viền thay đổi theo chế độ
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -97,7 +103,9 @@ class EnrolledCourseCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   courseName,
-                  style: Theme.of(context).textTheme.titleMedium,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: isDarkMode ? Colors.white : Colors.black,
+                      ),
                 ),
               ),
               Container(
@@ -127,18 +135,22 @@ class EnrolledCourseCard extends StatelessWidget {
           const SizedBox(height: TSizes.sm),
           LinearProgressIndicator(
             value: progress,
-            backgroundColor: Colors.grey[200],
+            backgroundColor: isDarkMode ? Colors.grey[700] : Colors.grey[200],
             valueColor: const AlwaysStoppedAnimation<Color>(Colors.blue),
           ),
           const SizedBox(height: TSizes.xs),
           Text(
             '${(progress * 100).toInt()}%',
-            style: Theme.of(context).textTheme.bodySmall,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: isDarkMode ? Colors.white : Colors.black, 
+                ),
           ),
           const SizedBox(height: TSizes.sm),
           Text(
             'Tiếp tục bài học: $nextLesson',
-            style: Theme.of(context).textTheme.bodyMedium,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: isDarkMode ? Colors.white : Colors.black,
+                ),
           ),
         ],
       ),

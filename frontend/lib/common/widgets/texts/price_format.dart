@@ -16,6 +16,8 @@ class CoursePrice extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final darkMode = Theme.of(context).brightness == Brightness.dark;
+
     return LayoutBuilder(
       builder: (context, constraints) {
         return Wrap(
@@ -27,7 +29,7 @@ class CoursePrice extends StatelessWidget {
               Text(
                 '${formatPrice(discountPrice!)} VNĐ',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: Colors.green,
+                      color: darkMode ? Colors.green[200] : Colors.green,
                       fontWeight: FontWeight.bold,
                     ),
               ),

@@ -55,15 +55,26 @@ class CategoryChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Kiểm tra chế độ sáng/tối
+    bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Padding(
       padding: const EdgeInsets.only(right: TSizes.sm),
       child: FilterChip(
-        label: Text(label),
+        label: Text(
+          label,
+          style: TextStyle(
+            color: isSelected
+                ? (isDarkMode ? Colors.blue[300] : Colors.blue[800]) // Màu chữ khi được chọn
+                : (isDarkMode ? Colors.white : Colors.black), // Màu chữ khi chưa chọn
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+          ),
+        ),
         selected: isSelected,
         onSelected: (_) => onSelected(),
-        backgroundColor: Colors.grey[200],
-        selectedColor: Colors.blue.withOpacity(0.2),
-        checkmarkColor: Colors.blue,
+        backgroundColor: isDarkMode ? Colors.grey[800] : Colors.grey[200], // Nền khi chưa chọn
+        selectedColor: isDarkMode ? Colors.blue[900] : Colors.blue.withOpacity(0.2), // Nền khi chọn
+        checkmarkColor: isDarkMode ? Colors.blue[300] : Colors.blue[800], // Màu dấu check
       ),
     );
   }

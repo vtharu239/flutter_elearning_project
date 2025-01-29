@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_elearning_project/features/shop/screens/home/widgets/course_schedule_card.dart';
+import 'package:flutter_elearning_project/utils/constants/colors.dart';
 import 'package:flutter_elearning_project/utils/constants/sizes.dart';
 
 // Section hiển thị lịch học hôm nay
@@ -8,6 +9,8 @@ class TodayScheduleSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final darkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -17,7 +20,7 @@ class TodayScheduleSection extends StatelessWidget {
             Text(
               'Lịch học hôm nay',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: Colors.blue[700],
+                    color: darkMode ? Colors.white : Colors.blue[700],
                     fontWeight: FontWeight.bold,
                   ),
             ),
@@ -25,7 +28,7 @@ class TodayScheduleSection extends StatelessWidget {
               onPressed: () {},
               child: Text(
                 'Xem Lịch học của tôi',
-                style: TextStyle(color: Colors.blue[700]),
+                style: TextStyle(color: darkMode? TColors.darkGrey : Colors.blue[700]),
               ),
             ),
           ],
