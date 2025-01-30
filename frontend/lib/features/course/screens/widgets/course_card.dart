@@ -5,7 +5,33 @@ import 'package:flutter_elearning_project/common/widgets/texts/rating_star.dart'
 import 'package:flutter_elearning_project/utils/constants/sizes.dart';
 import 'package:iconsax/iconsax.dart';
 
-class CourseCard extends StatelessWidget {
+/// Widget hiển thị danh sách khóa học theo chiều ngang
+class HorizontalCourseCardList extends StatelessWidget {
+  final int itemCount;
+  final List<HorizontalCourseCard> items;
+
+  const HorizontalCourseCardList({
+    super.key,
+    required this.itemCount,
+    required this.items,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.separated(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: itemCount,
+      separatorBuilder: (_, __) => const SizedBox(height: TSizes.md),
+      itemBuilder: (context, index) {
+        return items[
+            index]; // Trả về từng HorizontalCourseCard đã được truyền vào
+      },
+    );
+  }
+}
+
+class HorizontalCourseCard extends StatelessWidget {
   final String title;
   final double rating;
   final int ratingCount;
@@ -16,7 +42,7 @@ class CourseCard extends StatelessWidget {
   final String imageUrl;
   final VoidCallback onTap;
 
-  const CourseCard({
+  const HorizontalCourseCard({
     super.key,
     required this.title,
     required this.rating,
@@ -39,7 +65,7 @@ class CourseCard extends StatelessWidget {
       child: Container(
         width: 310,
         decoration: BoxDecoration(
-          color: isDarkMode ? Colors.grey[900] : Colors.white,
+          color: isDarkMode ? Colors.grey[800] : Colors.white,
           borderRadius: BorderRadius.circular(TSizes.cardRadiusLg),
           boxShadow: isDarkMode
               ? []

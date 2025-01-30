@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_elearning_project/common/styles/shadows.dart';
 import 'package:flutter_elearning_project/features/exam/controller/practice_test_controller.dart';
 import 'package:flutter_elearning_project/utils/constants/colors.dart';
 import 'package:flutter_elearning_project/utils/constants/sizes.dart';
@@ -44,7 +43,7 @@ class TestCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: darkMode ? TColors.darkerGrey : Colors.white,
         borderRadius: BorderRadius.circular(TSizes.cardRadiusLg),
-        boxShadow: [TShadowStyle.verticalProductShadow],
+        // boxShadow: [TShadowStyle.verticalProductShadow],
       ),
       child: Row(
         crossAxisAlignment:

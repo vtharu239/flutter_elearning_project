@@ -4,6 +4,8 @@ import 'package:flutter_elearning_project/common/widgets/custom_shapes/container
 import 'package:flutter_elearning_project/common/widgets/images/t_circular_images.dart';
 import 'package:flutter_elearning_project/common/widgets/list_tiles/settings_menu_tile.dart';
 import 'package:flutter_elearning_project/features/authentication/screens/login/login.dart';
+import 'package:flutter_elearning_project/features/personalization/screens/course/my_courses.dart';
+import 'package:flutter_elearning_project/features/personalization/screens/course/test_result.dart';
 import 'package:flutter_elearning_project/features/personalization/screens/profile/profile.dart';
 import 'package:flutter_elearning_project/features/personalization/screens/settings/UserAuthController.dart';
 import 'package:flutter_elearning_project/utils/constants/image_strings.dart';
@@ -12,11 +14,33 @@ import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
 
-class SettingScreen extends StatelessWidget {
+class SettingScreen extends StatefulWidget {
   const SettingScreen({super.key});
 
   @override
+  State<SettingScreen> createState() => _SettingScreenState();
+}
+
+class _SettingScreenState extends State<SettingScreen>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -131,93 +155,147 @@ class SettingScreen extends StatelessWidget {
               ),
             ),
 
-            /// -- Body
+            // Tab Bar
+            TabBar(
+              controller: _tabController,
+              labelColor: isDarkMode ? Colors.white : Colors.blue[700],
+              unselectedLabelColor: Colors.grey,
+              indicatorColor: isDarkMode ? Colors.white : Colors.blue[700],
+              tabs: const [
+                Tab(text: 'Khóa học'),
+                Tab(text: 'Kết quả luyện thi'),
+              ],
+            ),
+
+            // Tab Bar View
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.5,
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  // Courses Tab
+                  SingleChildScrollView(
+                    padding: const EdgeInsets.all(TSizes.defaultSpace),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Các khóa đã kích hoạt',
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleMedium
+                              ?.copyWith(fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: TSizes.spaceBtwItems),
+                        const EnrolledCourseCard(
+                          courseName: 'Complete TOEIC',
+                          progress: 0.07,
+                          nextLesson: 'Ngữ pháp TOEIC - Đại từ',
+                          status: 'Đã kích hoạt',
+                        ),
+                        const SizedBox(height: TSizes.spaceBtwItems),
+                        Text(
+                          'Các khóa học thử',
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleMedium
+                              ?.copyWith(fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: TSizes.spaceBtwItems),
+                        const EnrolledCourseCard(
+                          courseName: '[Practical English] 3600 từ vựng',
+                          progress: 0,
+                          nextLesson:
+                              'Nature, the world (Thiên nhiên, thế giới)',
+                          status: 'Học thử',
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Test Results Tab
+                  SingleChildScrollView(
+                    padding: const EdgeInsets.all(TSizes.defaultSpace),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Kết quả các bài luyện thi',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium
+                                  ?.copyWith(fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: TSizes.spaceBtwItems),
+                        const LatestTestResultsSection(),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Settings Section
             Padding(
               padding: const EdgeInsets.all(TSizes.defaultSpace),
               child: Column(
                 children: [
-                  /// -- Account Settings
-                  const TSectionHeading(title: 'Account Settings'),
+                  const TSectionHeading(title: 'Cài đặt ứng dụng'),
                   const SizedBox(height: TSizes.spaceBtwItems),
 
+                  // Language Settings
                   TSettingsMenuTile(
-                    icon: Iconsax.safe_home,
-                    title: 'My Addresses',
-                    subTitle: 'Set shopping delivery address',
-                    onTap: () {},
-                  ),
-                  TSettingsMenuTile(
-                    icon: Iconsax.safe_home,
-                    title: 'My Addresses',
-                    subTitle: 'Set shopping delivery address',
-                    onTap: () {},
-                  ),
-                  TSettingsMenuTile(
-                    icon: Iconsax.safe_home,
-                    title: 'My Addresses',
-                    subTitle: 'Set shopping delivery address',
-                    onTap: () {},
-                  ),
-                  TSettingsMenuTile(
-                    icon: Iconsax.safe_home,
-                    title: 'My Addresses',
-                    subTitle: 'Set shopping delivery address',
-                    onTap: () {},
+                    icon: Iconsax.language_square,
+                    title: 'Ngôn ngữ',
+                    subTitle: 'Thay đổi ngôn ngữ của ứng dụng',
+                    trailing: DropdownButton<String>(
+                      value: 'English',
+                      items: const [
+                        DropdownMenuItem(
+                            value: 'English', child: Text('English')),
+                        DropdownMenuItem(
+                            value: 'Vietnamese', child: Text('Tiếng Việt')),
+                      ],
+                      onChanged: (value) {},
+                    ),
                   ),
 
-                  /// -- App Settings
+                  // Dark Mode Toggle
+                  TSettingsMenuTile(
+                    icon: Iconsax.moon,
+                    title: 'Chế độ sáng, tối',
+                    subTitle: 'Chuyển đổi Chế độ Sáng hoặc Tối',
+                    trailing: Switch(
+                      value: isDarkMode,
+                      onChanged: (value) {
+                        // Implement dark mode toggle
+                      },
+                    ),
+                  ),
+
                   const SizedBox(height: TSizes.spaceBtwSections),
-                  const TSectionHeading(
-                      title: 'App Settings', showActionButton: false),
-                  const SizedBox(height: TSizes.spaceBtwItems),
-                  const TSettingsMenuTile(
-                      icon: Iconsax.document_upload,
-                      title: 'Load Data',
-                      subTitle: 'Upload Data to your Database'),
-                  TSettingsMenuTile(
-                    icon: Iconsax.security,
-                    title: 'Switch Mode',
-                    subTitle: 'Switch to Light or Dark Mode',
-                    trailing: Switch(value: true, onChanged: (value) {}),
-                  ),
-                  TSettingsMenuTile(
-                    icon: Iconsax.security,
-                    title: 'Switch Mode',
-                    subTitle: 'Switch to Light or Dark Mode',
-                    trailing: Switch(value: false, onChanged: (value) {}),
-                  ),
-                  TSettingsMenuTile(
-                    icon: Iconsax.security,
-                    title: 'Switch Mode',
-                    subTitle: 'Switch to Light or Dark Mode',
-                    trailing: Switch(value: true, onChanged: (value) {}),
-                  ),
 
-                  const TSettingsMenuTile(
-                      icon: Iconsax.document_upload,
-                      title: 'Load Data',
-                      subTitle: 'Upload Data to your Database'),
-
-                  /// Logout Button
-                  const SizedBox(height: TSizes.spaceBtwSections),
+                  // Logout Button
                   SizedBox(
                     width: double.infinity,
                     child: OutlinedButton(
-                        onPressed: () {
-                          // Use the authentication controller to logout
-                          final authController =
-                              Provider.of<UserAuthController>(context,
-                                  listen: false);
-                          authController.logout();
-
-                          // Navigate to login screen
-                          Get.offAll(() => const LoginScreen());
-                        },
-                        child: const Text('Đăng xuất')),
+                      onPressed: () {
+                        final authController = Provider.of<UserAuthController>(
+                            context,
+                            listen: false);
+                        authController.logout();
+                        Get.offAll(() => const LoginScreen());
+                      },
+                      child: const Text('Đăng xuất'),
+                    ),
                   ),
                 ],
               ),
-            )
+            ),
           ],
         ),
       ),

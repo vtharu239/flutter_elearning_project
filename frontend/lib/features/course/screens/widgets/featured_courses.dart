@@ -1,27 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_elearning_project/features/course/controller/course_controller.dart';
 import 'package:flutter_elearning_project/features/course/screens/widgets/course_card.dart';
 import 'package:flutter_elearning_project/utils/constants/image_strings.dart';
-import 'package:flutter_elearning_project/utils/constants/sizes.dart';
 
+// Section hiển thị kết quả thi mới nhất
 class FeaturedCoursesSection extends StatelessWidget {
-  final CourseController controller;
-
-  const FeaturedCoursesSection({super.key, required this.controller});
+  const FeaturedCoursesSection({super.key});
 
   @override
   Widget build(BuildContext context) {
     final darkMode = Theme.of(context).brightness == Brightness.dark;
 
-    return SizedBox(
-      height: 320,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: 5,
-        itemBuilder: (context, index) {
-          return Padding(
-            padding: const EdgeInsets.only(right: TSizes.spaceBtwItems),
-            child: CourseCard(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        HorizontalCourseCardList(
+          itemCount: 3,
+          items: [
+            HorizontalCourseCard(
               title: 'Complete TOEIC 2024',
               rating: 4.8,
               ratingCount: 2345,
@@ -29,12 +24,37 @@ class FeaturedCoursesSection extends StatelessWidget {
               originalPrice: 1289000,
               discountPrice: 989000,
               discountPercentage: 25,
-              imageUrl: darkMode ? TImages.productImage1Dark: TImages.productImage1,
+              imageUrl:
+                  darkMode ? TImages.productImage1Dark : TImages.productImage1,
               onTap: () {},
             ),
-          );
-        },
-      ),
+            HorizontalCourseCard(
+              title: 'Complete TOEIC 2024',
+              rating: 4.8,
+              ratingCount: 2345,
+              students: 1234,
+              originalPrice: 1289000,
+              discountPrice: 989000,
+              discountPercentage: 25,
+              imageUrl:
+                  darkMode ? TImages.productImage1Dark : TImages.productImage1,
+              onTap: () {},
+            ),
+            HorizontalCourseCard(
+              title: 'Complete TOEIC 2024',
+              rating: 4.8,
+              ratingCount: 2345,
+              students: 1234,
+              originalPrice: 1289000,
+              discountPrice: 989000,
+              discountPercentage: 25,
+              imageUrl:
+                  darkMode ? TImages.productImage1Dark : TImages.productImage1,
+              onTap: () {},
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

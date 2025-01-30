@@ -7,32 +7,9 @@ class MyCourseSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Kiểm tra chế độ sáng tối
-    bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Khóa học của tôi',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: isDarkMode ? Colors.white : Colors.blue[700],
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-            TextButton(
-              onPressed: () {},
-              child: Text(
-                'Xem tất cả',
-                style: TextStyle(color: isDarkMode ? Colors.blue[300] : Colors.blue[700]),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: TSizes.spaceBtwItems),
         SizedBox(
           height: 280,
           child: ListView.separated(
@@ -93,7 +70,10 @@ class EnrolledCourseCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: isDarkMode ? Colors.grey[850] : Colors.white,
         borderRadius: BorderRadius.circular(TSizes.cardRadiusMd),
-        border: Border.all(color: isDarkMode ? Colors.grey[700]! : Colors.grey.shade200), // Màu viền thay đổi theo chế độ
+        border: Border.all(
+            color: isDarkMode
+                ? Colors.grey[700]!
+                : Colors.grey.shade200), // Màu viền thay đổi theo chế độ
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -142,7 +122,7 @@ class EnrolledCourseCard extends StatelessWidget {
           Text(
             '${(progress * 100).toInt()}%',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: isDarkMode ? Colors.white : Colors.black, 
+                  color: isDarkMode ? Colors.white : Colors.black,
                 ),
           ),
           const SizedBox(height: TSizes.sm),
