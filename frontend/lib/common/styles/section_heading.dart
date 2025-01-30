@@ -23,7 +23,7 @@ class TSectionHeading extends StatelessWidget {
       children: [
         Text(
           title,
-          style: Theme.of(context).textTheme.headlineSmall?.apply(color: textColor),
+          style: Theme.of(context).textTheme.titleMedium?.apply(color: textColor).copyWith(fontWeight: FontWeight.bold),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),

@@ -8,6 +8,7 @@ import 'package:flutter_elearning_project/features/personalization/screens/cours
 import 'package:flutter_elearning_project/features/personalization/screens/course/test_result.dart';
 import 'package:flutter_elearning_project/features/personalization/screens/profile/profile.dart';
 import 'package:flutter_elearning_project/features/personalization/screens/settings/UserAuthController.dart';
+import 'package:flutter_elearning_project/providers/theme_provider.dart';
 import 'package:flutter_elearning_project/utils/constants/image_strings.dart';
 import 'package:flutter_elearning_project/utils/constants/sizes.dart';
 import 'package:get/get.dart';
@@ -268,11 +269,28 @@ class _SettingScreenState extends State<SettingScreen>
                   TSettingsMenuTile(
                     icon: Iconsax.moon,
                     title: 'Chế độ sáng, tối',
-                    subTitle: 'Chuyển đổi Chế độ Sáng hoặc Tối',
-                    trailing: Switch(
-                      value: isDarkMode,
+                    subTitle: 'Chọn chế độ giao diện',
+                    trailing: DropdownButton<ThemeModeType>(
+                      value: Provider.of<ThemeProvider>(context).themeMode,
+                      items: const [
+                        DropdownMenuItem(
+                          value: ThemeModeType.system,
+                          child: Text('Hệ thống'),
+                        ),
+                        DropdownMenuItem(
+                          value: ThemeModeType.light,
+                          child: Text('Sáng'),
+                        ),
+                        DropdownMenuItem(
+                          value: ThemeModeType.dark,
+                          child: Text('Tối'),
+                        ),
+                      ],
                       onChanged: (value) {
-                        // Implement dark mode toggle
+                        if (value != null) {
+                          Provider.of<ThemeProvider>(context, listen: false)
+                              .setTheme(value);
+                        }
                       },
                     ),
                   ),
