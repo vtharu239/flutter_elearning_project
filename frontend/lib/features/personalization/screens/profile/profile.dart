@@ -28,19 +28,46 @@ class ProfileScreen extends StatelessWidget {
           padding: const EdgeInsets.all(TSizes.defaultSpace),
           child: Column(
             children: [
-              /// Profile Picture
-              SizedBox(
-                width: double.infinity,
-                child: Column(
-                  children: [
-                    const TCircularImages(
-                        image: TImages.user, width: 80, height: 80),
-                    TextButton(
-                        onPressed: () {},
-                        child: const Text('Change Profile Picture')),
-                  ],
-                ),
+              /// Cover Image Section
+              Stack(
+                clipBehavior: Clip.none,
+                alignment: Alignment.center,
+                children: [
+                  Container(
+                    width: double.infinity,
+                    height: 200,
+                    decoration: const BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage(TImages.defaultCover),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: -90,
+                    child: Column(
+                      children: [
+                        const TCircularImages(
+                            image: TImages.user, width: 100, height: 100),
+                        TextButton(
+                            onPressed: () {},
+                            child: const Text('Change Profile Picture')),
+                      ],
+                    ),
+                  ),
+                  Positioned(
+                    top: 10,
+                    right: 10,
+                    child: IconButton(
+                      onPressed: () {
+                        // Chức năng thay đổi ảnh bìa
+                      },
+                      icon: const Icon(Iconsax.edit, color: Colors.blue),
+                    ),
+                  ),
+                ],
               ),
+              const SizedBox(height: 70),
 
               /// Details
               const SizedBox(height: TSizes.spaceBtwItems / 2),
@@ -52,9 +79,14 @@ class ProfileScreen extends StatelessWidget {
                   title: "Thông tin hồ sơ", showActionButton: false),
               const SizedBox(height: TSizes.spaceBtwItems),
 
-              TProfileMenu(title: 'Tên', value: "Palm", onPressed: () => Get.to(ChangeName())),
               TProfileMenu(
-                  title: 'Tên người dùng', value: "pamela", onPressed: () => Get.to(ChangeUsername())),
+                  title: 'Tên',
+                  value: "Palm",
+                  onPressed: () => Get.to(const ChangeName())),
+              TProfileMenu(
+                  title: 'Tên người dùng',
+                  value: "pamela",
+                  onPressed: () => Get.to(const ChangeUsername())),
 
               const SizedBox(height: TSizes.spaceBtwItems),
               const Divider(),
@@ -70,14 +102,22 @@ class ProfileScreen extends StatelessWidget {
                   value: "223344",
                   icon: Iconsax.copy,
                   onPressed: () {}),
-              TProfileMenu(title: 'E-mail', value: "pamela", onPressed: () => Get.to(ChangeEmail())),
+              TProfileMenu(
+                  title: 'E-mail',
+                  value: "pamela",
+                  onPressed: () => Get.to(const ChangeEmail())),
               TProfileMenu(
                   title: 'Số điện thoại',
                   value: "+84-909123123",
-                  onPressed: () => Get.to(ChangePhoneNumber())),
-              TProfileMenu(title: 'Giới tính', value: "Nữ", onPressed: () => Get.to(ChangeGender())),
+                  onPressed: () => Get.to(const ChangePhoneNumber())),
               TProfileMenu(
-                  title: 'Ngày sinh', value: "20/01/2000", onPressed: () => Get.to(ChangeBirthdate())),
+                  title: 'Giới tính',
+                  value: "Nữ",
+                  onPressed: () => Get.to(const ChangeGender())),
+              TProfileMenu(
+                  title: 'Ngày sinh',
+                  value: "20/01/2000",
+                  onPressed: () => Get.to(const ChangeBirthdate())),
 
               const Divider(),
               const SizedBox(height: TSizes.spaceBtwItems),

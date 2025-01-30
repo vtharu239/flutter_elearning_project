@@ -80,8 +80,11 @@ class TImages {
   // static const String banner8 = "assets/images/banners/banner_8.jpg";
 
 
-  //Profile
+  // Profile
   static const String user = "assets/images/content/user.png";
+
+  // Profile Banner
+  static const String defaultCover = "assets/images/banners/banner_default.png";
 
   // -- Payment Methods
   static const String applePay = "assets/icons/payment_methods/apple-pay.png";
