@@ -19,10 +19,10 @@ class HorizontalCourseCardList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
+      scrollDirection: Axis.horizontal,
       shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
       itemCount: itemCount,
-      separatorBuilder: (_, __) => const SizedBox(height: TSizes.md),
+      separatorBuilder: (_, __) => const SizedBox(width: TSizes.md),
       itemBuilder: (context, index) {
         return items[
             index]; // Trả về từng HorizontalCourseCard đã được truyền vào
