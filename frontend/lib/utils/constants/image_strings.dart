@@ -80,8 +80,11 @@ class TImages {
   // static const String banner8 = "assets/images/banners/banner_8.jpg";
 
 
-  //Profile
+  // Profile
   static const String user = "assets/images/content/user.png";
+
+  // Profile Banner
+  static const String defaultCover = "assets/images/banners/banner_default.png";
 
   // -- Payment Methods
   static const String applePay = "assets/icons/payment_methods/apple-pay.png";
@@ -93,5 +96,10 @@ class TImages {
   static const String paystack = "assets/icons/payment_methods/paystack.png";
   static const String paytm = "assets/icons/payment_methods/paytm.png";
   static const String successfulPaymentIcon = "assets/icons/payment_methods/successful_payment_icon.png";
+
+
+  // -- Test card result
+  static const String toeicTest = "assets/images/content/toeic_test.png";
+
 }
 

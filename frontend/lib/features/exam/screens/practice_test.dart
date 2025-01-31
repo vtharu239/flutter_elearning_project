@@ -49,7 +49,6 @@ class PracticeTestScreen extends StatelessWidget {
 
                   // Test List Section
                   const BookmarkedTestsHeader(),
-                  const SizedBox(height: TSizes.spaceBtwItems),
                   TestListSection(controller: controller),
                   const SizedBox(height: TSizes.spaceBtwSections),
                 ],

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_elearning_project/utils/constants/image_strings.dart';
 import 'package:flutter_elearning_project/utils/constants/sizes.dart';
-import 'package:iconsax/iconsax.dart';
 
 // Section hiển thị kết quả thi mới nhất
 class LatestTestResultsSection extends StatelessWidget {
@@ -8,50 +8,72 @@ class LatestTestResultsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Kiểm tra chế độ sáng tối
-    bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
-
-    return Column(
+    return const Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Kết quả luyện thi mới nhất',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: isDarkMode ? Colors.white : Colors.blue[700],
-                    fontWeight: FontWeight.bold,
-                  ),
+        TestResultsList(
+          itemCount: 3,
+          items: [
+            TestResultDetailCard(
+              testName: 'Practice Test 1',
+              parts: ['Part 1', 'Part 2'],
+              date: '31/12/2024',
+              duration: '0:30:00',
+              score: '30/39',
+              imageUrl: TImages.toeicTest, // Có ảnh
             ),
-            TextButton(
-              onPressed: () {},
-              child: Text(
-                'Xem tất cả',
-                style: TextStyle(
-                  color: isDarkMode ? Colors.blue[300] : Colors.blue[700],
-                ),
-              ),
+            // TestResultDetailCard(
+            //   testName: 'Practice Test 2',
+            //   parts: ['Part 1', 'Part 3'],
+            //   date: '01/01/2025',
+            //   duration: '0:45:00',
+            //   score: '35/39',
+            // ),
+            TestResultDetailCard(
+              testName: 'Practice Test 3',
+              parts: ['Part 1', 'Part 2', 'Part 3'],
+              date: '02/01/2025',
+              duration: '1:00:00',
+              score: '28/39',
+              imageUrl: TImages.toeicTest, // Có ảnh
+            ),
+            TestResultDetailCard(
+              testName: 'Practice Test 3',
+              parts: ['Part 2', 'Part 3'],
+              date: '02/01/2025',
+              duration: '1:00:00',
+              score: '28/39',
+              imageUrl: TImages.toeicTest, // Có ảnh
             ),
           ],
         ),
-        const SizedBox(height: TSizes.spaceBtwItems),
-        ListView.separated(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: 2,
-          separatorBuilder: (_, __) => const SizedBox(height: TSizes.sm),
-          itemBuilder: (context, index) {
-            return TestResultDetailCard(
-              testName: 'Practice Test ${index + 1}',
-              parts: ['Part 1', 'Part 2', 'Part 3'], // Ví dụ nhiều part
-              date: '31/12/2024',
-              duration: '0:30:00',
-              score: '${30 + index}/39',
-            );
-          },
-        ),
       ],
+    );
+  }
+}
+
+/// Widget hiển thị danh sách kết quả luyện thi
+class TestResultsList extends StatelessWidget {
+  final int itemCount;
+  final List<TestResultDetailCard> items;
+
+  const TestResultsList({
+    super.key,
+    required this.itemCount,
+    required this.items,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.separated(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: itemCount,
+      separatorBuilder: (_, __) => const SizedBox(height: TSizes.md),
+      itemBuilder: (context, index) {
+        return items[
+            index]; // Trả về từng TestResultDetailCard đã được truyền vào
+      },
     );
   }
 }
@@ -62,6 +84,7 @@ class TestResultDetailCard extends StatelessWidget {
   final String date;
   final String duration;
   final String score;
+  final String? imageUrl;
 
   const TestResultDetailCard({
     super.key,
@@ -70,40 +93,40 @@ class TestResultDetailCard extends StatelessWidget {
     required this.date,
     required this.duration,
     required this.score,
+    this.imageUrl, // Tham số ảnh không bắt buộc
   });
 
   @override
   Widget build(BuildContext context) {
-    // Kiểm tra chế độ sáng tối
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
       padding: const EdgeInsets.all(TSizes.md),
       decoration: BoxDecoration(
-        color: isDarkMode
-            ? Colors.grey[850]
-            : Colors.white, 
+        color: isDarkMode ? Colors.grey[850] : Colors.white,
         borderRadius: BorderRadius.circular(TSizes.cardRadiusMd),
         border: Border.all(
-          color: isDarkMode
-              ? Colors.grey[700]!
-              : Colors.grey.shade200, 
+          color: isDarkMode ? Colors.grey[700]! : Colors.grey.shade200,
         ),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Ảnh bên trái
-          Container(
-            width: MediaQuery.of(context).size.width * 0.2, // 20% màn hình
-            height: MediaQuery.of(context).size.width * 0.2, // 20% màn hình
-            decoration: BoxDecoration(
-              color: Colors.blue.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(TSizes.cardRadiusMd),
+          // Kiểm tra nếu có ảnh thì hiển thị, nếu không thì bỏ qua
+          if (imageUrl != null) ...[
+            Container(
+              width: MediaQuery.of(context).size.width * 0.2, // 20% màn hình
+              height: MediaQuery.of(context).size.width * 0.2, // 20% màn hình
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: NetworkImage(imageUrl!), // Hiển thị ảnh từ URL
+                  fit: BoxFit.cover,
+                ),
+                borderRadius: BorderRadius.circular(TSizes.cardRadiusMd),
+              ),
             ),
-            child: const Icon(Iconsax.document, size: 30, color: Colors.blue),
-          ),
-          const SizedBox(width: TSizes.md),
+            const SizedBox(width: TSizes.md),
+          ],
           // Nội dung bên phải
           Expanded(
             child: Column(
@@ -112,9 +135,7 @@ class TestResultDetailCard extends StatelessWidget {
                 Text(
                   testName,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: isDarkMode
-                            ? Colors.white
-                            : Colors.black, 
+                        color: isDarkMode ? Colors.white : Colors.black,
                       ),
                 ),
                 const SizedBox(height: TSizes.sm),
@@ -158,18 +179,14 @@ class TestResultDetailCard extends StatelessWidget {
                 Text(
                   'Ngày làm bài: $date',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: isDarkMode
-                            ? Colors.white
-                            : Colors.black,
+                        color: isDarkMode ? Colors.white : Colors.black,
                       ),
                 ),
                 const SizedBox(height: TSizes.xs),
                 Text(
                   'Thời gian hoàn thành: $duration',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: isDarkMode
-                            ? Colors.white
-                            : Colors.black, 
+                        color: isDarkMode ? Colors.white : Colors.black,
                       ),
                 ),
                 const SizedBox(height: TSizes.xs),
@@ -181,18 +198,14 @@ class TestResultDetailCard extends StatelessWidget {
                     Text(
                       'Kết quả: ',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: isDarkMode
-                                ? Colors.white
-                                : Colors.black,
+                            color: isDarkMode ? Colors.white : Colors.black,
                           ),
                     ),
                     Text(
                       score,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             fontWeight: FontWeight.bold,
-                            color: isDarkMode
-                                ? Colors.white
-                                : Colors.black, 
+                            color: isDarkMode ? Colors.white : Colors.black,
                           ),
                     ),
                     TextButton(
@@ -200,10 +213,8 @@ class TestResultDetailCard extends StatelessWidget {
                       child: Text(
                         '[Xem chi tiết]',
                         style: TextStyle(
-                          color: isDarkMode
-                              ? Colors.blue[300]
-                              : Colors
-                                  .blue[700], 
+                          color:
+                              isDarkMode ? Colors.blue[300] : Colors.blue[700],
                         ),
                       ),
                     ),

@@ -42,27 +42,27 @@ class CourseScreen extends StatelessWidget {
 
                   // Featured Courses
                   const TSectionHeading(title: 'Khóa học nổi bật'),
-                  FeaturedCoursesSection(controller: controller),
+                  const FeaturedCoursesSection(),
                   const SizedBox(height: TSizes.spaceBtwSections),
 
                   // Combo Courses
                   const TSectionHeading(title: 'Combo khóa học'),
-                  CourseListSection(controller: controller, type: 'combo'),
+                  const CourseListSection(),
                   const SizedBox(height: TSizes.spaceBtwSections),
 
                   // TOEIC Courses
                   const TSectionHeading(title: 'Khóa học TOEIC'),
-                  CourseListSection(controller: controller, type: 'toeic'),
+                  const CourseListSection(),
                   const SizedBox(height: TSizes.spaceBtwSections),
 
                   // IELTS Courses
                   const TSectionHeading(title: 'Khóa học IELTS'),
-                  CourseListSection(controller: controller, type: 'ielts'),
+                  const CourseListSection(),
                   const SizedBox(height: TSizes.spaceBtwSections),
 
                   // Basic English Courses
                   const TSectionHeading(title: 'Khóa học Tiếng Anh cơ bản'),
-                  CourseListSection(controller: controller, type: 'basic'),
+                  const CourseListSection(),
                   const SizedBox(height: TSizes.spaceBtwSections),
                 ],
               ),
