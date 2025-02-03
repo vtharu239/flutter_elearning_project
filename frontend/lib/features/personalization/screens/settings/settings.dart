@@ -245,7 +245,10 @@ class _SettingScreenState extends State<SettingScreen>
               padding: const EdgeInsets.all(TSizes.defaultSpace),
               child: Column(
                 children: [
-                  const TSectionHeading(title: 'Cài đặt ứng dụng'),
+                  const TSectionHeading(
+                    title: 'Cài đặt ứng dụng',
+                    buttonTitle: '',
+                  ),
                   const SizedBox(height: TSizes.spaceBtwItems),
 
                   // Language Settings
@@ -254,7 +257,7 @@ class _SettingScreenState extends State<SettingScreen>
                     title: 'Ngôn ngữ',
                     subTitle: 'Thay đổi ngôn ngữ của ứng dụng',
                     trailing: DropdownButton<String>(
-                      value: 'English',
+                      value: 'Vietnamese',
                       items: const [
                         DropdownMenuItem(
                             value: 'English', child: Text('English')),

@@ -20,7 +20,7 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const TAppBar(showBackArrow: true, title: Text('Profile')),
+      appBar: const TAppBar(showBackArrow: true, title: Text('Trang cá nhân')),
 
       /// -- Body
       body: SingleChildScrollView(
@@ -51,7 +51,7 @@ class ProfileScreen extends StatelessWidget {
                             image: TImages.user, width: 100, height: 100),
                         TextButton(
                             onPressed: () {},
-                            child: const Text('Change Profile Picture')),
+                            child: const Text('Đổi ảnh đại diện')),
                       ],
                     ),
                   ),
