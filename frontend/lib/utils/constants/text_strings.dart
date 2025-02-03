@@ -74,7 +74,7 @@ class TTexts {
   static const String examAppbarTitle = "Thư viện luyện thi";
   static const String examAppbarSubTitle = "Ôn luyện kiến thức qua các đề thi";
 
-   // -- Exam
+   // -- Course
   static const String courseAppbarTitle = "Khóa học trực tuyến";
   static const String courseAppbarSubTitle = "Nắm vững kiến thức từ cơ bản đến chuyên sâu";
 }
