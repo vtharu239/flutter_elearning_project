@@ -30,8 +30,8 @@ class App extends StatelessWidget {
       ),
       darkTheme: ThemeData(
         brightness: Brightness.dark,
-        scaffoldBackgroundColor:
-            Colors.black, // Màu nền cho toàn bộ ứng dụng khi ở chế độ dark
+        scaffoldBackgroundColor: const Color.fromARGB(
+            155, 39, 36, 36), // Màu nền cho toàn bộ ứng dụng khi ở chế độ dark
         appBarTheme: const AppBarTheme(
           backgroundColor: Colors.transparent, // Màu nền AppBar cho chế độ dark
         ),
