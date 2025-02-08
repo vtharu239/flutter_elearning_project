@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_elearning_project/navigation_menu.dart';
+import 'package:flutter_elearning_project/features/authentication/screens/login/login.dart';
 import 'package:flutter_elearning_project/providers/theme_provider.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:provider/provider.dart';
@@ -36,7 +36,7 @@ class App extends StatelessWidget {
           backgroundColor: Colors.transparent, // Màu nền AppBar cho chế độ dark
         ),
       ),
-      home: const NavigationMenu(),
+      home: const LoginScreen(),
     );
   }
 }

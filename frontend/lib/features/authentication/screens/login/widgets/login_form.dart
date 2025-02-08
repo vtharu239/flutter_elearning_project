@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_elearning_project/config/api_constants.dart';
 import 'package:flutter_elearning_project/features/authentication/screens/password_configuration/forget_password.dart';
 import 'package:flutter_elearning_project/features/authentication/screens/signup/signup.dart';
-import 'package:flutter_elearning_project/features/authentication/screens/signup/widgets/signup_form.dart';
 import 'package:flutter_elearning_project/navigation_menu.dart';
 import 'package:flutter_elearning_project/utils/constants/sizes.dart';
 import 'package:flutter_elearning_project/utils/constants/text_strings.dart';
@@ -34,11 +34,8 @@ class _TLoginFormState extends State<TLoginForm> {
 
     try {
       final response = await http.post(
-        Uri.parse('${ApiConstants.baseUrl}/login'),
-        headers: {
-          'Content-Type': 'application/json',
-          'ngrok-skip-browser-warning': 'true',
-        },
+        Uri.parse(ApiConstants.getUrl(ApiConstants.loginEndpoint)),
+        headers: ApiConstants.getHeaders(),
         body: jsonEncode({
           'email': _emailController.text.trim(),
           'password': _passwordController.text,
@@ -145,7 +142,7 @@ class _TLoginFormState extends State<TLoginForm> {
 
                 // Forget Password
                 TextButton(
-                  onPressed: () => Get.to(() => ForgetPassword()),
+                  onPressed: () => Get.to(() => const ForgetPassword()),
                   child: const Text(TTexts.forgetPassword),
                 ),
               ],

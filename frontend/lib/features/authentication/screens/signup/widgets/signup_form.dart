@@ -1,7 +1,6 @@
-// ignore_for_file: avoid_print, use_build_context_synchronously
-
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_elearning_project/config/api_constants.dart';
 import 'package:flutter_elearning_project/features/authentication/screens/signup/verify_email.dart';
 import 'package:flutter_elearning_project/features/authentication/screens/signup/widgets/terms_comditions_checkbox.dart';
 import 'package:flutter_elearning_project/utils/constants/sizes.dart';
@@ -10,24 +9,6 @@ import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
-class ApiConstants {
-  static const String baseUrl =
-      'https://clear-tomcat-informally.ngrok-free.app';
-  // -- Xuan
-  // 'https://resolved-sawfish-equally.ngrok-free.app';
-
-  // API endpoints
-  static const String signupEndpoint = '/signup';
-  static const String checkUserEmailEndpoint = '/check-username-email';
-  static const String sendConfirmationEndpoint = '/send-confirmation-email';
-  static const String verifyEmailEndpoint = '/verify-email-token';
-  static const String sendOTP = '/send-otp';
-  static const String verifyOTP = '/verify-otp';
-  static const String resetPassword = '/reset-password';
-  // Hàm tiện ích để lấy full URL
-  static String getUrl(String endpoint) => baseUrl + endpoint;
-}
 
 class TSignupForm extends StatefulWidget {
   const TSignupForm({super.key});
@@ -74,16 +55,13 @@ class _TSignupFormState extends State<TSignupForm> {
       try {
         final response = await http.post(
           Uri.parse(ApiConstants.getUrl(ApiConstants.checkUserEmailEndpoint)),
-          headers: {'Content-Type': 'application/json'},
+          headers: ApiConstants.getHeaders(),
           body: jsonEncode({
             if (usernameOnly || !emailOnly) 'username': usernameController.text,
             if (emailOnly || !usernameOnly) 'email': emailController.text,
           }),
         );
 
-        // Thêm logging để debug
-        print('Response status: ${response.statusCode}');
-        print('Response body: ${response.body}');
 
         if (response.statusCode == 200) {
           final responseBody = jsonDecode(response.body);
@@ -113,7 +91,6 @@ class _TSignupFormState extends State<TSignupForm> {
     });
   }
 
-// Thay đổi trong hàm register:
   Future<void> register(BuildContext context) async {
     if (!_formKey.currentState!.validate()) {
       return;
@@ -131,15 +108,15 @@ class _TSignupFormState extends State<TSignupForm> {
     try {
       final response = await http.post(
         Uri.parse(ApiConstants.getUrl(ApiConstants.signupEndpoint)),
-        headers: {'Content-Type': 'application/json'},
+        headers: ApiConstants.getHeaders(),
         body: jsonEncode(userData),
       );
 
       if (response.statusCode == 201) {
         final responseBody = jsonDecode(response.body);
-        final email = responseBody['email'] as String?;
-        Get.to(
-            () => VerifyEmailScreen(userEmail: email ?? emailController.text));
+        // Chuyển đến màn hình xác thực email
+        Get.to(() => VerifyEmailScreen(
+            userEmail: responseBody['email'] ?? emailController.text));
       } else {
         final errorBody = jsonDecode(response.body);
         setState(() {
@@ -167,7 +144,6 @@ class _TSignupFormState extends State<TSignupForm> {
         );
       }
     } catch (e) {
-      print('Error during registration: $e');
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
