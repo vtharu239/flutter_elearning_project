@@ -5,17 +5,16 @@ const transporter = require('../config/email');
 
 // Đăng ký người dùng
 const signup = async (req, res) => {
-  const { firstName, lastName, username, email, phoneNo, password } = req.body;
+  const { fullName, gender, username, email, phoneNo, password } = req.body;
 
-  if (!firstName || !lastName || !username || !email || !phoneNo || !password) {
+  if (!fullName || !gender || !username || !email || !phoneNo || !password) {
     return res.status(400).json({ message: 'Vui lòng nhập đầy đủ thông tin!' });
   }
 
   try {
-    // Tạo người dùng mới
     const user = await User.create({
-      firstName,
-      lastName,
+      fullName,
+      gender,
       username,
       email,
       phoneNo,
@@ -108,15 +107,14 @@ const login = async (req, res) => {
         id: user.id,
         email: user.email,
         username: user.username,
-        firstName: user.firstName,
-        lastName: user.lastName,
+        fullName: user.fullName,
+        gender: user.gender
       },
     });
   } catch (error) {
     res.status(500).json({ message: 'Lỗi server!' });
   }
 };
-
 
 // Kiểm tra username và email
 const checkUsernameEmail = async (req, res) => {

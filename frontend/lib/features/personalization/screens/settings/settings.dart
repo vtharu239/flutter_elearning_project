@@ -3,11 +3,10 @@ import 'package:flutter_elearning_project/common/styles/section_heading.dart';
 import 'package:flutter_elearning_project/common/widgets/custom_shapes/container/primary_header_container.dart';
 import 'package:flutter_elearning_project/common/widgets/images/t_circular_images.dart';
 import 'package:flutter_elearning_project/common/widgets/list_tiles/settings_menu_tile.dart';
-import 'package:flutter_elearning_project/features/authentication/screens/login/login.dart';
+import 'package:flutter_elearning_project/features/personalization/controllers/auth_controller.dart';
 import 'package:flutter_elearning_project/features/personalization/screens/course/my_courses.dart';
 import 'package:flutter_elearning_project/features/personalization/screens/course/test_result.dart';
 import 'package:flutter_elearning_project/features/personalization/screens/profile/profile.dart';
-import 'package:flutter_elearning_project/features/personalization/screens/settings/UserAuthController.dart';
 import 'package:flutter_elearning_project/providers/theme_provider.dart';
 import 'package:flutter_elearning_project/utils/constants/image_strings.dart';
 import 'package:flutter_elearning_project/utils/constants/sizes.dart';
@@ -304,13 +303,7 @@ class _SettingScreenState extends State<SettingScreen>
                   SizedBox(
                     width: double.infinity,
                     child: OutlinedButton(
-                      onPressed: () {
-                        final authController = Provider.of<UserAuthController>(
-                            context,
-                            listen: false);
-                        authController.logout();
-                        Get.offAll(() => const LoginScreen());
-                      },
+                      onPressed: () => AuthController.instance.logout(),
                       child: const Text('Đăng xuất'),
                     ),
                   ),

@@ -8,12 +8,12 @@ const User = sequelize.define('User', {
     primaryKey: true,
     autoIncrement: true
   },
-  firstName: {
+  fullName: {
     type: DataTypes.STRING,
     allowNull: false
   },
-  lastName: {
-    type: DataTypes.STRING,
+  gender: {
+    type: DataTypes.ENUM('male', 'female', 'other'),
     allowNull: false
   },
   username: {

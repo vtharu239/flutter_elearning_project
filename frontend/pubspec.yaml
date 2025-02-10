@@ -49,6 +49,7 @@ dependencies:
   google_fonts: ^4.0.3
   form_validator: ^2.1.1
   shared_preferences: ^2.2.0
+  image_picker: ^1.1.2
   
 
 

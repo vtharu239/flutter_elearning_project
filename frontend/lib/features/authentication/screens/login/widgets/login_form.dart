@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_elearning_project/config/api_constants.dart';
 import 'package:flutter_elearning_project/features/authentication/screens/password_configuration/forget_password.dart';
 import 'package:flutter_elearning_project/features/authentication/screens/signup/signup.dart';
+import 'package:flutter_elearning_project/features/personalization/controllers/auth_controller.dart';
 import 'package:flutter_elearning_project/navigation_menu.dart';
 import 'package:flutter_elearning_project/utils/constants/sizes.dart';
 import 'package:flutter_elearning_project/utils/constants/text_strings.dart';
@@ -51,6 +52,9 @@ class _TLoginFormState extends State<TLoginForm> {
           await prefs.setString('token', data['token']);
           await prefs.setString('user', json.encode(data['user']));
         }
+
+        // Set user data vào AuthController
+        Get.find<AuthController>().setUser(data['user']);
 
         Get.offAll(() => const NavigationMenu());
         Get.snackbar('Thành công', 'Đăng nhập thành công!');
