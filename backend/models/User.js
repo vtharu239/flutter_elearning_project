@@ -16,6 +16,10 @@ const User = sequelize.define('User', {
     type: DataTypes.ENUM('male', 'female', 'other'),
     allowNull: false
   },
+  dateOfBirth: {
+    type: DataTypes.DATEONLY,
+    allowNull: true
+  },
   username: {
     type: DataTypes.STRING,
     unique: true,
@@ -40,6 +44,14 @@ const User = sequelize.define('User', {
       const hash = bcrypt.hashSync(value, 10);
       this.setDataValue('password', hash);
     }
+  },
+  avatarUrl: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  coverImageUrl: {
+    type: DataTypes.STRING,
+    allowNull: true
   },
   isEmailVerified: {
     type: DataTypes.BOOLEAN,
