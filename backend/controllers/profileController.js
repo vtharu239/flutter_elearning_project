@@ -4,6 +4,7 @@ const transporter = require('../config/email');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const bcrypt = require('bcrypt');
 
 // Middleware xác thực người dùng
 const authenticateUser = (req, res, next) => {
@@ -293,6 +294,93 @@ const sendEmailChangeOTP = async (req, res) => {
     }
   };
 
+  // Kiểm tra độ mạnh của mật khẩu
+const isStrongPassword = (password) => {
+  const minLength = 8;
+  const hasUpperCase = /[A-Z]/.test(password);
+  const hasLowerCase = /[a-z]/.test(password);
+  const hasNumbers = /\d/.test(password);
+  const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+  return (
+    password.length >= minLength &&
+    hasUpperCase &&
+    hasLowerCase &&
+    hasNumbers &&
+    hasSpecialChar
+  );
+};
+
+// Thay đổi mật khẩu
+const changePassword = async (req, res) => {
+  const { currentPassword, newPassword, confirmPassword } = req.body;
+
+  try {
+    // Tìm user trong database
+    const user = await User.findByPk(req.user.userId);
+    
+    if (!user) {
+      return res.status(404).json({ message: 'Không tìm thấy người dùng!' });
+    }
+
+    // Kiểm tra dữ liệu đầu vào
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      return res.status(400).json({ 
+        message: 'Vui lòng nhập đầy đủ thông tin mật khẩu!' 
+      });
+    }
+
+    // Kiểm tra mật khẩu cũ
+    const validPassword = await bcrypt.compare(currentPassword, user.password);
+    if (!validPassword) {
+      return res.status(401).json({ message: 'Mật khẩu hiện tại không đúng!' });
+    }
+
+    // Kiểm tra độ mạnh của mật khẩu mới
+    if (!isStrongPassword(newPassword)) {
+      return res.status(400).json({ 
+        message: 'Mật khẩu mới phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt!' 
+      });
+    }
+    
+    // Kiểm tra newPassword và confirmPassword có khớp nhau không
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ 
+        message: 'Mật khẩu mới và xác nhận mật khẩu không khớp!' 
+      });
+    }
+
+    // Kiểm tra mật khẩu mới có giống mật khẩu cũ không
+    const isSamePassword = await bcrypt.compare(newPassword, user.password);
+    if (isSamePassword) {
+      return res.status(400).json({ 
+        message: 'Mật khẩu mới không được giống mật khẩu cũ!' 
+      });
+    }
+
+    // Cập nhật mật khẩu mới
+    user.password = newPassword;
+    await user.save();
+
+    // Gửi email thông báo
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: user.email,
+      subject: 'Thông Báo Thay Đổi Mật Khẩu',
+      html: `
+        <h2>Thay Đổi Mật Khẩu Thành Công</h2>
+        <p>Mật khẩu của bạn đã được thay đổi thành công.</p>
+        <p>Nếu bạn không thực hiện thay đổi này, vui lòng liên hệ với chúng tôi ngay lập tức.</p>
+      `
+    });
+
+    res.status(200).json({ message: 'Thay đổi mật khẩu thành công!' });
+  } catch (error) {
+    console.error('Change password error:', error);
+    res.status(500).json({ message: 'Lỗi server!' });
+  }
+};
+
 module.exports = {
   authenticateUser,
   upload,
@@ -301,5 +389,6 @@ module.exports = {
   updateAvatar,
   updateCoverImage,
   sendEmailChangeOTP,
-  verifyEmailChangeOTP
+  verifyEmailChangeOTP,
+  changePassword
 };

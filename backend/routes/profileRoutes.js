@@ -8,7 +8,8 @@ const {
   updateAvatar,
   updateCoverImage,
   sendEmailChangeOTP,
-  verifyEmailChangeOTP
+  verifyEmailChangeOTP,
+  changePassword
 } = require('../controllers/profileController');
 
 // Lấy thông tin profile
@@ -34,5 +35,8 @@ router.post('/profile/cover',
 // Route thay đổi email
 router.post('/profile/send-email-change-otp', authenticateUser, sendEmailChangeOTP);
 router.post('/profile/verify-email-change-otp', authenticateUser, verifyEmailChangeOTP);
+
+// Thay đổi mật khẩu
+router.post('/profile/change-password', authenticateUser, changePassword);
 
 module.exports = router;

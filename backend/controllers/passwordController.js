@@ -80,12 +80,6 @@ const resetPassword = async (req, res) => {
       return res.status(404).json({ message: 'Email không tồn tại!' });
     }
 
-    const isSamePassword = await bcrypt.compare(newPassword, user.password);
-
-    if (isSamePassword) {
-      return res.status(400).json({ message: 'Mật khẩu mới không được trùng với mật khẩu cũ!' });
-    }
-
     await User.update({ password: newPassword }, { where: { email } });
 
     res.status(200).json({ message: 'Đặt lại mật khẩu thành công!' });
