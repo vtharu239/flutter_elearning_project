@@ -108,7 +108,11 @@ const login = async (req, res) => {
         email: user.email,
         username: user.username,
         fullName: user.fullName,
-        gender: user.gender
+        gender: user.gender,
+        dateOfBirth: user.dateOfBirth,
+        phoneNo: user.phoneNo,
+        avatarUrl: user.avatarUrl,
+        coverImageUrl: user.coverImageUrl      
       },
     });
   } catch (error) {

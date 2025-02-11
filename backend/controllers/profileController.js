@@ -76,7 +76,7 @@ const getProfile = async (req, res) => {
 
 // Cập nhật profile
 const updateProfile = async (req, res) => {
-  const { firstName, lastName, gender, dateOfBirth, phoneNo, username, email } = req.body;
+  const { fullName, gender, dateOfBirth, phoneNo, username } = req.body;
   
   try {
     const user = await User.findByPk(req.user.userId);
@@ -94,13 +94,11 @@ const updateProfile = async (req, res) => {
     }
 
     // Cập nhật các trường
-    if (firstName) user.firstName = firstName;
-    if (lastName) user.lastName = lastName;
+    if (fullName) user.fullName = fullName;
     if (gender) user.gender = gender;
     if (dateOfBirth) user.dateOfBirth = dateOfBirth;
     if (phoneNo) user.phoneNo = phoneNo;
     if (username) user.username = username;
-    if (email) user.email = email;
 
     await user.save();
 
@@ -118,30 +116,39 @@ const updateProfile = async (req, res) => {
 const updateAvatar = async (req, res) => {
   try {
     const user = await User.findByPk(req.user.userId);
-
     if (!user) {
       return res.status(404).json({ message: 'Không tìm thấy người dùng!' });
     }
 
+    // Đảm bảo thư mục uploads/profiles tồn tại
+    const uploadDir = path.join(__dirname, '../uploads/profiles');
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+
+    const avatarPath = '/uploads/profiles/' + req.file.filename;
+    
     // Xóa ảnh cũ nếu tồn tại
     if (user.avatarUrl) {
-      const oldFilePath = path.join(__dirname, '../', user.avatarUrl);
+      const oldFilePath = path.join(__dirname, '..', user.avatarUrl);
       if (fs.existsSync(oldFilePath)) {
         fs.unlinkSync(oldFilePath);
       }
     }
 
-    // Cập nhật ảnh mới
-    const avatarPath = req.file.path;
-    const relativePath = avatarPath.split('uploads')[1];
-    user.avatarUrl = `/uploads${relativePath}`;
+    user.avatarUrl = avatarPath;
     await user.save();
 
-    res.status(200).json({ 
-      message: 'Cập nhật ảnh đại diện thành công!', 
-      avatarUrl: user.avatarUrl 
+    const baseUrl = process.env.BASE_URL || `${req.protocol}://${req.get('host')}`;
+    const fullUrl = `${baseUrl}${avatarPath}`;
+
+    res.status(200).json({
+      message: 'Cập nhật ảnh đại diện thành công!',
+      avatarUrl: avatarPath,
+      fullUrl: fullUrl
     });
   } catch (error) {
+    console.error('Update avatar error:', error);
     res.status(500).json({ message: 'Lỗi server!' });
   }
 };
@@ -164,9 +171,10 @@ const updateCoverImage = async (req, res) => {
     }
 
     // Cập nhật ảnh bìa mới
-    const coverImagePath = req.file.path;
-    const relativePath = coverImagePath.split('uploads')[1];
-    user.coverImageUrl = `/uploads${relativePath}`;
+    let coverImagePath = req.file.path.replace(/\\/g, '/'); // Chuyển tất cả \ thành /
+    coverImagePath = coverImagePath.replace(path.join(__dirname, '../uploads').replace(/\\/g, '/'), '/uploads');
+
+    user.coverImageUrl = coverImagePath;
     await user.save();
 
     res.status(200).json({ 

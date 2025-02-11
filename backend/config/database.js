@@ -1,8 +1,7 @@
 const { Sequelize } = require('sequelize');
-const mysql = require('mysql2'); // Sử dụng mysql2 để kiểm tra và tạo database
+const mysql = require('mysql2');
 require('dotenv').config();
 
-// Initialize database connection
 const sequelize = new Sequelize(
   process.env.DB_NAME || 'elearning_db',
   process.env.DB_USER || 'root',
@@ -12,24 +11,25 @@ const sequelize = new Sequelize(
     dialect: 'mysql',
     logging: false,
     define: {
-      timestamps: true, // Tự động thêm createdAt và updatedAt
-      paranoid: true, // Tự động thêm deletedAt (soft delete)
+      timestamps: true,
+      paranoid: true,
     },
   }
 );
 
-// Kiểm tra và tạo Database nếu chưa tồn tại
-const initializeDatabase = async () => {
-  const connection = mysql.createConnection({
-    host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || '123456789',
-  });
-
+async function initializeDatabase() {
   return new Promise((resolve, reject) => {
+    const connection = mysql.createConnection({
+      host: process.env.DB_HOST || 'localhost',
+      user: process.env.DB_USER || 'root',
+      password: process.env.DB_PASSWORD || '123456789',
+    });
+
     connection.query(
       `CREATE DATABASE IF NOT EXISTS ${process.env.DB_NAME || 'elearning_db'}`,
       (err) => {
+        connection.end(); // Đảm bảo đóng kết nối trong mọi trường hợp
+        
         if (err) {
           console.error('Lỗi khi tạo database:', err);
           reject(err);
@@ -37,16 +37,9 @@ const initializeDatabase = async () => {
           console.log('Database đã sẵn sàng!');
           resolve();
         }
-        connection.end(); // Đóng kết nối
       }
     );
   });
-};
+}
 
-// Initialize database
-initializeDatabase()
-  .then(() => sequelize.authenticate())
-  .then(() => console.log('Kết nối cơ sở dữ liệu đã được thiết lập'))
-  .catch((err) => console.error('Lỗi khi khởi tạo database:', err));
-
-module.exports = { sequelize };
+module.exports = { sequelize, initializeDatabase };

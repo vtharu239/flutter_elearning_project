@@ -1,8 +1,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const db = require('./models');
 const path = require('path');
+const { initializeDatabase } = require('./config/database');
+const db = require('./models');
 const app = express();
 require('dotenv').config();
 
@@ -12,15 +13,6 @@ app.use(bodyParser.json());
 
 // Phục vụ các tệp tải lên tĩnh
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
-// Initialize database and sync models
-db.sequelize.sync({ force: false, alter: true }) // force: false: Không xóa và tạo lại bảng nếu nó đã tồn tại - alter: true: Tự động cập nhật schema nếu có thay đổi trong model.
-  .then(() => {
-    console.log('Cơ sở dữ liệu đã được đồng bộ thành công');
-  })
-  .catch((err) => {
-    console.error('Lỗi đồng bộ cơ sở dữ liệu:', err);
-  });
 
 // Routes
 const authRoutes = require('./routes/authRoutes');
@@ -33,7 +25,25 @@ app.use(emailRoutes);
 app.use(passwordRoutes);
 app.use(profileRoutes);
 
-const PORT = process.env.PORT || 80;
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Máy chủ đang chạy trên port ${PORT}`);
-});
+// Initialize application
+async function startServer() {
+  try {
+    // 1. First create database if it doesn't exist
+    await initializeDatabase();
+    
+    // 2. Then sync models
+    await db.sequelize.sync({ force: false, alter: true });
+    console.log('Cơ sở dữ liệu đã được đồng bộ thành công');
+    
+    // 3. Finally start the server
+    const PORT = process.env.PORT || 80;
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`Máy chủ đang chạy trên port ${PORT}`);
+    });
+  } catch (error) {
+    console.error('Lỗi khởi động server:', error);
+    process.exit(1);
+  }
+}
+
+startServer();
