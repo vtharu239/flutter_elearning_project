@@ -18,12 +18,12 @@ class TSignupForm extends StatefulWidget {
 }
 
 class _TSignupFormState extends State<TSignupForm> {
-  final TextEditingController firstNameController = TextEditingController();
-  final TextEditingController lastNameController = TextEditingController();
+  final TextEditingController fullNameController = TextEditingController();
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController phoneNoController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  String selectedGender = 'male'; // Giá trị mặc định
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -62,7 +62,6 @@ class _TSignupFormState extends State<TSignupForm> {
           }),
         );
 
-
         if (response.statusCode == 200) {
           final responseBody = jsonDecode(response.body);
           setState(() {
@@ -97,8 +96,8 @@ class _TSignupFormState extends State<TSignupForm> {
     }
 
     final Map<String, String> userData = {
-      "firstName": firstNameController.text,
-      "lastName": lastNameController.text,
+      "fullName": fullNameController.text,
+      "gender": selectedGender,
       "username": usernameController.text,
       "email": emailController.text,
       "phoneNo": phoneNoController.text,
@@ -192,32 +191,46 @@ class _TSignupFormState extends State<TSignupForm> {
         children: [
           Row(
             children: [
+              // Full Name chiếm 2/3 không gian
               Expanded(
+                flex: 2,
                 child: TextFormField(
-                  controller: firstNameController,
+                  controller: fullNameController,
                   decoration: const InputDecoration(
-                    labelText: TTexts.firstName,
+                    labelText: 'Họ và tên',
                     prefixIcon: Icon(Iconsax.user),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Vui lòng nhập tên';
+                      return 'Vui lòng nhập họ và tên';
                     }
                     return null;
                   },
                 ),
               ),
               const SizedBox(width: TSizes.spaceBtwInputFields),
+              // Gender chiếm 1/3 không gian
               Expanded(
-                child: TextFormField(
-                  controller: lastNameController,
+                flex: 1,
+                child: DropdownButtonFormField<String>(
+                  value: selectedGender,
                   decoration: const InputDecoration(
-                    labelText: TTexts.lastName,
-                    prefixIcon: Icon(Iconsax.user),
+                    labelText: 'Giới tính',
+                    prefixIcon: Icon(Iconsax.user_octagon),
                   ),
+                  items: const [
+                    DropdownMenuItem(value: 'male', child: Text('Nam')),
+                    DropdownMenuItem(value: 'female', child: Text('Nữ')),
+                    DropdownMenuItem(value: 'other', child: Text('Khác')),
+                  ],
+                  onChanged: (value) {
+                    setState(() {
+                      selectedGender = value!;
+                    });
+                  },
                   validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Vui lòng nhập họ';
+                    if (value == null) {
+                      return 'Vui lòng chọn giới tính';
                     }
                     return null;
                   },

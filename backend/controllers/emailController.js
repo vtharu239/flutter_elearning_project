@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const db = require('../config/database');
+const { User } = require('../models');
 const transporter = require('../config/email');
 
 // Gửi email xác nhận
@@ -27,7 +27,7 @@ const sendConfirmationEmail = async (req, res) => {
         <h2>Xác nhận email của bạn</h2>
         <p>Vui lòng nhấp vào liên kết sau để xác nhận email:</p>
         <a href="${confirmationLink}">Xác nhận email</a>
-      `,
+      `
     });
 
     res.status(200).json({ message: 'Email xác nhận đã được gửi!' });
@@ -46,19 +46,17 @@ const verifyEmail = async (req, res) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const query = 'UPDATE users SET isEmailVerified = 1 WHERE email = ?';
-   
-    db.query(query, [decoded.email], (err) => {
-      if (err) {
-        return res.status(500).send('<h1>Lỗi xác nhận email!</h1>');
-      }
 
-      // Trả về HTML thân thiện với người dùng
-      res.send(`
-        <h1>Xác nhận email thành công!</h1>
-        <p>Bạn có thể đóng tab này và quay lại ứng dụng.</p>
-      `);
-    });
+    // Cập nhật trạng thái xác nhận email
+    await User.update(
+      { isEmailVerified: true },
+      { where: { email: decoded.email } }
+    );
+
+    res.send(`
+      <h1>Xác nhận email thành công!</h1>
+      <p>Bạn có thể đóng tab này và quay lại ứng dụng.</p>
+    `);
   } catch (error) {
     res.status(400).send('<h1>Token không hợp lệ hoặc đã hết hạn!</h1>');
   }
@@ -67,24 +65,27 @@ const verifyEmail = async (req, res) => {
 // Xác nhận token email
 const verifyEmailToken = async (req, res) => {
   const { email } = req.body;
-  if (!email) return res.status(400).json({ message: 'Email không hợp lệ!' });
+  
+  if (!email) {
+    return res.status(400).json({ message: 'Email không hợp lệ!' });
+  }
 
   try {
-    const query = 'SELECT isEmailVerified FROM users WHERE email = ?';
-    db.query(query, [email], (err, results) => {
-      if (err) throw err;
-      if (results.length === 0) {
-        return res.status(404).json({ message: 'Không tìm thấy email!' });
-      }
-      if (results[0].isEmailVerified === 1) {
-        return res.status(200).json({ message: 'Email đã được xác nhận!' });
-      }
-      res.status(400).json({ message: 'Email chưa được xác nhận!' });
-    });
+    const user = await User.findOne({ where: { email } });
+
+    if (!user) {
+      return res.status(404).json({ message: 'Không tìm thấy email!' });
+    }
+
+    if (user.isEmailVerified) {
+      return res.status(200).json({ message: 'Email đã được xác nhận!' });
+    }
+
+    res.status(400).json({ message: 'Email chưa được xác nhận!' });
   } catch (error) {
     res.status(500).json({ message: 'Lỗi server!' });
   }
-}
+};
 
 module.exports = {
   sendConfirmationEmail,
