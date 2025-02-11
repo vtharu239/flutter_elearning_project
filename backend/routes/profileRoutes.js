@@ -7,8 +7,9 @@ const {
   updateProfile, 
   updateAvatar,
   updateCoverImage,
-  sendEmailChangeOTP,
-  verifyEmailChangeOTP,
+  sendCurrentEmailOTP,
+  verifyCurrentEmailAndSendNewOTP,
+  verifyNewEmailAndComplete,
   changePassword
 } = require('../controllers/profileController');
 
@@ -33,8 +34,9 @@ router.post('/profile/cover',
 );
 
 // Route thay đổi email
-router.post('/profile/send-email-change-otp', authenticateUser, sendEmailChangeOTP);
-router.post('/profile/verify-email-change-otp', authenticateUser, verifyEmailChangeOTP);
+router.post('/profile/send-current-email-otp', authenticateUser, sendCurrentEmailOTP);
+router.post('/profile/verify-current-email', authenticateUser, verifyCurrentEmailAndSendNewOTP);
+router.post('/profile/verify-new-email', authenticateUser, verifyNewEmailAndComplete);
 
 // Thay đổi mật khẩu
 router.post('/profile/change-password', authenticateUser, changePassword);
