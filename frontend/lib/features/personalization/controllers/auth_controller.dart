@@ -106,6 +106,7 @@ class AuthController extends GetxController {
       username: userData['username'],
       fullName: userData['fullName'],
       gender: userData['gender'],
+      dateOfBirth: userData['dateOfBirth'],
       phoneNo: userData['phoneNo'],
       avatarUrl: userData['avatarUrl'],
       coverImageUrl: userData['coverImageUrl'],

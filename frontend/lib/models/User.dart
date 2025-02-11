@@ -4,6 +4,7 @@ class User {
   final String username;
   final String fullName;
   final String gender;
+  final String? dateOfBirth;
   final String phoneNo;
   final String? avatarUrl;
   final String? coverImageUrl;
@@ -14,6 +15,7 @@ class User {
     required this.username,
     required this.fullName,
     required this.gender,
+    required this.dateOfBirth,
     required this.phoneNo,
     this.avatarUrl,
     this.coverImageUrl,
@@ -26,9 +28,25 @@ class User {
       username: json['username'],
       fullName: json['fullName'],
       gender: json['gender'],
+      dateOfBirth: json['dateOfBirth'],
       phoneNo: json['gender'],
       avatarUrl: json['avatarUrl'],
       coverImageUrl: json['coverImageUrl'],
     );
+  }
+  
+  // Convert User object to JSON
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'email': email,
+      'username': username,
+      'fullName': fullName,
+      'gender': gender,
+      'dateOfBirth': dateOfBirth,
+      'phoneNo': phoneNo,
+      'avatarUrl': avatarUrl,
+      'coverImageUrl': coverImageUrl,
+    };
   }
 }
