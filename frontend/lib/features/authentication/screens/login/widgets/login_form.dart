@@ -11,8 +11,6 @@ import 'package:iconsax/iconsax.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-import 'package:shared_preferences/shared_preferences.dart';
-
 class TLoginForm extends StatefulWidget {
   const TLoginForm({super.key});
 
@@ -46,15 +44,12 @@ class _TLoginFormState extends State<TLoginForm> {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
 
-        // Lưu token nếu remember me được chọn
-        if (_rememberMe) {
-          final prefs = await SharedPreferences.getInstance();
-          await prefs.setString('token', data['token']);
-          await prefs.setString('user', json.encode(data['user']));
-        }
-
-        // Set user data vào AuthController
-        Get.find<AuthController>().setUser(data['user']);
+        // Lưu thông tin đăng nhập thông qua AuthController
+        await Get.find<AuthController>().setUserAndLoginState(
+          data['user'],
+          data['token'],
+          _rememberMe,
+        );
 
         Get.offAll(() => const NavigationMenu());
         Get.snackbar('Thành công', 'Đăng nhập thành công!');
@@ -63,7 +58,6 @@ class _TLoginFormState extends State<TLoginForm> {
         Get.snackbar('Lỗi', error['message'] ?? 'Đăng nhập thất bại!');
       }
     } catch (e) {
-      // ignore: avoid_print
       print('Login error: $e');
       Get.snackbar('Lỗi', 'Đã có lỗi xảy ra. Vui lòng thử lại sau.');
     } finally {

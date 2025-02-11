@@ -6,10 +6,14 @@ import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'app.dart';
 
-void main() {
-
-  // Khởi tạo AuthController ngay khi app starts
-  Get.put(AuthController());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // Khởi tạo các controllers
+  final authController = Get.put(AuthController());
+  
+  // Kiểm tra trạng thái đăng nhập trước khi render UI
+  await authController.checkLoginStatus();
 
   runApp(
     MultiProvider(

@@ -21,6 +21,7 @@ class ApiConstants {
   static const String sendOTP = '/send-otp';
   static const String verifyOTP = '/verify-otp';
   static const String resetPassword = '/reset-password';
+  static const String getProfile = '/profile';
 
   // Headers mặc định
   static Map<String, String> getHeaders() {
