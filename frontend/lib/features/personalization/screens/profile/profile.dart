@@ -131,62 +131,97 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        await authController.refreshUserData();
-        return true;
-      },
-      child: GetBuilder<ProfileController>(
-        builder: (controller) => Scaffold(
-          appBar:
-              const TAppBar(showBackArrow: true, title: Text('Hồ sơ cá nhân')),
+    return GetBuilder<ProfileController>(
+      builder: (controller) => Scaffold(
+        appBar:
+            const TAppBar(showBackArrow: true, title: Text('Hồ sơ cá nhân')),
 
-          /// -- Body
-          body: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(TSizes.defaultSpace),
-              child: Column(
-                children: [
-                  /// Cover Image Section
-                  Stack(
-                    clipBehavior: Clip.none,
-                    alignment: Alignment.center,
-                    children: [
-                      // Cover Image
-                      Obx(() => GestureDetector(
-                            onTap: profileController.isLoading.value
-                                ? null
-                                : () => _showImageOptions(context, 'cover'),
-                            child: Stack(
-                              alignment: Alignment.center,
-                              children: [
+        /// -- Body
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(TSizes.defaultSpace),
+            child: Column(
+              children: [
+                /// Cover Image Section
+                Stack(
+                  clipBehavior: Clip.none,
+                  alignment: Alignment.center,
+                  children: [
+                    // Cover Image
+                    Obx(() => GestureDetector(
+                          onTap: profileController.isCoverLoading.value
+                              ? null
+                              : () => _showImageOptions(context, 'cover'),
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              Container(
+                                width: double.infinity,
+                                height: 200,
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                    image: authController
+                                                .user.value?.coverImageUrl !=
+                                            null
+                                        ? NetworkImage(
+                                            ApiConstants.getUrl(authController
+                                                .user.value!.coverImageUrl!),
+                                            headers: {
+                                              'cache-control': 'no-cache'
+                                            },
+                                          )
+                                        : const AssetImage(TImages.defaultCover)
+                                            as ImageProvider,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                              if (profileController.isCoverLoading.value)
                                 Container(
                                   width: double.infinity,
                                   height: 200,
-                                  decoration: BoxDecoration(
-                                    image: DecorationImage(
-                                      image: authController
-                                                  .user.value?.coverImageUrl !=
+                                  color: Colors.black45,
+                                  child: const Center(
+                                    child: CircularProgressIndicator(
+                                        color: Colors.white),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        )),
+                    // Avatar
+                    Positioned(
+                      bottom: -50,
+                      child: Obx(() => GestureDetector(
+                            onTap: profileController.isAvatarLoading.value
+                                ? null
+                                : () => _showImageOptions(context, 'avatar'),
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                CircleAvatar(
+                                  radius: 50,
+                                  backgroundImage:
+                                      authController.user.value?.avatarUrl !=
                                               null
                                           ? NetworkImage(
                                               ApiConstants.getUrl(authController
-                                                  .user.value!.coverImageUrl!),
+                                                  .user.value!.avatarUrl!),
                                               headers: {
                                                 'cache-control': 'no-cache'
                                               },
                                             )
-                                          : const AssetImage(
-                                                  TImages.defaultCover)
+                                          : const AssetImage(TImages.user)
                                               as ImageProvider,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
                                 ),
-                                if (profileController.isCoverLoading.value)
+                                if (profileController.isAvatarLoading.value)
                                   Container(
-                                    width: double.infinity,
-                                    height: 200,
-                                    color: Colors.black45,
+                                    width: 100,
+                                    height: 100,
+                                    decoration: const BoxDecoration(
+                                      color: Colors.black45,
+                                      shape: BoxShape.circle,
+                                    ),
                                     child: const Center(
                                       child: CircularProgressIndicator(
                                           color: Colors.white),
@@ -195,122 +230,79 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ],
                             ),
                           )),
-                      // Avatar
-                      Positioned(
-                        bottom: -50,
-                        child: Obx(() => GestureDetector(
-                              onTap: profileController.isAvatarLoading.value
-                                  ? null
-                                  : () => _showImageOptions(context, 'avatar'),
-                              child: Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  CircleAvatar(
-                                    radius: 50,
-                                    backgroundImage: authController
-                                                .user.value?.avatarUrl !=
-                                            null
-                                        ? NetworkImage(
-                                            ApiConstants.getUrl(authController
-                                                .user.value!.avatarUrl!),
-                                            headers: {
-                                              'cache-control': 'no-cache'
-                                            },
-                                          )
-                                        : const AssetImage(TImages.user)
-                                            as ImageProvider,
-                                  ),
-                                  if (profileController.isLoading.value)
-                                    Container(
-                                      width: 100,
-                                      height: 100,
-                                      decoration: const BoxDecoration(
-                                        color: Colors.black45,
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: const Center(
-                                        child: CircularProgressIndicator(
-                                            color: Colors.white),
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            )),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 70),
+
+                /// Details
+                const Divider(),
+                const SizedBox(height: TSizes.spaceBtwItems),
+
+                /// Heading Profile Info
+                const TSectionHeading(
+                    title: "Thông tin hồ sơ", showActionButton: false),
+                const SizedBox(height: TSizes.spaceBtwItems),
+
+                Obx(() {
+                  final user = authController.user.value;
+                  if (user == null) return const SizedBox();
+
+                  return Column(
+                    children: [
+                      TProfileMenu(
+                        title: 'Họ và tên',
+                        value: user.fullName,
+                        onPressed: () => _showEditDialog(context, 'fullName'),
+                      ),
+                      TProfileMenu(
+                        title: 'Tên người dùng',
+                        value: user.username,
+                        onPressed: () => _showEditDialog(context, 'username'),
+                      ),
+                      const SizedBox(height: TSizes.spaceBtwItems),
+                      const Divider(),
+                      const SizedBox(height: TSizes.spaceBtwItems),
+
+                      /// Heading Personal Info
+                      const TSectionHeading(
+                          title: "Thông tin cá nhân", showActionButton: false),
+                      const SizedBox(height: TSizes.spaceBtwItems),
+                      TProfileMenu(
+                        title: 'E-mail',
+                        value: user.email,
+                        onPressed: () {},
+                      ),
+                      TProfileMenu(
+                        title: 'Số điện thoại',
+                        value: user.phoneNo,
+                        onPressed: () => _showEditDialog(context, 'phoneNo'),
+                      ),
+                      TProfileMenu(
+                        title: 'Giới tính',
+                        value: user.gender == 'male'
+                            ? 'Nam'
+                            : user.gender == 'female'
+                                ? 'Nữ'
+                                : 'Khác',
+                        onPressed: () => _showEditDialog(context, 'gender'),
+                      ),
+                      TProfileMenu(
+                        title: 'Ngày sinh',
+                        value: user.dateOfBirth != null
+                            ? DateFormat('dd/MM/yyyy')
+                                .format(DateTime.parse(user.dateOfBirth!))
+                            : 'Chưa cập nhật',
+                        onPressed: () =>
+                            _showEditDialog(context, 'dateOfBirth'),
                       ),
                     ],
-                  ),
-                  const SizedBox(height: 70),
+                  );
+                }),
 
-                  /// Details
-                  const Divider(),
-                  const SizedBox(height: TSizes.spaceBtwItems),
-
-                  /// Heading Profile Info
-                  const TSectionHeading(
-                      title: "Thông tin hồ sơ", showActionButton: false),
-                  const SizedBox(height: TSizes.spaceBtwItems),
-
-                  Obx(() {
-                    final user = authController.user.value;
-                    if (user == null) return const SizedBox();
-
-                    return Column(
-                      children: [
-                        TProfileMenu(
-                          title: 'Họ và tên',
-                          value: user.fullName,
-                          onPressed: () => _showEditDialog(context, 'fullName'),
-                        ),
-                        TProfileMenu(
-                          title: 'Tên người dùng',
-                          value: user.username,
-                          onPressed: () => _showEditDialog(context, 'username'),
-                        ),
-                        const SizedBox(height: TSizes.spaceBtwItems),
-                        const Divider(),
-                        const SizedBox(height: TSizes.spaceBtwItems),
-
-                        /// Heading Personal Info
-                        const TSectionHeading(
-                            title: "Thông tin cá nhân",
-                            showActionButton: false),
-                        const SizedBox(height: TSizes.spaceBtwItems),
-                        TProfileMenu(
-                          title: 'E-mail',
-                          value: user.email,
-                          onPressed: () {},
-                        ),
-                        TProfileMenu(
-                          title: 'Số điện thoại',
-                          value: user.phoneNo,
-                          onPressed: () => _showEditDialog(context, 'phoneNo'),
-                        ),
-                        TProfileMenu(
-                          title: 'Giới tính',
-                          value: user.gender == 'male'
-                              ? 'Nam'
-                              : user.gender == 'female'
-                                  ? 'Nữ'
-                                  : 'Khác',
-                          onPressed: () => _showEditDialog(context, 'gender'),
-                        ),
-                        TProfileMenu(
-                          title: 'Ngày sinh',
-                          value: user.dateOfBirth != null
-                              ? DateFormat('dd/MM/yyyy')
-                                  .format(DateTime.parse(user.dateOfBirth!))
-                              : 'Chưa cập nhật',
-                          onPressed: () =>
-                              _showEditDialog(context, 'dateOfBirth'),
-                        ),
-                      ],
-                    );
-                  }),
-
-                  const Divider(),
-                  const SizedBox(height: TSizes.spaceBtwItems),
-                ],
-              ),
+                const Divider(),
+                const SizedBox(height: TSizes.spaceBtwItems),
+              ],
             ),
           ),
         ),

@@ -88,9 +88,9 @@ class _SettingScreenState extends State<SettingScreen>
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<AuthController>(
-      builder: (controller) {
-        final user = controller.user.value;
+    return Obx(
+      () {
+        final user = AuthController.instance.user.value;
         final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
         return Scaffold(
@@ -188,7 +188,12 @@ class _SettingScreenState extends State<SettingScreen>
                             color: Colors.black54,
                           ),
                           child: IconButton(
-                            onPressed: () => Get.to(const ProfileScreen()),
+                            onPressed: () async {
+                              await Get.to(() => const ProfileScreen(),
+                                  preventDuplicates: false);
+                              // Refresh data khi quay về
+                              await AuthController.instance.refreshUserData();
+                            },
                             icon: const Icon(Iconsax.edit, color: Colors.white),
                           ),
                         ),
