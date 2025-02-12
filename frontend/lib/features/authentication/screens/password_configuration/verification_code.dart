@@ -1,17 +1,21 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_elearning_project/config/api_constants.dart';
 import 'package:flutter_elearning_project/features/authentication/screens/password_configuration/reset_password.dart';
 import 'package:flutter_elearning_project/utils/constants/sizes.dart';
 import 'package:flutter_elearning_project/utils/constants/text_strings.dart';
-import 'package:get/get.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
-import 'package:flutter_elearning_project/features/authentication/screens/signup/widgets/signup_form.dart';
 import 'package:http/http.dart' as http;
 
 class VerificationScreen extends StatefulWidget {
   final String email;
+  final String otpToken;
 
-  const VerificationScreen({super.key, required this.email});
+  const VerificationScreen({
+    super.key,
+    required this.email,
+    required this.otpToken,
+  });
 
   @override
   State<VerificationScreen> createState() => _VerificationScreenState();
@@ -35,31 +39,36 @@ class _VerificationScreenState extends State<VerificationScreen> {
     });
 
     try {
-      // API Call
       final response = await http.post(
         Uri.parse(ApiConstants.getUrl(ApiConstants.verifyOTP)),
-        headers: {'Content-Type': 'application/json'},
+        headers: ApiConstants.getHeaders(),
         body: jsonEncode({
-          'email': widget.email, // Access the email parameter here
+          'otpToken': widget.otpToken,
           'otp': verificationCode,
         }),
       );
 
+     final responseBody = jsonDecode(response.body);
+     
       if (response.statusCode == 200) {
-        // Navigate to ResetPassword Screen
-        Get.off(() => ResetPassword(email: widget.email));
-      } else {
-        // Show error message
-        final errorBody = jsonDecode(response.body);
+  final resetToken = responseBody['resetToken']; // Lấy resetToken từ response
+  Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(
+      builder: (context) => ResetPassword(
+        email: widget.email,
+        resetToken: resetToken, // Truyền resetToken
+      ),
+    ),
+  );
+} else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text(errorBody['message'] ?? 'Verification failed')),
+          SnackBar(content: Text(responseBody['message'] ?? 'Xác thực thất bại')),
         );
       }
     } catch (e) {
-      // Handle errors
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error occurred: $e')),
+        SnackBar(content: Text('Lỗi kết nối: $e')),
       );
     } finally {
       setState(() {
@@ -70,8 +79,22 @@ class _VerificationScreenState extends State<VerificationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final darkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back,
+            color: darkMode
+                ? Colors.white
+                : Colors.black, // Màu trắng cho dark mode, đen cho light mode
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(TSizes.defaultSpace),
         child: Column(

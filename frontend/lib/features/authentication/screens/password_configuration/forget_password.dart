@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_elearning_project/config/api_constants.dart';
 import 'package:flutter_elearning_project/features/authentication/screens/password_configuration/verification_code.dart';
-import 'package:flutter_elearning_project/features/authentication/screens/signup/widgets/signup_form.dart';
 import 'package:flutter_elearning_project/utils/constants/sizes.dart';
 import 'package:flutter_elearning_project/utils/constants/text_strings.dart';
 import 'package:iconsax/iconsax.dart';
@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class ForgetPassword extends StatefulWidget {
-  const ForgetPassword({Key? key}) : super(key: key);
+  const ForgetPassword({super.key});
 
   @override
   State<ForgetPassword> createState() => _ForgetPasswordScreenState();
@@ -18,6 +18,7 @@ class _ForgetPasswordScreenState extends State<ForgetPassword> {
   final TextEditingController emailController = TextEditingController();
   String? emailError;
   bool isLoading = false;
+  String? otpToken; // Thêm biến để lưu otpToken
 
   Future<void> sendOtp() async {
     if (emailController.text.isEmpty) {
@@ -35,21 +36,24 @@ class _ForgetPasswordScreenState extends State<ForgetPassword> {
     try {
       final response = await http.post(
         Uri.parse(ApiConstants.getUrl(ApiConstants.sendOTP)),
-        headers: {'Content-Type': 'application/json'},
+        headers: ApiConstants.getHeaders(),
         body: jsonEncode({'email': emailController.text}),
       );
 
+      final responseBody = jsonDecode(response.body);
+
       if (response.statusCode == 200) {
-        // Navigate to Verify OTP Screen
+        otpToken = responseBody['otpToken']; // Lưu otpToken từ response
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) =>
-                VerificationScreen(email: emailController.text),
+            builder: (context) => VerificationScreen(
+              email: emailController.text,
+              otpToken: otpToken!, // Truyền otpToken sang màn hình xác thực
+            ),
           ),
         );
       } else {
-        final responseBody = jsonDecode(response.body);
         setState(() {
           emailError = responseBody['message'] ?? 'Gửi OTP thất bại.';
         });
@@ -67,8 +71,22 @@ class _ForgetPasswordScreenState extends State<ForgetPassword> {
 
   @override
   Widget build(BuildContext context) {
+    final darkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back,
+            color: darkMode
+                ? Colors.white
+                : Colors.black, // Màu trắng cho dark mode, đen cho light mode
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(TSizes.defaultSpace),
         child: Column(
@@ -84,7 +102,7 @@ class _ForgetPasswordScreenState extends State<ForgetPassword> {
               controller: emailController,
               decoration: InputDecoration(
                 labelText: TTexts.email,
-                suffixIcon: Icon(Iconsax.direct_right),
+                suffixIcon: const Icon(Iconsax.direct_right),
                 prefixIcon: const Icon(Icons.email),
                 errorText: emailError,
               ),

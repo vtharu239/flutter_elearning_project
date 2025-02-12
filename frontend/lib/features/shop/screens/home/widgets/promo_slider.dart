@@ -23,6 +23,8 @@ class TPromoSlider extends StatelessWidget {
       children: [
         CarouselSlider(
             options: CarouselOptions(
+                enableInfiniteScroll: true,
+                autoPlay: true,
                 viewportFraction: 1,
                 onPageChanged: (index, _) =>
                     controller.updatePageIndicator(index)),

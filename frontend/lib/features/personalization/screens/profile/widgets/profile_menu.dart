@@ -26,12 +26,13 @@ class TProfileMenu extends StatelessWidget {
             Expanded(
                 flex: 3,
                 child: Text(title,
-                    style: Theme.of(context).textTheme.bodySmall,
+                    style: Theme.of(context).textTheme.bodyMedium,
                     overflow: TextOverflow.ellipsis)),
+            const SizedBox(width: TSizes.spaceBtwItems),        
             Expanded(
                 flex: 5,
                 child: Text(value,
-                    style: Theme.of(context).textTheme.bodySmall,
+                    style: Theme.of(context).textTheme.bodyMedium,
                     overflow: TextOverflow.ellipsis)),
            Expanded(child: Icon(icon, size: 18)),
           ],

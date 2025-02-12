@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_elearning_project/config/api_constants.dart';
 import 'package:flutter_elearning_project/features/authentication/screens/password_configuration/forget_password.dart';
 import 'package:flutter_elearning_project/features/authentication/screens/signup/signup.dart';
-import 'package:flutter_elearning_project/features/authentication/screens/signup/widgets/signup_form.dart';
+import 'package:flutter_elearning_project/features/personalization/controllers/auth_controller.dart';
 import 'package:flutter_elearning_project/navigation_menu.dart';
 import 'package:flutter_elearning_project/utils/constants/sizes.dart';
 import 'package:flutter_elearning_project/utils/constants/text_strings.dart';
@@ -9,8 +10,6 @@ import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
-import 'package:shared_preferences/shared_preferences.dart';
 
 class TLoginForm extends StatefulWidget {
   const TLoginForm({super.key});
@@ -34,11 +33,8 @@ class _TLoginFormState extends State<TLoginForm> {
 
     try {
       final response = await http.post(
-        Uri.parse('${ApiConstants.baseUrl}/login'),
-        headers: {
-          'Content-Type': 'application/json',
-          'ngrok-skip-browser-warning': 'true',
-        },
+        Uri.parse(ApiConstants.getUrl(ApiConstants.loginEndpoint)),
+        headers: ApiConstants.getHeaders(),
         body: jsonEncode({
           'email': _emailController.text.trim(),
           'password': _passwordController.text,
@@ -48,12 +44,12 @@ class _TLoginFormState extends State<TLoginForm> {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
 
-        // Lưu token nếu remember me được chọn
-        if (_rememberMe) {
-          final prefs = await SharedPreferences.getInstance();
-          await prefs.setString('token', data['token']);
-          await prefs.setString('user', json.encode(data['user']));
-        }
+        // Lưu thông tin đăng nhập thông qua AuthController
+        await Get.find<AuthController>().setUserAndLoginState(
+          data['user'],
+          data['token'],
+          _rememberMe,
+        );
 
         Get.offAll(() => const NavigationMenu());
         Get.snackbar('Thành công', 'Đăng nhập thành công!');
@@ -62,7 +58,6 @@ class _TLoginFormState extends State<TLoginForm> {
         Get.snackbar('Lỗi', error['message'] ?? 'Đăng nhập thất bại!');
       }
     } catch (e) {
-      // ignore: avoid_print
       print('Login error: $e');
       Get.snackbar('Lỗi', 'Đã có lỗi xảy ra. Vui lòng thử lại sau.');
     } finally {
@@ -118,8 +113,8 @@ class _TLoginFormState extends State<TLoginForm> {
                 if (value == null || value.isEmpty) {
                   return 'Vui lòng nhập mật khẩu';
                 }
-                if (value.length < 6) {
-                  return 'Mật khẩu phải có ít nhất 6 ký tự';
+                if (value.length < 8) {
+                  return 'Mật khẩu phải có ít nhất 8 ký tự';
                 }
                 return null;
               },
@@ -145,7 +140,7 @@ class _TLoginFormState extends State<TLoginForm> {
 
                 // Forget Password
                 TextButton(
-                  onPressed: () => Get.to(() => ForgetPassword()),
+                  onPressed: () => Get.to(() => const ForgetPassword()),
                   child: const Text(TTexts.forgetPassword),
                 ),
               ],

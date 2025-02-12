@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_elearning_project/common/widgets/success_screen/success_screen.dart';
+import 'package:flutter_elearning_project/config/api_constants.dart';
 import 'package:flutter_elearning_project/features/authentication/screens/login/login.dart';
-import 'package:flutter_elearning_project/features/authentication/screens/signup/widgets/signup_form.dart';
 import 'package:flutter_elearning_project/utils/constants/image_strings.dart';
 import 'package:flutter_elearning_project/utils/constants/sizes.dart';
 import 'package:flutter_elearning_project/utils/constants/text_strings.dart';
@@ -25,11 +25,7 @@ class VerifyEmailScreen extends StatelessWidget {
     try {
       final response = await http.post(
         Uri.parse(ApiConstants.getUrl(ApiConstants.sendConfirmationEndpoint)),
-        headers: {
-          'Content-Type': 'application/json',
-          'ngrok-skip-browser-warning':
-              'true', // Thêm header để tránh cảnh báo của ngrok
-        },
+        headers: ApiConstants.getHeaders(),
         body: jsonEncode({'email': userEmail}),
       );
 
@@ -56,10 +52,7 @@ class VerifyEmailScreen extends StatelessWidget {
     try {
       final response = await http.post(
         Uri.parse(ApiConstants.getUrl(ApiConstants.verifyEmailEndpoint)),
-        headers: {
-          'Content-Type': 'application/json',
-          'ngrok-skip-browser-warning': 'true',
-        },
+        headers: ApiConstants.getHeaders(),
         body: jsonEncode({'email': userEmail}),
       );
 
