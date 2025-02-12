@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:flutter_elearning_project/config/api_constants.dart';
 import 'package:flutter_elearning_project/features/personalization/controllers/auth_controller.dart';
 import 'package:http/http.dart' as http;
@@ -17,99 +19,73 @@ class ProfileController extends GetxController {
   final isCoverLoading = false.obs;
   final errorMessage = ''.obs;
 
-  // Upload image for web platform
-  Future<void> _uploadImageWeb(String endpoint, XFile pickedFile) async {
+  // Hàm chung để xử lý upload image cho cả web và mobile
+  Future<void> _uploadImage(String endpoint, dynamic imageFile) async {
     final isAvatar = endpoint.contains('avatar');
-
     try {
-      // Set appropriate loading state
       if (isAvatar) {
         isAvatarLoading.value = true;
       } else {
         isCoverLoading.value = true;
       }
 
-      // Validate file type before upload
-      final String mimeType = pickedFile.mimeType ?? '';
-      final validImageTypes = [
-        'image/jpeg',
-        'image/jpg',
-        'image/png',
-        'image/gif'
-      ];
-
-      if (!validImageTypes.contains(mimeType.toLowerCase())) {
-        throw 'Chỉ chấp nhận file ảnh (jpeg/jpg/png/gif)!';
-      }
-
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('token');
 
-      // Read file as bytes
-      final bytes = await pickedFile.readAsBytes();
-
-      // Create request
-      final uri = Uri.parse(ApiConstants.getUrl(endpoint));
+      var uri = Uri.parse(ApiConstants.getUrl(endpoint));
       var request = http.MultipartRequest('POST', uri);
-
-      // Add file with explicit mime type
-      final fieldName = endpoint.contains('avatar') ? 'avatar' : 'coverImage';
-      final file = http.MultipartFile.fromBytes(
-        fieldName,
-        bytes,
-        filename: pickedFile.name,
-        contentType: MediaType.parse(mimeType),
-      );
 
       request.headers.addAll({
         'Authorization': 'Bearer $token',
         'Accept': 'application/json',
-        'Content-Type': 'multipart/form-data',
         'ngrok-skip-browser-warning': 'true',
       });
 
-      request.files.add(file);
+      final fieldName = endpoint.contains('avatar') ? 'avatar' : 'coverImage';
 
-      // Send request and handle response
+      if (kIsWeb) {
+        // Web platform
+        final XFile file = imageFile as XFile;
+        final bytes = await file.readAsBytes();
+        request.files.add(
+          http.MultipartFile.fromBytes(
+            fieldName,
+            bytes,
+            filename: file.name,
+            contentType: MediaType.parse(file.mimeType ?? 'image/jpeg'),
+          ),
+        );
+      } else {
+        // Mobile platform
+        final File file = File(imageFile.path);
+        request.files.add(
+          await http.MultipartFile.fromPath(
+            fieldName,
+            file.path,
+            contentType: MediaType('image', 'jpeg'),
+          ),
+        );
+      }
+
       final streamedResponse = await request.send();
       final response = await http.Response.fromStream(streamedResponse);
 
       if (response.statusCode == 200) {
-        jsonDecode(response.body);
-
-        // Cập nhật user data trong AuthController
         await authController.refreshUserData();
-
-        // Force update UI
         update();
-
-        // Thông báo thành công
         Get.snackbar(
           'Thành công',
           'Cập nhật ảnh thành công',
           snackPosition: SnackPosition.BOTTOM,
         );
       } else {
-        String errorMessage;
-        try {
-          final error = jsonDecode(response.body);
-          errorMessage = error['message'] ?? 'Cập nhật ảnh thất bại';
-        } catch (e) {
-          errorMessage = 'Lỗi máy chủ: ${response.statusCode}';
-        }
-        throw errorMessage;
+        throw jsonDecode(response.body)['message'] ?? 'Cập nhật ảnh thất bại';
       }
     } catch (e) {
       print('Upload error: $e');
       errorMessage.value = e.toString();
-      Get.snackbar(
-        'Lỗi',
-        e.toString(),
-        snackPosition: SnackPosition.BOTTOM,
-      );
-      rethrow;
+      Get.snackbar('Lỗi', e.toString(), snackPosition: SnackPosition.BOTTOM);
     } finally {
-      // Clear appropriate loading state
       if (isAvatar) {
         isAvatarLoading.value = false;
       } else {
@@ -118,38 +94,47 @@ class ProfileController extends GetxController {
     }
   }
 
-  // Pick and upload image
   Future<void> pickAndUploadImage(String type) async {
     try {
       errorMessage.value = '';
 
+      final ImageSource? source = await showModalBottomSheet<ImageSource>(
+        context: Get.context!,
+        builder: (BuildContext context) => SafeArea(
+          child: Wrap(
+            children: <Widget>[
+              ListTile(
+                leading: const Icon(Icons.photo_library),
+                title: const Text('Chọn từ thư viện'),
+                onTap: () => Navigator.pop(context, ImageSource.gallery),
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_camera),
+                title: const Text('Chụp ảnh'),
+                onTap: () => Navigator.pop(context, ImageSource.camera),
+              ),
+            ],
+          ),
+        ),
+      );
+
+      if (source == null) return;
+
       final XFile? pickedFile = await imagePicker.pickImage(
-        source: ImageSource.gallery,
+        source: source,
         imageQuality: 85,
       );
 
-      if (pickedFile == null) {
-        print('No file picked');
-        return;
-      }
+      if (pickedFile == null) return;
 
-      print('File picked: ${pickedFile.name}');
       final endpoint = type == 'avatar' ? '/profile/avatar' : '/profile/cover';
+      await _uploadImage(endpoint, pickedFile);
 
-      if (kIsWeb) {
-        await _uploadImageWeb(endpoint, pickedFile);
-        // Force rebuild của widget
-        Get.forceAppUpdate();
-      } else {
-        throw 'Chỉ hỗ trợ tải ảnh trên web';
-      }
+      // Force rebuild widget
+      Get.forceAppUpdate();
     } catch (e) {
       print('Error in pickAndUploadImage: $e');
-      Get.snackbar(
-        'Lỗi',
-        e.toString(),
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      Get.snackbar('Lỗi', e.toString(), snackPosition: SnackPosition.BOTTOM);
     }
   }
 
