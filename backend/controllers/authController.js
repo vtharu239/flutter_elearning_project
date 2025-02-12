@@ -25,10 +25,10 @@ const signup = async (req, res) => {
       const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
       // Ngoc
-      // const confirmationLink = `https://clear-tomcat-informally.ngrok-free.app/verify-email?token=${token}`;
+       const confirmationLink = `https://clear-tomcat-informally.ngrok-free.app/verify-email?token=${token}`;
 
       // Xuan
-      const confirmationLink = `https://resolved-sawfish-equally.ngrok-free.app/verify-email?token=${token}`;
+      //const confirmationLink = `https://resolved-sawfish-equally.ngrok-free.app/verify-email?token=${token}`;
 
       // Gửi email xác nhận
       await transporter.sendMail({
