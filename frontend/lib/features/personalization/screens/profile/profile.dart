@@ -4,6 +4,8 @@ import 'package:flutter_elearning_project/common/widgets/appbar/appbar.dart';
 import 'package:flutter_elearning_project/config/api_constants.dart';
 import 'package:flutter_elearning_project/features/personalization/controllers/auth_controller.dart';
 import 'package:flutter_elearning_project/features/personalization/controllers/profile_controller.dart';
+import 'package:flutter_elearning_project/features/personalization/screens/profile/component/change_email_dialog.dart';
+import 'package:flutter_elearning_project/features/personalization/screens/profile/component/change_password_dialog.dart';
 import 'package:flutter_elearning_project/features/personalization/screens/profile/component/edit_date_dialog.dart';
 import 'package:flutter_elearning_project/features/personalization/screens/profile/component/edit_gender_dialog.dart';
 import 'package:flutter_elearning_project/features/personalization/screens/profile/component/profile_dialog.dart';
@@ -13,6 +15,7 @@ import 'package:flutter_elearning_project/features/personalization/screens/profi
 import 'package:flutter_elearning_project/utils/constants/image_strings.dart';
 import 'package:flutter_elearning_project/utils/constants/sizes.dart';
 import 'package:get/get.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -36,7 +39,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           context: context,
           builder: (context) => EditFieldDialog(
             title: 'Họ và tên',
-            initialValue: user.fullName,
+            initialValue: user.fullName.isEmpty ? null : user.fullName,
             onSave: (value) => profileController.updateProfile(fullName: value),
           ),
         );
@@ -47,7 +50,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           context: context,
           builder: (context) => EditFieldDialog(
             title: 'Tên người dùng',
-            initialValue: user.username,
+            initialValue: user.username.isEmpty ? null : user.username,
             onSave: (value) => profileController.updateProfile(username: value),
           ),
         );
@@ -58,7 +61,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           context: context,
           builder: (context) => EditFieldDialog(
             title: 'Số điện thoại',
-            initialValue: user.phoneNo,
+            initialValue: user.phoneNo.isEmpty ? null : user.phoneNo,
             keyboardType: TextInputType.phone,
             onSave: (value) => profileController.updateProfile(phoneNo: value),
           ),
@@ -76,17 +79,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
         break;
 
       case 'dateOfBirth':
-        if (user.dateOfBirth != null) {
-          showDialog(
-            context: context,
-            builder: (context) => EditDateDialog(
-              initialDate: DateTime.parse(user.dateOfBirth!),
-              onSave: (value) => profileController.updateProfile(
-                dateOfBirth: value.toIso8601String(),
-              ),
+        showDialog(
+          context: context,
+          builder: (context) => EditDateDialog(
+            initialDate: user.dateOfBirth != null
+                ? DateTime.parse(user.dateOfBirth!)
+                : DateTime.now(),
+            onSave: (value) => profileController.updateProfile(
+              dateOfBirth: value.toIso8601String(),
             ),
-          );
-        }
+          ),
+        );
         break;
     }
   }
@@ -129,12 +132,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
     profileController.pickAndUploadImage(type);
   }
 
+  // Thêm phương thức hiển thị dialog đổi mật khẩu
+  void _showChangePasswordDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => const ChangePasswordDialog(),
+    );
+  }
+
+  // Thêm phương thức hiển thị dialog đổi email
+  void _showChangeEmailDialog() {
+    final user = authController.user.value;
+    if (user == null) return;
+
+    showDialog(
+      context: context,
+      builder: (context) => ChangeEmailDialog(currentEmail: user.email),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return GetBuilder<ProfileController>(
       builder: (controller) => Scaffold(
         appBar:
             const TAppBar(showBackArrow: true, title: Text('Hồ sơ cá nhân')),
+        backgroundColor: isDarkMode ? Colors.grey[850] : Colors.white,
 
         /// -- Body
         body: SingleChildScrollView(
@@ -147,93 +172,126 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   clipBehavior: Clip.none,
                   alignment: Alignment.center,
                   children: [
-                    // Cover Image
-                    Obx(() => GestureDetector(
-                          onTap: profileController.isCoverLoading.value
-                              ? null
-                              : () => _showImageOptions(context, 'cover'),
-                          child: Stack(
-                            alignment: Alignment.center,
-                            children: [
+                    // Cover Image with Edit Icon
+                    Obx(() => Stack(
+                          children: [
+                            // Cover Image
+                            Container(
+                              width: double.infinity,
+                              height: 200,
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: authController
+                                              .user.value?.coverImageUrl !=
+                                          null
+                                      ? NetworkImage(
+                                          ApiConstants.getUrl(authController
+                                              .user.value!.coverImageUrl!),
+                                          headers: {
+                                            'cache-control': 'no-cache'
+                                          },
+                                        )
+                                      : const AssetImage(TImages.defaultCover)
+                                          as ImageProvider,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                            // Cover Image Edit Button
+                            Positioned(
+                              top: 10,
+                              right: 10,
+                              child: CircleAvatar(
+                                backgroundColor: Colors.white.withOpacity(0.8),
+                                child: IconButton(
+                                  icon: const Icon(Iconsax.edit,
+                                      color: Colors.blue),
+                                  onPressed: profileController
+                                          .isCoverLoading.value
+                                      ? null
+                                      : () =>
+                                          _showImageOptions(context, 'cover'),
+                                ),
+                              ),
+                            ),
+                            // Loading Overlay
+                            if (profileController.isCoverLoading.value)
                               Container(
                                 width: double.infinity,
                                 height: 200,
-                                decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                    image: authController
-                                                .user.value?.coverImageUrl !=
-                                            null
-                                        ? NetworkImage(
-                                            ApiConstants.getUrl(authController
-                                                .user.value!.coverImageUrl!),
-                                            headers: {
-                                              'cache-control': 'no-cache'
-                                            },
-                                          )
-                                        : const AssetImage(TImages.defaultCover)
-                                            as ImageProvider,
-                                    fit: BoxFit.cover,
-                                  ),
+                                color: Colors.black45,
+                                child: const Center(
+                                  child: CircularProgressIndicator(
+                                      color: Colors.white),
                                 ),
                               ),
-                              if (profileController.isCoverLoading.value)
-                                Container(
-                                  width: double.infinity,
-                                  height: 200,
-                                  color: Colors.black45,
-                                  child: const Center(
-                                    child: CircularProgressIndicator(
-                                        color: Colors.white),
-                                  ),
-                                ),
-                            ],
-                          ),
+                          ],
                         )),
                     // Avatar
                     Positioned(
-                      bottom: -50,
-                      child: Obx(() => GestureDetector(
-                            onTap: profileController.isAvatarLoading.value
-                                ? null
-                                : () => _showImageOptions(context, 'avatar'),
-                            child: Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                CircleAvatar(
-                                  radius: 50,
-                                  backgroundImage:
-                                      authController.user.value?.avatarUrl !=
-                                              null
-                                          ? NetworkImage(
-                                              ApiConstants.getUrl(authController
-                                                  .user.value!.avatarUrl!),
-                                              headers: {
-                                                'cache-control': 'no-cache'
-                                              },
-                                            )
-                                          : const AssetImage(TImages.user)
-                                              as ImageProvider,
-                                ),
-                                if (profileController.isAvatarLoading.value)
-                                  Container(
-                                    width: 100,
-                                    height: 100,
-                                    decoration: const BoxDecoration(
-                                      color: Colors.black45,
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: const Center(
-                                      child: CircularProgressIndicator(
-                                          color: Colors.white),
-                                    ),
-                                  ),
-                              ],
+                      bottom: -20,
+                      child: Obx(
+                        () => Stack(
+                          children: [
+                            // Avatar
+                            CircleAvatar(
+                              radius: 50,
+                              backgroundImage:
+                                  authController.user.value?.avatarUrl != null
+                                      ? NetworkImage(
+                                          ApiConstants.getUrl(authController
+                                              .user.value!.avatarUrl!),
+                                          headers: {
+                                            'cache-control': 'no-cache'
+                                          },
+                                        )
+                                      : const AssetImage(TImages.user)
+                                          as ImageProvider,
                             ),
-                          )),
+                            // Loading Overlay
+                            if (profileController.isAvatarLoading.value)
+                              Container(
+                                width: 100,
+                                height: 100,
+                                decoration: const BoxDecoration(
+                                  color: Colors.black45,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Center(
+                                  child: CircularProgressIndicator(
+                                      color: Colors.white),
+                                ),
+                              ),
+                            // Avatar Edit Button
+                            Positioned(
+                              bottom: 0,
+                              right: 0,
+                              child: CircleAvatar(
+                                radius: 18,
+                                backgroundColor: Colors.white,
+                                child: CircleAvatar(
+                                  radius: 16,
+                                  backgroundColor: Colors.blue,
+                                  child: IconButton(
+                                    icon: const Icon(Icons.edit,
+                                        size: 16, color: Colors.white),
+                                    onPressed:
+                                        profileController.isAvatarLoading.value
+                                            ? null
+                                            : () => _showImageOptions(
+                                                context, 'avatar'),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 70),
+
+                const SizedBox(height: 50),
 
                 /// Details
                 const Divider(),
@@ -271,7 +329,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       TProfileMenu(
                         title: 'E-mail',
                         value: user.email,
-                        onPressed: () {},
+                        onPressed: _showChangeEmailDialog,
                       ),
                       TProfileMenu(
                         title: 'Số điện thoại',
@@ -299,9 +357,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ],
                   );
                 }),
-
                 const Divider(),
                 const SizedBox(height: TSizes.spaceBtwItems),
+
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: _showChangePasswordDialog,
+                        icon: const Icon(Icons.lock_outline),
+                        label: const Text('Đổi mật khẩu'),
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),

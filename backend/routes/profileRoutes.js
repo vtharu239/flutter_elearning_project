@@ -7,9 +7,9 @@ const {
   updateProfile, 
   updateAvatar,
   updateCoverImage,
-  sendCurrentEmailOTP,
-  verifyCurrentEmailAndSendNewOTP,
-  verifyNewEmailAndComplete,
+  verifyCurrentPassword,
+  initiateEmailChange,
+  completeEmailChange,
   changePassword
 } = require('../controllers/profileController');
 
@@ -33,10 +33,12 @@ router.post('/profile/cover',
   updateCoverImage
 );
 
+// Route kiểm tra mật khẩu
+router.post('/profile/verify-password', authenticateUser, verifyCurrentPassword);
+
 // Route thay đổi email
-router.post('/profile/send-current-email-otp', authenticateUser, sendCurrentEmailOTP);
-router.post('/profile/verify-current-email', authenticateUser, verifyCurrentEmailAndSendNewOTP);
-router.post('/profile/verify-new-email', authenticateUser, verifyNewEmailAndComplete);
+router.post('/profile/initiate-email-change', authenticateUser, initiateEmailChange);
+router.post('/profile/complete-email-change', authenticateUser, completeEmailChange);
 
 // Thay đổi mật khẩu
 router.post('/profile/change-password', authenticateUser, changePassword);

@@ -187,19 +187,47 @@ const updateCoverImage = async (req, res) => {
   }
 };
 
-// Gửi mã OTP để xác thực email hiện tại
-const sendCurrentEmailOTP = async (req, res) => {
-  const { currentEmail, newEmail } = req.body;
+// Kiểm tra mật khẩu hiện tại
+const verifyCurrentPassword = async (req, res) => {
+  const { password } = req.body;
 
-  if (!currentEmail || !newEmail) {
-    return res.status(400).json({ message: 'Vui lòng cung cấp email hiện tại và email mới!' });
+  if (!password) {
+    return res.status(400).json({ message: 'Vui lòng nhập mật khẩu!' });
   }
 
   try {
-    // Kiểm tra email hiện tại
-    const user = await User.findOne({ where: { email: currentEmail } });
+    // Tìm user hiện tại
+    const user = await User.findByPk(req.user.userId);
     if (!user) {
-      return res.status(404).json({ message: 'Email hiện tại không chính xác!' });
+      return res.status(404).json({ message: 'Không tìm thấy người dùng!' });
+    }
+
+    // Kiểm tra mật khẩu
+    const validPassword = await bcrypt.compare(password, user.password);
+    if (!validPassword) {
+      return res.status(401).json({ message: 'Mật khẩu không chính xác!' });
+    }
+
+    res.status(200).json({ message: 'Mật khẩu chính xác!' });
+  } catch (error) {
+    console.error('Lỗi kiểm tra mật khẩu:', error);
+    res.status(500).json({ message: 'Lỗi server!' });
+  }
+};
+
+// Khởi tạo thay đổi email và gửi OTP
+const initiateEmailChange = async (req, res) => {
+  const { newEmail } = req.body;
+
+  if (!newEmail) {
+    return res.status(400).json({ message: 'Vui lòng cung cấp email mới!' });
+  }
+
+  try {
+    // Tìm user hiện tại
+    const user = await User.findByPk(req.user.userId);
+    if (!user) {
+      return res.status(404).json({ message: 'Không tìm thấy người dùng!' });
     }
 
     // Kiểm tra email mới đã tồn tại chưa
@@ -208,36 +236,36 @@ const sendCurrentEmailOTP = async (req, res) => {
       return res.status(400).json({ message: 'Email mới đã được sử dụng!' });
     }
 
-    // Tạo mã OTP cho email hiện tại
+    // Tạo mã OTP
     const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
     const otpToken = jwt.sign(
-      { 
-        currentEmail,
-        newEmail,
-        otp: otpCode,
-        step: 'verify_current_email'
+      {
+        userId: user.id,
+        currentEmail: user.email,
+        newEmail: newEmail,
+        otp: otpCode
       },
       process.env.JWT_SECRET,
       { expiresIn: '10m' }
     );
 
-    // Gửi email chứa mã OTP đến email hiện tại
+    // Gửi email chứa mã OTP
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
-      to: currentEmail,
-      subject: 'Xác Thực Thay Đổi Email',
+      to: newEmail,
+      subject: 'Xác Thực Email Mới',
       html: `
-        <h2>Xác Thực Thay Đổi Email</h2>
-        <p>Chúng tôi nhận được yêu cầu thay đổi email của bạn sang: ${newEmail}</p>
+        <h2>Xác Thực Email Mới</h2>
+        <p>Bạn đã yêu cầu thay đổi email từ ${user.email} sang ${newEmail}</p>
         <p>Mã OTP của bạn là: <strong>${otpCode}</strong></p>
         <p>Mã này có hiệu lực trong 10 phút.</p>
-        <p>Nếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email này và đổi mật khẩu ngay lập tức.</p>
+        <p>Nếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email này.</p>
       `
     });
 
     res.status(200).json({
       otpToken,
-      message: 'Mã OTP đã được gửi đến email hiện tại!'
+      message: 'Mã OTP đã được gửi đến email mới!'
     });
   } catch (error) {
     console.error('Lỗi gửi OTP:', error);
@@ -245,8 +273,8 @@ const sendCurrentEmailOTP = async (req, res) => {
   }
 };
 
-// Xác thực OTP của email hiện tại và gửi OTP đến email mới
-const verifyCurrentEmailAndSendNewOTP = async (req, res) => {
+// Xác thực OTP và hoàn tất thay đổi email
+const completeEmailChange = async (req, res) => {
   const { otpToken, otp } = req.body;
 
   if (!otpToken || !otp) {
@@ -256,71 +284,6 @@ const verifyCurrentEmailAndSendNewOTP = async (req, res) => {
   try {
     // Giải mã token
     const decoded = jwt.verify(otpToken, process.env.JWT_SECRET);
-
-    // Kiểm tra bước xác thực
-    if (decoded.step !== 'verify_current_email') {
-      return res.status(400).json({ message: 'Token không hợp lệ!' });
-    }
-
-    // Kiểm tra mã OTP
-    if (decoded.otp !== otp) {
-      return res.status(400).json({ message: 'Mã OTP không chính xác!' });
-    }
-
-    // Tạo mã OTP mới cho email mới
-    const newOTPCode = Math.floor(100000 + Math.random() * 900000).toString();
-    const newOTPToken = jwt.sign(
-      {
-        currentEmail: decoded.currentEmail,
-        newEmail: decoded.newEmail,
-        otp: newOTPCode,
-        step: 'verify_new_email'
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: '10m' }
-    );
-
-    // Gửi email chứa mã OTP đến email mới
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
-      to: decoded.newEmail,
-      subject: 'Mã OTP Xác Thực Email Mới',
-      html: `
-        <h2>Mã OTP Xác Thực Email Mới</h2>
-        <p>Mã OTP của bạn là: <strong>${newOTPCode}</strong></p>
-        <p>Mã này có hiệu lực trong 10 phút.</p>
-      `
-    });
-
-    res.status(200).json({
-      otpToken: newOTPToken,
-      message: 'Mã OTP đã được gửi đến email mới!'
-    });
-  } catch (error) {
-    if (error.name === 'TokenExpiredError') {
-      return res.status(400).json({ message: 'Mã OTP đã hết hạn!' });
-    }
-    console.error('Lỗi xác thực OTP:', error);
-    res.status(500).json({ message: 'Lỗi server!' });
-  }
-};
-
-// Xác thực OTP của email mới và hoàn tất thay đổi email
-const verifyNewEmailAndComplete = async (req, res) => {
-  const { otpToken, otp } = req.body;
-
-  if (!otpToken || !otp) {
-    return res.status(400).json({ message: 'Vui lòng cung cấp token và mã OTP!' });
-  }
-
-  try {
-    // Giải mã token
-    const decoded = jwt.verify(otpToken, process.env.JWT_SECRET);
-
-    // Kiểm tra bước xác thực
-    if (decoded.step !== 'verify_new_email') {
-      return res.status(400).json({ message: 'Token không hợp lệ!' });
-    }
 
     // Kiểm tra mã OTP
     if (decoded.otp !== otp) {
@@ -328,9 +291,15 @@ const verifyNewEmailAndComplete = async (req, res) => {
     }
 
     // Tìm người dùng
-    const user = await User.findOne({ where: { email: decoded.currentEmail } });
+    const user = await User.findByPk(decoded.userId);
     if (!user) {
       return res.status(404).json({ message: 'Người dùng không tồn tại!' });
+    }
+
+    // Kiểm tra lại email mới có bị trùng không
+    const existingUser = await User.findOne({ where: { email: decoded.newEmail } });
+    if (existingUser) {
+      return res.status(400).json({ message: 'Email mới đã được sử dụng!' });
     }
 
     // Lưu email cũ để gửi thông báo
@@ -470,8 +439,8 @@ module.exports = {
   updateProfile,
   updateAvatar,
   updateCoverImage,
-  sendCurrentEmailOTP,
-  verifyCurrentEmailAndSendNewOTP,
-  verifyNewEmailAndComplete,
+  verifyCurrentPassword,
+  initiateEmailChange,
+  completeEmailChange,
   changePassword
 };
