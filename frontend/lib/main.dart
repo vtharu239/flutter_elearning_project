@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_elearning_project/features/personalization/controllers/auth_controller.dart';
 import 'package:flutter_elearning_project/providers/auth_provider.dart';
 import 'package:flutter_elearning_project/providers/theme_provider.dart';
@@ -7,11 +8,12 @@ import 'package:provider/provider.dart';
 import 'app.dart';
 
 void main() async {
+  // debugPaintSizeEnabled = true; // Bật Debug Paint
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Khởi tạo các controllers
   final authController = Get.put(AuthController());
-  
+
   // Kiểm tra trạng thái đăng nhập trước khi render UI
   await authController.checkLoginStatus();
 
@@ -20,7 +22,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
-      ],    
+      ],
       child: const App(),
     ),
   );

@@ -30,7 +30,7 @@ class _EditGenderDialogState extends State<EditGenderDialog> {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          RadioListTile<String>(
+          RadioListTile<String?>(
             title: const Text('Nam'),
             value: 'male',
             groupValue: selectedGender,
@@ -40,7 +40,7 @@ class _EditGenderDialogState extends State<EditGenderDialog> {
               });
             },
           ),
-          RadioListTile<String>(
+          RadioListTile<String?>(
             title: const Text('Nữ'),
             value: 'female',
             groupValue: selectedGender,
@@ -50,7 +50,7 @@ class _EditGenderDialogState extends State<EditGenderDialog> {
               });
             },
           ),
-          RadioListTile<String>(
+          RadioListTile<String?>(
             title: const Text('Khác'),
             value: 'other',
             groupValue: selectedGender,
