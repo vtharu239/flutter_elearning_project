@@ -1,8 +1,19 @@
 const { sequelize } = require('../config/database');
 const User = require('./User');
-
-// Thêm các model khác ở đây
+const Category = require('./Category');
+const Course = require('./Course');
 module.exports = {
   sequelize,
-  User
+  User,
+  Category,
+  Course
 };
+Category.hasMany(Course, {
+  foreignKey: 'categoryId',
+  as: 'Courses'
+});
+
+Course.belongsTo(Category, {
+  foreignKey: 'categoryId',
+  as: 'Category'
+});

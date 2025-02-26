@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_elearning_project/common/styles/section_heading.dart';
 import 'package:flutter_elearning_project/common/widgets/custom_shapes/container/primary_header_container.dart';
+import 'package:flutter_elearning_project/features/course/controller/category_controller.dart';
 import 'package:flutter_elearning_project/features/course/controller/course_controller.dart';
 import 'package:flutter_elearning_project/features/course/screens/widgets/course_appbar.dart';
 import 'package:flutter_elearning_project/features/course/screens/widgets/course_list.dart';
@@ -14,7 +15,8 @@ class CourseScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(CourseController());
+    final categoryController = Get.put(CategoryController());
+    final courseController = Get.put(CourseController());
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -26,44 +28,73 @@ class CourseScreen extends StatelessWidget {
                 children: [
                   TCourseAppBar(),
                   SizedBox(height: TSizes.spaceBtwSections),
+                  SizedBox(height: TSizes.spaceBtwSections),
                 ],
               ),
             ),
 
             // Body content
             Padding(
-              padding: const EdgeInsets.all(TSizes.defaultSpace),
+              padding: const EdgeInsets.all(TSizes.spaceBtwItems),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Popular Course Categories
                   const TSectionHeading(title: 'Thể loại'),
-                  PopularCategoriesGrid(controller: controller),
-                  const SizedBox(height: TSizes.spaceBtwSections),
-
+                  // Container(
+                  //   decoration:
+                  //       BoxDecoration(border: Border.all(color: Colors.red)),
+                  //   child:
+                  //       PopularCategoriesGrid(controller: categoryController),
+                  // ),
+                  PopularCategoriesGrid(controller: categoryController),
                   // Featured Courses
                   const TSectionHeading(title: 'Khóa học nổi bật'),
                   const FeaturedCoursesSection(),
-                  const SizedBox(height: TSizes.spaceBtwSections),
 
-                  // Combo Courses
-                  const TSectionHeading(title: 'Combo khóa học'),
-                  const CourseListSection(),
-                  const SizedBox(height: TSizes.spaceBtwSections),
+                  // Hiển thị khóa học dựa theo category đã chọn hoặc tất cả khóa học
+                  Obx(() {
+                    final selectedCategory =
+                        courseController.selectedCategory.value;
 
-                  // TOEIC Courses
-                  const TSectionHeading(title: 'Khóa học TOEIC'),
-                  const CourseListSection(),
-                  const SizedBox(height: TSizes.spaceBtwSections),
+                    if (selectedCategory == 'all') {
+                      // Hiển thị các khóa học theo tất cả danh mục một cách tự động
+                      return Obx(() {
+                        if (categoryController.isLoading.value) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
 
-                  // IELTS Courses
-                  const TSectionHeading(title: 'Khóa học IELTS'),
-                  const CourseListSection(),
-                  const SizedBox(height: TSizes.spaceBtwSections),
-
-                  // Basic English Courses
-                  const TSectionHeading(title: 'Khóa học Tiếng Anh cơ bản'),
-                  const CourseListSection(),
-                  const SizedBox(height: TSizes.spaceBtwSections),
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children:
+                              categoryController.categories.map((category) {
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                TSectionHeading(
+                                    title: 'Khóa học ${category.name}'),
+                                CourseListSection(
+                                    categoryId: category.id.toString()),
+                              ],
+                            );
+                          }).toList(),
+                        );
+                      });
+                    } else {
+                      // Hiển thị khóa học theo category đã chọn
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          TSectionHeading(
+                            title:
+                                'Khóa học ${categoryController.getCategoryName(selectedCategory)}',
+                          ),
+                          CourseListSection(),
+                        ],
+                      );
+                    }
+                  }),
                 ],
               ),
             ),
