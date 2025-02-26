@@ -22,7 +22,7 @@ class HorizontalCourseCardList extends StatelessWidget {
       scrollDirection: Axis.horizontal,
       shrinkWrap: true,
       itemCount: itemCount,
-      separatorBuilder: (_, __) => const SizedBox(width: TSizes.md),
+      separatorBuilder: (_, __) => const SizedBox(width: TSizes.sm),
       itemBuilder: (context, index) {
         return items[
             index]; // Trả về từng HorizontalCourseCard đã được truyền vào
