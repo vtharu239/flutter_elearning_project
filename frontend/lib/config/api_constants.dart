@@ -22,8 +22,9 @@ class ApiConstants {
   static const String verifyOTP = '/verify-otp';
   static const String resetPassword = '/reset-password';
   static const String getProfile = '/profile';
-
-  // Headers mặc định
+  static const String getAllCourse = '/getAllCourse';
+  static const String getAllCategory = '/getAllCategory';
+  // Headers mặc địnhs
   static Map<String, String> getHeaders() {
     return {
       'Content-Type': 'application/json',
