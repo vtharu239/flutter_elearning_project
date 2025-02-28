@@ -54,7 +54,7 @@ class ChangePhoneNumber extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () => Get.to(ProfileScreen()),
+                onPressed: () => Get.to(const ProfileScreen()),
                 child: const Text('Gửi mã xác nhận'),
               ),
             )

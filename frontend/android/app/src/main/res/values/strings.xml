@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+   <string name="facebook_app_id">2386448941716049</string>
+   <string name="fb_login_protocol_scheme">fb1234</string>
+   <string name="facebook_client_token">0c5531e35186321c3e4b53d7254751e7</string>
+
+
+</resources>

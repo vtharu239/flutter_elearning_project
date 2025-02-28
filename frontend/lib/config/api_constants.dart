@@ -2,10 +2,12 @@ class ApiConstants {
   static const String baseUrl =
 
       // - Ngoc
-      'https://clear-tomcat-informally.ngrok-free.app';
+      // 'https://clear-tomcat-informally.ngrok-free.app';
 
-  // -- Xuan
-  // 'https://resolved-sawfish-equally.ngrok-free.app';
+      // -- Xuan
+      // 'https://resolved-sawfish-equally.ngrok-free.app';
+      // -- Phuong
+      'https://equipped-living-osprey.ngrok-free.app';
 
   // API endpoints
   static const String auth = '/auth';

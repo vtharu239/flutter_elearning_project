@@ -11,12 +11,6 @@ class AuthController extends GetxController {
   final Rx<User?> user = Rx<User?>(null);
   final RxBool isLoggedIn = false.obs;
 
-  @override
-  void onInit() {
-    super.onInit();
-    // checkLoginStatus() will be called from main.dart before app starts
-  }
-
   // Lấy thông tin user mới nhất từ server
   Future<void> refreshUserData() async {
     try {
@@ -112,6 +106,40 @@ class AuthController extends GetxController {
       coverImageUrl: userData['coverImageUrl'],
     );
   }
+
+  void setUserFromGoogle(String displayName, String email) {
+    final userData = {
+      'id': 0, // Tạm để 0 nếu chưa có ID thực
+      'email': email,
+      'username': '',
+      'fullName': displayName,
+      'gender': '',
+      'dateOfBirth': null,
+      'phoneNo': '',
+      'avatarUrl': null,
+      'coverImageUrl': null,
+    };
+
+    setUser(userData); // Gọi hàm setUser để cập nhật Rx user
+    isLoggedIn.value = true; // Đánh dấu đã đăng nhập
+  }
+  void setUserFromFacebook(String fullName, String email) {
+  final userData = {
+    'id': 0, // Tạm đặt 0 nếu chưa có ID
+    'email': email,
+    'username': '',
+    'fullName': fullName,
+    'gender': '',
+    'dateOfBirth': null,
+    'phoneNo': '',
+    'avatarUrl': null,
+    'coverImageUrl': null,
+  };
+
+  setUser(userData);        // Gọi hàm setUser để cập nhật Rx user
+  isLoggedIn.value = true;  // Đánh dấu đã đăng nhập
+}
+
 
   // Đăng xuất
   Future<void> logout({bool shouldNavigate = true}) async {

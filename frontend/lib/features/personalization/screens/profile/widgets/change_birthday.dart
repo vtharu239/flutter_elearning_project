@@ -69,7 +69,7 @@ class _ChangeBirthdateState extends State<ChangeBirthdate> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: _selectedDate != null
-                    ? () => Get.to(ProfileScreen())
+                    ? () => Get.to(const ProfileScreen())
                     : null,
                 child: const Text('Lưu'),
               ),

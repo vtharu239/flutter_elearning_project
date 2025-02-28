@@ -5,7 +5,7 @@ require('dotenv').config();
 const sequelize = new Sequelize(
   process.env.DB_NAME || 'elearning_db',
   process.env.DB_USER || 'root',
-  process.env.DB_PASSWORD || '123456789',
+  process.env.DB_PASSWORD || '12345678',
   {
     host: process.env.DB_HOST || 'localhost',
     dialect: 'mysql',
@@ -22,7 +22,7 @@ async function initializeDatabase() {
     const connection = mysql.createConnection({
       host: process.env.DB_HOST || 'localhost',
       user: process.env.DB_USER || 'root',
-      password: process.env.DB_PASSWORD || '123456789',
+      password: process.env.DB_PASSWORD || '12345678',
     });
 
     connection.query(

@@ -12,15 +12,15 @@ class TestDetailScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Tags and Title Section
-            Padding(
-              padding: const EdgeInsets.all(16.0),
+            const Padding(
+              padding: EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Wrap(
                     spacing: 8,
                     runSpacing: 8,
-                    children: const [
+                    children: [
                       Chip(
                         label: Text('#Toeic Academic'),
                         backgroundColor: Colors.transparent,
@@ -35,8 +35,8 @@ class TestDetailScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 12),
-                  const Text(
+                  SizedBox(height: 12),
+                  Text(
                     'Toeic Simulation Listening test 2',
                     style: TextStyle(
                       fontSize: 24,
@@ -536,8 +536,8 @@ class TestInfoSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+    return const Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -545,42 +545,42 @@ class TestInfoSection extends StatelessWidget {
             spacing: 8,
             runSpacing: 4,
             children: [
-              const Icon(Icons.access_time, size: 16, color: Colors.black54),
-              const Text(
+              Icon(Icons.access_time, size: 16, color: Colors.black54),
+              Text(
                 'Thời gian làm bài: 120 phút',
                 style: TextStyle(fontSize: 14, color: Colors.black87),
               ),
-              const Text('|', style: TextStyle(color: Colors.black54)),
-              const Text(
+              Text('|', style: TextStyle(color: Colors.black54)),
+              Text(
                 '7 phần thi',
                 style: TextStyle(fontSize: 14, color: Colors.black87),
               ),
-              const Text('|', style: TextStyle(color: Colors.black54)),
-              const Text(
+              Text('|', style: TextStyle(color: Colors.black54)),
+              Text(
                 '200 câu hỏi',
                 style: TextStyle(fontSize: 14, color: Colors.black87),
               ),
-              const Text('|', style: TextStyle(color: Colors.black54)),
-              const Text(
+              Text('|', style: TextStyle(color: Colors.black54)),
+              Text(
                 '226 bình luận',
                 style: TextStyle(fontSize: 14, color: Colors.black87),
               ),
             ],
           ),
-          const SizedBox(height: 6),
+          SizedBox(height: 6),
           Wrap(
             spacing: 8,
             runSpacing: 4,
             children: [
-              const Icon(Icons.people, size: 16, color: Colors.black54),
-              const Text(
+              Icon(Icons.people, size: 16, color: Colors.black54),
+              Text(
                 '359028 người đã luyện tập đề thi này',
                 style: TextStyle(fontSize: 14, color: Colors.black87),
               ),
             ],
           ),
-          const SizedBox(height: 6),
-          const Text(
+          SizedBox(height: 6),
+          Text(
             'Chú ý: để được quy đổi sang scaled score (ví dụ trên thang điểm 990 cho TOEIC hoặc 9.0 cho IELTS), vui lòng chọn chế độ làm FULL TEST.',
             style: TextStyle(fontSize: 14, color: Colors.red),
           ),

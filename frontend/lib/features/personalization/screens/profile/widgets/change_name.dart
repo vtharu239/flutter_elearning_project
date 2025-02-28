@@ -51,7 +51,7 @@ class ChangeName extends StatelessWidget {
             /// Save button
             SizedBox(
               width: double.infinity,
-              child: ElevatedButton(onPressed: () => Get.to(ProfileScreen()), child: const Text('Lưu')),
+              child: ElevatedButton(onPressed: () => Get.to(const ProfileScreen()), child: const Text('Lưu')),
             )
           ],
         ),

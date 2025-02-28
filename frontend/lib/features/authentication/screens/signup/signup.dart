@@ -18,7 +18,9 @@ class SignupScreen extends StatelessWidget {
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back,
-            color: darkMode ? Colors.white : Colors.black, // Màu trắng cho dark mode, đen cho light mode
+            color: darkMode
+                ? Colors.white
+                : Colors.black, // Màu trắng cho dark mode, đen cho light mode
           ),
           onPressed: () {
             Navigator.pop(context);
@@ -45,7 +47,7 @@ class SignupScreen extends StatelessWidget {
               const SizedBox(height: TSizes.spaceBtwSections),
 
               /// Social Buttons
-              const TSocialButtons(),
+              TSocialButtons(),
             ],
           ),
         ),

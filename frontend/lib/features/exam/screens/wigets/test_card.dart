@@ -44,7 +44,7 @@ class TestCard extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => TestDetailScreen(),
+            builder: (context) => const TestDetailScreen(),
           ),
         );
       },
@@ -64,7 +64,7 @@ class TestCard extends StatelessWidget {
                 color: Colors.blue.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(TSizes.cardRadiusMd),
               ),
-              child: Icon(Iconsax.document, size: 30, color: Colors.blue),
+              child: const Icon(Iconsax.document, size: 30, color: Colors.blue),
             ),
             const SizedBox(width: TSizes.spaceBtwItems),
             Expanded(
@@ -165,7 +165,7 @@ class TestCard extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => TestDetailScreen(),
+                        builder: (context) => const TestDetailScreen(),
                       ),
                     );
                   },

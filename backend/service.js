@@ -19,11 +19,15 @@ const authRoutes = require('./routes/authRoutes');
 const emailRoutes = require('./routes/emailRoutes');
 const passwordRoutes = require('./routes/passwordRoutes');
 const profileRoutes = require('./routes/profileRoutes');
+//const categoryRoutes = require('./routes/category');
+//const courseRoutes = require('./routes/course');
 
 app.use(authRoutes);
 app.use(emailRoutes);
 app.use(passwordRoutes);
 app.use(profileRoutes);
+//app.use(categoryRoutes);
+//app.use(courseRoutes);
 
 // Initialize application
 async function startServer() {

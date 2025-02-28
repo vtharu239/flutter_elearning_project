@@ -29,7 +29,7 @@ class _ResetPasswordState extends State<ResetPassword> {
   bool _confirmPasswordVisible = false;
   bool _isLoading = false;
   String? _passwordStrengthMessage;
-  Color _passwordStrengthColor = Colors.red;
+  final Color _passwordStrengthColor = Colors.red;
 
   // Kiểm tra độ mạnh của mật khẩu
   bool _isPasswordStrong(String password) {
