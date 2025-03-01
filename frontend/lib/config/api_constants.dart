@@ -1,16 +1,19 @@
 class ApiConstants {
   static const String baseUrl =
 
-      // - Ngoc
-      // 'https://clear-tomcat-informally.ngrok-free.app';
+      // -- Phuong
+      'https://equipped-living-osprey.ngrok-free.app';
 
-      // -- Xuan
-      'https://resolved-sawfish-equally.ngrok-free.app';
+  // - Ngoc
+  // 'https://clear-tomcat-informally.ngrok-free.app';
+
+  // -- Xuan
+  // 'https://resolved-sawfish-equally.ngrok-free.app';
 
   // API endpoints
 
   static const String imageBaseUrl = baseUrl; // Để load ảnh từ backend
-  
+
   static const String auth = '/auth';
   static const String email = '/email';
   static const String password = '/password';

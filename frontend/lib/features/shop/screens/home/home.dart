@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_elearning_project/common/styles/section_heading.dart';
 import 'package:flutter_elearning_project/common/widgets/custom_shapes/container/primary_header_container.dart';
-
 import 'package:flutter_elearning_project/features/course/screens/widgets/featured_courses.dart';
-import 'package:flutter_elearning_project/features/exam/controller/practice_test_controller.dart';
-import 'package:flutter_elearning_project/features/exam/screens/wigets/popular_tests.dart';
 import 'package:flutter_elearning_project/features/personalization/screens/course/my_courses.dart';
 import 'package:flutter_elearning_project/features/personalization/screens/course/test_result.dart';
 import 'package:flutter_elearning_project/features/shop/screens/home/widgets/home_appbar.dart';
@@ -22,7 +19,6 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final testController = Get.put(PracticeTestController());
     final searchController = TextEditingController();
 
     return Scaffold(

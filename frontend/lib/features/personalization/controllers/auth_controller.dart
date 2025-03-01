@@ -11,12 +11,6 @@ class AuthController extends GetxController {
   final Rx<User?> user = Rx<User?>(null);
   final RxBool isLoggedIn = false.obs;
 
-  @override
-  void onInit() {
-    super.onInit();
-    // checkLoginStatus() will be called from main.dart before app starts
-  }
-
   // Lấy thông tin user mới nhất từ server
   Future<void> refreshUserData() async {
     try {

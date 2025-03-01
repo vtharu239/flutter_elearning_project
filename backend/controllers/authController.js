@@ -24,11 +24,14 @@ const signup = async (req, res) => {
       // Tạo token xác nhận email
       const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
+      // Phuong
+      const confirmationLink = `https://equipped-living-osprey.ngrok-free.app/verify-email?token=${token}`;
+
       // Ngoc
-       const confirmationLink = `https://clear-tomcat-informally.ngrok-free.app/verify-email?token=${token}`;
+      //  const confirmationLink = `https://clear-tomcat-informally.ngrok-free.app/verify-email?token=${token}`;
 
       // Xuan
-      //const confirmationLink = `https://resolved-sawfish-equally.ngrok-free.app/verify-email?token=${token}`;
+      // const confirmationLink = `https://resolved-sawfish-equally.ngrok-free.app/verify-email?token=${token}`;
 
       // Gửi email xác nhận
       await transporter.sendMail({

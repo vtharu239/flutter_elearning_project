@@ -84,14 +84,14 @@ class _CourseScheduleCardState extends State<CourseScheduleCard> {
           const SizedBox(height: 8),
           ListView.builder(
             shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
+            physics: const NeverScrollableScrollPhysics(),
             itemCount: widget.tasks.length,
             itemBuilder: (context, index) {
               return GestureDetector(
                 onTap: () => _toggleTask(index),
                 child: Container(
-                  margin: EdgeInsets.symmetric(vertical: 4),
-                  padding: EdgeInsets.all(8),
+                  margin: const EdgeInsets.symmetric(vertical: 4),
+                  padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     color: _taskCompleted[index]
                         ? (isDarkMode ? Colors.green[700] : Colors.green[100]) // Màu nền khi task hoàn thành
@@ -111,10 +111,10 @@ class _CourseScheduleCardState extends State<CourseScheduleCard> {
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: _taskCompleted[index]
-                            ? Icon(Icons.check, size: 16, color: Colors.white)
+                            ? const Icon(Icons.check, size: 16, color: Colors.white)
                             : null,
                       ),
-                      SizedBox(width: 8),
+                      const SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           widget.tasks[index],

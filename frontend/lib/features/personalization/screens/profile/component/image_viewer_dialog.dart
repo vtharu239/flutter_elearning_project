@@ -6,11 +6,11 @@ class TImageViewerDialog extends StatelessWidget {
   final String defaultImage;
 
   const TImageViewerDialog({
-    Key? key,
+    super.key,
     required this.imageUrl,
     this.isNetworkImage = true,
     required this.defaultImage,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

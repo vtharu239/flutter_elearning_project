@@ -7,10 +7,10 @@ class TImageOptionsSheet extends StatelessWidget {
   final VoidCallback onEdit;
 
   const TImageOptionsSheet({
-    Key? key,
+    super.key,
     required this.onView,
     required this.onEdit,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
