@@ -13,6 +13,7 @@ app.use(bodyParser.json());
 
 // Phục vụ các tệp tải lên tĩnh
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads/profiles', express.static(path.join(__dirname, 'uploads/profiles')));
 
 // Routes
 const authRoutes = require('./routes/authRoutes');
@@ -21,6 +22,7 @@ const passwordRoutes = require('./routes/passwordRoutes');
 const profileRoutes = require('./routes/profileRoutes');
 const categoryRoutes = require('./routes/category');
 const courseRoutes = require('./routes/course');
+const testRoutes = require('./routes/testRoutes');
 
 app.use(authRoutes);
 app.use(emailRoutes);
@@ -28,6 +30,7 @@ app.use(passwordRoutes);
 app.use(profileRoutes);
 app.use(categoryRoutes);
 app.use(courseRoutes);
+app.use(testRoutes);
 
 // Initialize application
 async function startServer() {
