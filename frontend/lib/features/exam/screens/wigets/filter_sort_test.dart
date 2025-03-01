@@ -21,7 +21,8 @@ class FilterSortSection extends StatelessWidget {
         borderRadius: BorderRadius.circular(TSizes.cardRadiusMd),
         boxShadow: [
           BoxShadow(
-            color: isDarkMode ? Colors.grey[700]! : Colors.grey.withOpacity(0.1),
+            color:
+                isDarkMode ? Colors.grey[700]! : Colors.grey.withOpacity(0.1),
             blurRadius: 10,
             offset: const Offset(0, 5),
           ),
@@ -54,13 +55,12 @@ class FilterSortSection extends StatelessWidget {
                       DropdownMenuItem(
                           value: 'difficulty', child: Text('Độ khó')),
                     ],
-                    onChanged: (value) =>
-                        controller.selectedSort.value = value!,
+                    onChanged: (value) => controller.setSort(value!),
                     underline: const SizedBox(),
                     style: TextStyle(
-                      color: isDarkMode ? Colors.white : Colors.black, 
+                      color: isDarkMode ? Colors.white : Colors.black,
                     ),
-                    dropdownColor: isDarkMode ? Colors.grey[850] : Colors.white, 
+                    dropdownColor: isDarkMode ? Colors.grey[850] : Colors.white,
                   ),
                 ),
               ],
@@ -77,9 +77,13 @@ class FilterSortSection extends StatelessWidget {
                   selected: controller.selectedFilters.contains('done'),
                   onSelected: (_) => controller.toggleFilter('done'),
                   selectedColor: Colors.green[700], // Màu nền khi được chọn
-                  backgroundColor: isDarkMode ? Colors.grey[700] : Colors.grey[200], // Màu nền khi chưa chọn
+                  backgroundColor: isDarkMode
+                      ? Colors.grey[700]
+                      : Colors.grey[200], // Màu nền khi chưa chọn
                   labelStyle: TextStyle(
-                    color: isDarkMode ? Colors.white : Colors.black, // Màu chữ của filter chip
+                    color: isDarkMode
+                        ? Colors.white
+                        : Colors.black, // Màu chữ của filter chip
                   ),
                 ),
                 FilterChip(
@@ -87,9 +91,13 @@ class FilterSortSection extends StatelessWidget {
                   selected: controller.selectedFilters.contains('notDone'),
                   onSelected: (_) => controller.toggleFilter('notDone'),
                   selectedColor: Colors.orange[700], // Màu nền khi được chọn
-                  backgroundColor: isDarkMode ? Colors.grey[700] : Colors.grey[200], // Màu nền khi chưa chọn
+                  backgroundColor: isDarkMode
+                      ? Colors.grey[700]
+                      : Colors.grey[200], // Màu nền khi chưa chọn
                   labelStyle: TextStyle(
-                    color: isDarkMode ? Colors.white : Colors.black, // Màu chữ của filter chip
+                    color: isDarkMode
+                        ? Colors.white
+                        : Colors.black, // Màu chữ của filter chip
                   ),
                 ),
               ],

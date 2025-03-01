@@ -28,7 +28,7 @@ class CourseScreen extends StatelessWidget {
                 children: [
                   TCourseAppBar(),
                   SizedBox(height: TSizes.spaceBtwSections),
-                  SizedBox(height: TSizes.spaceBtwSections),
+                  // SizedBox(height: TSizes.spaceBtwSections),
                 ],
               ),
             ),
@@ -90,7 +90,7 @@ class CourseScreen extends StatelessWidget {
                             title:
                                 'Khóa học ${categoryController.getCategoryName(selectedCategory)}',
                           ),
-                          CourseListSection(),
+                          const CourseListSection(),
                         ],
                       );
                     }

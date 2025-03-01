@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_elearning_project/config/api_constants.dart';
 import 'package:flutter_elearning_project/features/exam/controller/practice_test_controller.dart';
 import 'package:flutter_elearning_project/features/exam/screens/wigets/test_detail_screen.dart';
 import 'package:flutter_elearning_project/utils/constants/colors.dart';
@@ -13,27 +14,49 @@ class TestListSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.separated(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: 5,
-      separatorBuilder: (_, __) => const SizedBox(height: TSizes.spaceBtwItems),
-      itemBuilder: (context, index) {
-        return TestCard(controller: controller, testId: 'test_$index');
-      },
-    );
+    return Obx(() => ListView.separated(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: controller.tests.length,
+          separatorBuilder: (_, __) =>
+              const SizedBox(height: TSizes.spaceBtwItems),
+          itemBuilder: (context, index) {
+            final test = controller.tests[index];
+            return TestCard(
+              controller: controller,
+              testId: test['id']?.toString() ?? 'unknown',
+              testData: test,
+            );
+          },
+        ));
   }
 }
 
 class TestCard extends StatelessWidget {
   final PracticeTestController controller;
   final String testId;
+  final dynamic testData;
 
   const TestCard({
     super.key,
     required this.controller,
     required this.testId,
+    required this.testData,
   });
+
+  // Hàm helper để lấy màu icon dựa trên độ khó
+  Color getDifficultyColor(String difficulty) {
+    switch (difficulty.toLowerCase()) {
+      case 'easy':
+        return Colors.green;
+      case 'medium':
+        return Colors.orange;
+      case 'hard':
+        return Colors.red;
+      default:
+        return Colors.grey; // Màu mặc định nếu không khớp
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +67,7 @@ class TestCard extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => TestDetailScreen(),
+            builder: (context) => TestDetailScreen(testId: testId),
           ),
         );
       },
@@ -61,10 +84,21 @@ class TestCard extends StatelessWidget {
               width: MediaQuery.of(context).size.width * 0.25,
               height: MediaQuery.of(context).size.width * 0.25,
               decoration: BoxDecoration(
-                color: Colors.blue.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(TSizes.cardRadiusMd),
               ),
-              child: Icon(Iconsax.document, size: 30, color: Colors.blue),
+              child: testData['imageUrl'] != null
+                  ? Image.network(
+                      ApiConstants.getUrl(testData['imageUrl']),
+                      fit: BoxFit.cover,
+                      headers:
+                          ApiConstants.getHeaders(isImage: true), // Thêm header
+                      errorBuilder: (context, error, stackTrace) => const Icon(
+                        Iconsax.document,
+                        size: 30,
+                        color: Colors.blue,
+                      ),
+                    )
+                  : const Icon(Iconsax.document, size: 30, color: Colors.blue),
             ),
             const SizedBox(width: TSizes.spaceBtwItems),
             Expanded(
@@ -72,7 +106,7 @@ class TestCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Đề thi TOEIC ETS 2024 - Test 01',
+                    testData['title'],
                     style: Theme.of(context).textTheme.titleMedium,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -87,16 +121,17 @@ class TestCard extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
-                          color: Colors.green.withOpacity(0.1),
+                          color: Colors.blue.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: const Text(
-                          'TOEIC',
-                          style: TextStyle(color: Colors.green, fontSize: 12),
+                        child: Text(
+                          testData['Category']['name'],
+                          style:
+                              const TextStyle(color: Colors.blue, fontSize: 12),
                         ),
                       ),
                       Text(
-                        '2 phần • 120 phút',
+                        '${testData['parts']} phần • ${testData['duration']} phút',
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ],
@@ -113,7 +148,7 @@ class TestCard extends StatelessWidget {
                           Icon(Iconsax.user, size: 16, color: Colors.grey[600]),
                           const SizedBox(width: TSizes.xs),
                           Text(
-                            '1.2k lượt thi',
+                            '${testData['testCount'] ?? 0} lượt thi',
                             style: Theme.of(context).textTheme.bodySmall,
                           ),
                         ],
@@ -121,11 +156,15 @@ class TestCard extends StatelessWidget {
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Iconsax.level,
-                              size: 16, color: Colors.amber[600]),
+                          Icon(
+                            Iconsax.level,
+                            size: 16,
+                            color: getDifficultyColor(testData[
+                                'difficulty']), // Áp dụng màu dựa trên độ khó
+                          ),
                           const SizedBox(width: TSizes.xs),
                           Text(
-                            'Trung bình',
+                            testData['difficulty'],
                             style: Theme.of(context).textTheme.bodySmall,
                           ),
                         ],
@@ -137,7 +176,7 @@ class TestCard extends StatelessWidget {
                               size: 16, color: Colors.grey[600]),
                           const SizedBox(width: TSizes.xs),
                           Text(
-                            '24',
+                            '${testData['commentCount'] ?? 0}',
                             style: Theme.of(context).textTheme.bodySmall,
                           ),
                         ],
@@ -165,7 +204,7 @@ class TestCard extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => TestDetailScreen(),
+                        builder: (context) => TestDetailScreen(testId: testId),
                       ),
                     );
                   },

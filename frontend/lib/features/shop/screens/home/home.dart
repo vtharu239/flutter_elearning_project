@@ -112,7 +112,7 @@ class HomeScreen extends StatelessWidget {
                       onPressed: () => Get.find<NavigationController>()
                           .selectedIndex
                           .value = 2),
-                  PopularTestsSection(controller: testController),
+                  // PopularTestsSection(controller: testController),
                   const SizedBox(height: TSizes.spaceBtwSections),
 
                   // Quick Stats Section
