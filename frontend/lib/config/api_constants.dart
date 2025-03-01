@@ -2,12 +2,15 @@ class ApiConstants {
   static const String baseUrl =
 
       // - Ngoc
-      'https://clear-tomcat-informally.ngrok-free.app';
+      // 'https://clear-tomcat-informally.ngrok-free.app';
 
-  // -- Xuan
-  // 'https://resolved-sawfish-equally.ngrok-free.app';
+      // -- Xuan
+      'https://resolved-sawfish-equally.ngrok-free.app';
 
   // API endpoints
+
+  static const String imageBaseUrl = baseUrl; // Để load ảnh từ backend
+  
   static const String auth = '/auth';
   static const String email = '/email';
   static const String password = '/password';
@@ -24,14 +27,23 @@ class ApiConstants {
   static const String getProfile = '/profile';
   static const String getAllCourse = '/getAllCourse';
   static const String getAllCategory = '/getAllCategory';
+  static const String getAllTests = '/getAllTests';
+  static const String getTest = '/getTest';
+  static const String getTestDetail = '/getTestDetail';
+  static const String addComment = '/addComment';
+
   // Headers mặc địnhs
-  static Map<String, String> getHeaders() {
-    return {
+  static Map<String, String> getHeaders({bool isImage = false}) {
+    final headers = {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
       'ngrok-skip-browser-warning': 'true',
       'Access-Control-Allow-Origin': '*',
     };
+    if (isImage) {
+      headers.remove('Content-Type'); // Không cần Content-Type cho ảnh
+    }
+    return headers;
   }
 
   // Hàm tiện ích để lấy full URL

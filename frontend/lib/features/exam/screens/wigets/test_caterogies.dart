@@ -12,31 +12,21 @@ class TestCategoriesSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       height: 40,
-      child: ListView(
+      child: Obx(() => ListView(
         scrollDirection: Axis.horizontal,
         children: [
-          Obx(() => CategoryChip(
-                label: 'Tất cả',
-                isSelected: controller.selectedCategory.value == 'all',
-                onSelected: () => controller.setCategory('all'),
-              )),
-          Obx(() => CategoryChip(
-                label: 'TOEIC',
-                isSelected: controller.selectedCategory.value == 'toeic',
-                onSelected: () => controller.setCategory('toeic'),
-              )),
-          Obx(() => CategoryChip(
-                label: 'IELTS',
-                isSelected: controller.selectedCategory.value == 'ielts',
-                onSelected: () => controller.setCategory('ielts'),
-              )),
-          Obx(() => CategoryChip(
-                label: 'HSK 1',
-                isSelected: controller.selectedCategory.value == 'hsk1',
-                onSelected: () => controller.setCategory('hsk1'),
-              )),
+          CategoryChip(
+            label: 'Tất cả',
+            isSelected: controller.selectedCategory.value == 'all',
+            onSelected: () => controller.setCategory('all'),
+          ),
+          ...controller.categories.map((category) => CategoryChip(
+                label: category['name'],
+                isSelected: controller.selectedCategory.value == category['name'],
+                onSelected: () => controller.setCategory(category['name']),
+              )).toList(),
         ],
-      ),
+      )),
     );
   }
 }

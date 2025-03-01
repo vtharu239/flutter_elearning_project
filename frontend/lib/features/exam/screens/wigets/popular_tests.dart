@@ -18,7 +18,7 @@ class PopularTestsSection extends StatelessWidget {
       itemBuilder: (context, index) {
         return TestCard(
           controller: controller,
-          testId: 'test_$index',
+          testId: 'test_$index', testData: null,
         );
       },
     );
