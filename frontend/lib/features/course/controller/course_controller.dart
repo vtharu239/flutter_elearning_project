@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter_elearning_project/config/api_constants.dart';
 import 'package:flutter_elearning_project/features/course/controller/course_model.dart';
 import 'package:get/get.dart';
@@ -50,7 +52,7 @@ class CourseController extends GetxController {
         filterCourses(); // Lọc khóa học sau khi tải xong
       }
     } catch (e) {
-      print('Error fetching courses: $e');
+      log('Error fetching courses: $e');
     } finally {
       isLoading.value = false;
     }

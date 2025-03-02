@@ -3,6 +3,7 @@ import 'package:flutter_elearning_project/config/api_constants.dart';
 import 'package:flutter_elearning_project/features/authentication/screens/password_configuration/verification_code.dart';
 import 'package:flutter_elearning_project/utils/constants/sizes.dart';
 import 'package:flutter_elearning_project/utils/constants/text_strings.dart';
+import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -44,28 +45,31 @@ class _ForgetPasswordScreenState extends State<ForgetPassword> {
 
       if (response.statusCode == 200) {
         otpToken = responseBody['otpToken']; // Lưu otpToken từ response
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => VerificationScreen(
+
+        // Use Get.to instead of Navigator.push
+        Get.to(() => VerificationScreen(
               email: emailController.text,
               otpToken: otpToken!, // Truyền otpToken sang màn hình xác thực
-            ),
-          ),
-        );
+            ));
       } else {
-        setState(() {
-          emailError = responseBody['message'] ?? 'Gửi OTP thất bại.';
-        });
+        if (mounted) {
+          setState(() {
+            emailError = responseBody['message'] ?? 'Gửi OTP thất bại.';
+          });
+        }
       }
     } catch (e) {
-      setState(() {
-        emailError = 'Không thể kết nối đến server.';
-      });
+      if (mounted) {
+        setState(() {
+          emailError = 'Không thể kết nối đến server.';
+        });
+      }
     } finally {
-      setState(() {
-        isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
     }
   }
 

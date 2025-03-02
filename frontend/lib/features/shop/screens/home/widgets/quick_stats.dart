@@ -10,7 +10,7 @@ class QuickStatsSection extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(TSizes.md),
       decoration: BoxDecoration(
-        color: Colors.blue.withOpacity(0.1),
+        color: Colors.blue.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(TSizes.cardRadiusLg),
       ),
       child: Row(

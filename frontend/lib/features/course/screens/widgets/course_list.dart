@@ -41,7 +41,7 @@ class CourseListSection extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
+                const Icon(
                   Icons.search_off,
                   size: 48,
                   color: Colors.grey,

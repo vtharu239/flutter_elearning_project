@@ -1,7 +1,8 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:flutter_elearning_project/config/api_constants.dart';
 import 'package:flutter_elearning_project/features/authentication/screens/login/login.dart';
-import 'package:flutter_elearning_project/models/User.dart';
+import 'package:flutter_elearning_project/models/user.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -40,7 +41,7 @@ class AuthController extends GetxController {
         await logout();
       }
     } catch (e) {
-      print('Error refreshing user data: $e');
+      log('Error refreshing user data: $e');
     }
   }
 

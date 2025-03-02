@@ -21,8 +21,9 @@ class FilterSortSection extends StatelessWidget {
         borderRadius: BorderRadius.circular(TSizes.cardRadiusMd),
         boxShadow: [
           BoxShadow(
-            color:
-                isDarkMode ? Colors.grey[700]! : Colors.grey.withOpacity(0.1),
+            color: isDarkMode
+                ? Colors.grey[700]!
+                : Colors.grey.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, 5),
           ),

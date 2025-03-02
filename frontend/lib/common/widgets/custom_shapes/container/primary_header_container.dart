@@ -5,7 +5,8 @@ import 'package:flutter_elearning_project/utils/constants/colors.dart';
 
 class TPrimaryHeaderContainer extends StatelessWidget {
   const TPrimaryHeaderContainer({
-    super.key, required this.child,
+    super.key,
+    required this.child,
   });
 
   final Widget child;
@@ -15,13 +16,21 @@ class TPrimaryHeaderContainer extends StatelessWidget {
     return TCurvedEdgeWidget(
       child: Container(
         color: TColors.primary,
-      
+
         /// -- [size.isFinite': is not true in Stack] error occurred -> Read README.md file at [DESIGN ERRORS] # 1
         child: Stack(
           children: [
             /// -- Background Custom Shapes
-            Positioned(top: -150, right: -250, child: TCircularContainer(backgroundColor: TColors.textWhite.withOpacity(0.1))),
-            Positioned(top: 10, right: -300, child: TCircularContainer(backgroundColor: TColors.textWhite.withOpacity(0.1))),
+            Positioned(
+                top: -150,
+                right: -250,
+                child: TCircularContainer(
+                    backgroundColor: TColors.textWhite.withValues(alpha: 0.1))),
+            Positioned(
+                top: 10,
+                right: -300,
+                child: TCircularContainer(
+                    backgroundColor: TColors.textWhite.withValues(alpha: 0.1))),
             child,
           ],
         ),

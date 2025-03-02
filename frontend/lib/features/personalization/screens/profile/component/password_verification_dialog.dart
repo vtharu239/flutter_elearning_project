@@ -12,7 +12,7 @@ class PasswordVerificationDialog extends StatefulWidget {
 
 class _PasswordVerificationDialogState extends State<PasswordVerificationDialog> {
   final TextEditingController _passwordController = TextEditingController();
-  bool _isLoading = false;
+  final bool _isLoading = false;
   bool _obscureText = true;
 
   @override

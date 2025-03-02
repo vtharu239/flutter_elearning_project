@@ -32,7 +32,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
   }
 
   bool _isStrongPassword(String password) {
-    final minLength = 8;
+    const minLength = 8;
     final hasUpperCase = RegExp(r'[A-Z]').hasMatch(password);
     final hasLowerCase = RegExp(r'[a-z]').hasMatch(password);
     final hasNumbers = RegExp(r'\d').hasMatch(password);

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_elearning_project/config/api_constants.dart';
 import 'package:flutter_elearning_project/features/personalization/controllers/auth_controller.dart';
@@ -470,7 +472,7 @@ class TestDetailScreen extends StatelessWidget {
                     : const AssetImage('assets/images/user.png') as ImageProvider,
                 backgroundColor: Colors.grey[300],
                 onBackgroundImageError: (error, stackTrace) {
-                  print('Error loading avatar: $error');
+                  log('Error loading avatar: $error');
                 },
               ),
               Text(username),
@@ -497,7 +499,7 @@ class TestDetailScreen extends StatelessWidget {
                   comment['User']
                       ['avatarUrl'], // Truyền avatarUrl từ dữ liệu API
                 ))
-            .toList(),
+            ,
         const SizedBox(height: 16),
         SizedBox(
           width: double.infinity,

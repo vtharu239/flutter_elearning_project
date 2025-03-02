@@ -48,32 +48,43 @@ class _VerificationScreenState extends State<VerificationScreen> {
         }),
       );
 
-     final responseBody = jsonDecode(response.body);
-     
+      final responseBody = jsonDecode(response.body);
+
       if (response.statusCode == 200) {
-  final resetToken = responseBody['resetToken']; // Lấy resetToken từ response
-  Navigator.pushReplacement(
-    context,
-    MaterialPageRoute(
-      builder: (context) => ResetPassword(
-        email: widget.email,
-        resetToken: resetToken, // Truyền resetToken
-      ),
-    ),
-  );
-} else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(responseBody['message'] ?? 'Xác thực thất bại')),
-        );
+        final resetToken = responseBody['resetToken'];
+
+        // Kiểm tra widget có còn mounted trước khi điều hướng
+        if (mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ResetPassword(
+                email: widget.email,
+                resetToken: resetToken,
+              ),
+            ),
+          );
+        }
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: Text(responseBody['message'] ?? 'Xác thực thất bại')),
+          );
+        }
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Lỗi kết nối: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Lỗi kết nối: $e')),
+        );
+      }
     } finally {
-      setState(() {
-        isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
     }
   }
 

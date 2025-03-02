@@ -29,7 +29,7 @@ class _ResetPasswordState extends State<ResetPassword> {
   bool _confirmPasswordVisible = false;
   bool _isLoading = false;
   String? _passwordStrengthMessage;
-  Color _passwordStrengthColor = Colors.red;
+  final Color _passwordStrengthColor = Colors.red;
 
   // Kiểm tra độ mạnh của mật khẩu
   bool _isPasswordStrong(String password) {
@@ -94,31 +94,37 @@ class _ResetPasswordState extends State<ResetPassword> {
 
     // Validation cơ bản
     if (newPassword.isEmpty || confirmPassword.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Vui lòng nhập đầy đủ thông tin")),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Vui lòng nhập đầy đủ thông tin")),
+        );
+      }
       return;
     }
 
     // Kiểm tra độ mạnh mật khẩu
     if (!_isPasswordStrong(newPassword)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-              "Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt"),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+                "Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt"),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
       return;
     }
 
     if (newPassword != confirmPassword) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Mật khẩu không khớp"),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Mật khẩu không khớp"),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
       return;
     }
 
@@ -140,33 +146,45 @@ class _ResetPasswordState extends State<ResetPassword> {
       final responseData = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Đặt lại mật khẩu thành công!'),
-            backgroundColor: Colors.green,
-          ),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Đặt lại mật khẩu thành công!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+
         await Future.delayed(const Duration(seconds: 2));
-        Get.offAll(() => const LoginScreen());
+
+        if (mounted) {
+          Get.offAll(() => const LoginScreen());
+        }
       } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(responseData['message'] ?? 'Có lỗi xảy ra!'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(responseData['message'] ?? 'Có lỗi xảy ra!'),
+            content: Text('Đã xảy ra lỗi: $e'),
             backgroundColor: Colors.red,
           ),
         );
       }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Đã xảy ra lỗi: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
