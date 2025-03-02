@@ -127,7 +127,7 @@ class CoursePrice extends StatelessWidget {
 
     for (int i = priceStr.length - 1; i >= 0; i--) {
       if (count == 3 && i != 0) {
-        result = '.' + result;
+        result = '.$result';
         count = 0;
       }
       result = priceStr[i] + result;

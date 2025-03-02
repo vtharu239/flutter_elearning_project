@@ -15,10 +15,10 @@ class CourseScheduleCard extends StatefulWidget {
   });
 
   @override
-  _CourseScheduleCardState createState() => _CourseScheduleCardState();
+  CourseScheduleCardState createState() => CourseScheduleCardState();
 }
 
-class _CourseScheduleCardState extends State<CourseScheduleCard> {
+class CourseScheduleCardState extends State<CourseScheduleCard> {
   late List<bool> _taskCompleted;
 
   @override

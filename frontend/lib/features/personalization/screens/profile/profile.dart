@@ -202,7 +202,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               top: 10,
                               right: 10,
                               child: CircleAvatar(
-                                backgroundColor: Colors.white.withOpacity(0.8),
+                                backgroundColor: Colors.white.withValues(alpha: 0.8),
                                 child: IconButton(
                                   icon: const Icon(Iconsax.edit,
                                       color: Colors.blue),

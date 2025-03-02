@@ -58,7 +58,6 @@ class _TLoginFormState extends State<TLoginForm> {
         Get.snackbar('Lỗi', error['message'] ?? 'Đăng nhập thất bại!');
       }
     } catch (e) {
-      print('Login error: $e');
       Get.snackbar('Lỗi', 'Đã có lỗi xảy ra. Vui lòng thử lại sau.');
     } finally {
       setState(() => _isLoading = false);

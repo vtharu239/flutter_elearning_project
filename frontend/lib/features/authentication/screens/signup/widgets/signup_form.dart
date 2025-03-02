@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_elearning_project/config/api_constants.dart';
 import 'package:flutter_elearning_project/features/authentication/screens/signup/verify_email.dart';
@@ -80,7 +81,7 @@ class _TSignupFormState extends State<TSignupForm> {
           throw Exception('Lỗi kiểm tra thông tin từ server');
         }
       } catch (e) {
-        print('Error during API call: $e');
+        log('Error during API call: $e', name: 'checkUsernameAndEmail');
       } finally {
         setState(() {
           if (usernameOnly) _isCheckingUsername = false;
@@ -127,15 +128,15 @@ class _TSignupFormState extends State<TSignupForm> {
           }
         });
 
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
+        // Use Get.dialog instead of showDialog
+        Get.dialog(
+          AlertDialog(
             title: const Text('Lỗi'),
             content:
                 Text(errorBody['message'] ?? 'Đã xảy ra lỗi không xác định.'),
             actions: [
               TextButton(
-                onPressed: () => Navigator.pop(context),
+                onPressed: () => Get.back(),
                 child: const Text('OK'),
               ),
             ],
@@ -143,14 +144,14 @@ class _TSignupFormState extends State<TSignupForm> {
         );
       }
     } catch (e) {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
+      // Use Get.dialog instead of showDialog
+      Get.dialog(
+        AlertDialog(
           title: const Text('Lỗi kết nối'),
           content: Text('Không thể kết nối đến server.\nLỗi chi tiết: $e'),
           actions: [
             TextButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => Get.back(),
               child: const Text('OK'),
             ),
           ],

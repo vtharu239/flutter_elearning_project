@@ -24,7 +24,7 @@ class TestCategoriesSection extends StatelessWidget {
                 label: category['name'],
                 isSelected: controller.selectedCategory.value == category['name'],
                 onSelected: () => controller.setCategory(category['name']),
-              )).toList(),
+              )),
         ],
       )),
     );
@@ -63,7 +63,7 @@ class CategoryChip extends StatelessWidget {
         selected: isSelected,
         onSelected: (_) => onSelected(),
         backgroundColor: isDarkMode ? Colors.grey[800] : Colors.grey[200], // Nền khi chưa chọn
-        selectedColor: isDarkMode ? Colors.blue[900] : Colors.blue.withOpacity(0.2), // Nền khi chọn
+        selectedColor: isDarkMode ? Colors.blue[900] : Colors.blue.withValues(alpha: 0.2), // Nền khi chọn
         checkmarkColor: isDarkMode ? Colors.blue[300] : Colors.blue[800], // Màu dấu check
       ),
     );

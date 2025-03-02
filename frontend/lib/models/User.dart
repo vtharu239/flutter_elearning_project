@@ -29,7 +29,7 @@ class User {
       fullName: json['fullName'],
       gender: json['gender'],
       dateOfBirth: json['dateOfBirth'],
-      phoneNo: json['gender'],
+      phoneNo: json['phoneNo'],
       avatarUrl: json['avatarUrl'],
       coverImageUrl: json['coverImageUrl'],
     );

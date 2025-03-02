@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_elearning_project/common/styles/section_heading.dart';
 import 'package:flutter_elearning_project/common/widgets/custom_shapes/container/primary_header_container.dart';
@@ -70,7 +72,7 @@ class _SettingScreenState extends State<SettingScreen>
     if (imageUrl == null || imageUrl.isEmpty) return defaultImage;
 
     final processedUrl = _processImageUrl(imageUrl);
-    print('Loading image from URL: $processedUrl');
+    log('Loading image from URL: $processedUrl');
 
     return Image.network(
       processedUrl!,
@@ -79,8 +81,8 @@ class _SettingScreenState extends State<SettingScreen>
       fit: fit,
       headers: ApiConstants.getHeaders(),
       errorBuilder: (context, error, stackTrace) {
-        print('Error loading image: $error');
-        print('Stack trace: $stackTrace');
+        log('Error loading image: $error');
+        log('Stack trace: $stackTrace');
         return defaultImage;
       },
     );
@@ -127,7 +129,7 @@ class _SettingScreenState extends State<SettingScreen>
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 20),
                           decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.35),
+                            color: Colors.black.withValues(alpha: 0.35),
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,

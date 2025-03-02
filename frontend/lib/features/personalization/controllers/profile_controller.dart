@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_elearning_project/config/api_constants.dart';
@@ -82,7 +83,7 @@ class ProfileController extends GetxController {
         throw jsonDecode(response.body)['message'] ?? 'Cập nhật ảnh thất bại';
       }
     } catch (e) {
-      print('Upload error: $e');
+      log('Upload error: $e');
       errorMessage.value = e.toString();
       Get.snackbar('Lỗi', e.toString(), snackPosition: SnackPosition.BOTTOM);
     } finally {
@@ -133,7 +134,7 @@ class ProfileController extends GetxController {
       // Force rebuild widget
       Get.forceAppUpdate();
     } catch (e) {
-      print('Error in pickAndUploadImage: $e');
+      log('Error in pickAndUploadImage: $e');
       Get.snackbar('Lỗi', e.toString(), snackPosition: SnackPosition.BOTTOM);
     }
   }

@@ -11,10 +11,10 @@ class CategoryCoursesScreen extends StatelessWidget {
   final String categoryName;
 
   const CategoryCoursesScreen({
-    Key? key,
+    super.key,
     required this.categoryId,
     required this.categoryName,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +44,7 @@ class CategoryCoursesScreen extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
+                const Icon(
                   Icons.search_off,
                   size: 72,
                   color: Colors.grey,

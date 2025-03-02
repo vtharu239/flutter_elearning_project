@@ -45,7 +45,7 @@ class SignupScreen extends StatelessWidget {
               const SizedBox(height: TSizes.spaceBtwSections),
 
               /// Social Buttons
-              TSocialButtons(),
+              const TSocialButtons(),
             ],
           ),
         ),
