@@ -35,7 +35,6 @@ class LatestTestResultsSection extends StatelessWidget {
               date: '02/01/2025',
               duration: '1:00:00',
               score: '28/39',
-              imageUrl: TImages.toeicTest, // Có ảnh
             ),
             TestResultDetailCard(
               testName: 'Practice Test 3',
@@ -43,7 +42,6 @@ class LatestTestResultsSection extends StatelessWidget {
               date: '02/01/2025',
               duration: '1:00:00',
               score: '28/39',
-              imageUrl: TImages.toeicTest, // Có ảnh
             ),
           ],
         ),
@@ -118,8 +116,9 @@ class TestResultDetailCard extends StatelessWidget {
               width: MediaQuery.of(context).size.width * 0.2, // 20% màn hình
               height: MediaQuery.of(context).size.width * 0.2, // 20% màn hình
               decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: NetworkImage(imageUrl!), // Hiển thị ảnh từ URL
+                image: const DecorationImage(
+                  image: AssetImage(
+                      'assets/images/content/toeic_test.png'), // Hiển thị ảnh từ URL
                   fit: BoxFit.cover,
                 ),
                 borderRadius: BorderRadius.circular(TSizes.cardRadiusMd),

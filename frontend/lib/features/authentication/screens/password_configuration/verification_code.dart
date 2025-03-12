@@ -1,20 +1,28 @@
 import 'dart:convert';
+import 'dart:developer';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_elearning_project/config/api_constants.dart';
 import 'package:flutter_elearning_project/features/authentication/screens/password_configuration/reset_password.dart';
+import 'package:flutter_elearning_project/features/authentication/screens/password_configuration/widgets/verification_code_header.dart';
 import 'package:flutter_elearning_project/utils/constants/sizes.dart';
 import 'package:flutter_elearning_project/utils/constants/text_strings.dart';
+import 'package:get/get.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:http/http.dart' as http;
 
 class VerificationScreen extends StatefulWidget {
-  final String email;
-  final String otpToken;
+  final String identifier;
+  final String? otpToken; // Dùng cho email
+  final String? verificationId; // Dùng cho phone
+  final bool isEmail;
 
   const VerificationScreen({
     super.key,
-    required this.email,
-    required this.otpToken,
+    required this.identifier,
+    this.otpToken,
+    this.verificationId,
+    required this.isEmail,
   });
 
   @override
@@ -27,107 +35,123 @@ class _VerificationScreenState extends State<VerificationScreen> {
 
   Future<void> verifyOTP() async {
     if (verificationCode.length != 6) {
-      // Show an error message if OTP is not valid
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Vui lòng nhập mã OTP 6 chữ số hợp lệ')),
       );
       return;
     }
 
-    setState(() {
-      isLoading = true;
-    });
+    setState(() => isLoading = true);
 
     try {
-      final response = await http.post(
-        Uri.parse(ApiConstants.getUrl(ApiConstants.verifyOTP)),
-        headers: ApiConstants.getHeaders(),
-        body: jsonEncode({
-          'otpToken': widget.otpToken,
-          'otp': verificationCode,
-        }),
-      );
+      if (widget.isEmail) {
+        // Xác minh OTP email qua backend
+        final response = await http.post(
+          Uri.parse(ApiConstants.getUrl(ApiConstants.verifyOTP)),
+          headers: ApiConstants.getHeaders(),
+          body: jsonEncode({
+            'otpToken': widget.otpToken,
+            'otp': verificationCode,
+          }),
+        );
 
-      final responseBody = jsonDecode(response.body);
+        if (!mounted) return;
 
-      if (response.statusCode == 200) {
-        final resetToken = responseBody['resetToken'];
+        final responseBody = jsonDecode(response.body);
+        if (response.statusCode == 200) {
+          final resetToken = responseBody['resetToken'];
+          Get.snackbar('Thành công',
+              'Bạn đã xác thực mã OTP thành công. Hãy tiến hành đặt lại mật khẩu!');
 
-        // Kiểm tra widget có còn mounted trước khi điều hướng
-        if (mounted) {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
               builder: (context) => ResetPassword(
-                email: widget.email,
+                identifier: widget.identifier,
                 resetToken: resetToken,
+                isEmail: true,
               ),
             ),
           );
-        }
-      } else {
-        if (mounted) {
+        } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
                 content: Text(responseBody['message'] ?? 'Xác thực thất bại')),
           );
         }
+      } else {
+        // Xác minh OTP phone qua Firebase
+        final credential = PhoneAuthProvider.credential(
+          verificationId: widget.verificationId!,
+          smsCode: verificationCode,
+        );
+        final userCredential =
+            await FirebaseAuth.instance.signInWithCredential(credential);
+
+        if (!mounted) return;
+
+        if (userCredential.user != null) {
+          final idToken = await userCredential.user!.getIdToken();
+          log('Firebase idToken: $idToken');
+
+          if (!mounted) return;
+
+          Get.snackbar('Thành công',
+              'Bạn đã xác thực mã OTP thành công. Hãy tiến hành đặt lại mật khẩu!');
+
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ResetPassword(
+                identifier: widget.identifier,
+                resetToken: idToken!,
+                isEmail: false,
+              ),
+            ),
+          );
+        }
       }
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Lỗi kết nối: $e')),
-        );
-      }
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Lỗi: $e')),
+      );
     } finally {
-      if (mounted) {
-        setState(() {
-          isLoading = false;
-        });
-      }
+      if (mounted) setState(() => isLoading = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final darkMode = Theme.of(context).brightness == Brightness.dark;
-
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back,
-            color: darkMode
-                ? Colors.white
-                : Colors.black, // Màu trắng cho dark mode, đen cho light mode
+            color: darkMode ? Colors.white : Colors.black,
           ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          onPressed: () => Navigator.pop(context),
         ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(TSizes.defaultSpace),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            /// Headings
-            Text(TTexts.verification,
-                style: Theme.of(context).textTheme.headlineMedium),
+            /// Logo, Title & Sub Title
+            const TVerificationCodeHeader(),
             const SizedBox(height: TSizes.spaceBtwItems),
-            Text(TTexts.verificationSubTitle,
-                style: Theme.of(context).textTheme.labelMedium),
+            Text(
+                'Nhập mã OTP đã gửi đến ${widget.isEmail ? 'email' : 'số điện thoại'} ${widget.identifier}',
+                style: Theme.of(context).textTheme.labelLarge),
             const SizedBox(height: TSizes.spaceBtwSections),
-
-            /// Verification Code Input
             PinCodeTextField(
               appContext: context,
               length: 6,
-              onChanged: (value) {
-                setState(() {
-                  verificationCode = value;
-                });
-              },
+              onChanged: (value) => setState(() => verificationCode = value),
               pinTheme: PinTheme(
                 shape: PinCodeFieldShape.box,
                 borderRadius: BorderRadius.circular(8),
@@ -137,8 +161,6 @@ class _VerificationScreenState extends State<VerificationScreen> {
               ),
             ),
             const SizedBox(height: TSizes.spaceBtwSections),
-
-            /// Confirm Button
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(

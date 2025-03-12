@@ -29,10 +29,59 @@
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
 
-  <title>flutter_elearning_project</title>
+  <title>Elearning App</title>
+  <style>
+    /* Ẩn grecaptcha-badge nhưng giữ chức năng */
+    .grecaptcha-badge {
+      visibility: hidden !important; /* Ẩn giao diện nhưng giữ không gian */
+      width: 0 !important; /* Thu nhỏ kích thước */
+      height: 0 !important;
+      overflow: hidden !important;
+    }
+    /* Đảm bảo textarea phản hồi vẫn hoạt động */
+    .grecaptcha-badge .g-recaptcha-response {
+      display: block !important; /* Giữ textarea hoạt động */
+      position: absolute;
+      width: 0;
+      height: 0;
+      opacity: 0;
+    }
+  </style>
   <link rel="manifest" href="manifest.json">
 </head>
 <body>
   <script src="flutter_bootstrap.js" async></script>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBi6mTo6RibXltbhLxBbU375GsKY0vhe7s",
+      authDomain: "e-learning-app-533f4.firebaseapp.com",
+      projectId: "e-learning-app-533f4",
+      storageBucket: "e-learning-app-533f4.firebasestorage.app",
+      messagingSenderId: "952393473776",
+      appId: "1:952393473776:web:2c84b9dcdb533a47162c35",
+      measurementId: "G-P1N05YEQ7Z"
+    };
+    firebase.initializeApp(firebaseConfig);
+
+    // Khởi tạo Facebook SDK
+    window.fbAsyncInit = function() {
+      FB.init({
+        appId: 'YOUR_FACEBOOK_APP_ID',
+        cookie: true,
+        xfbml: true,
+        version: 'v20.0'
+      });
+    };
+    (function(d, s, id){
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) {return;}
+      js = d.createElement(s); js.id = id;
+      js.src = "https://connect.facebook.net/en_US/sdk.js";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+  </script>
 </body>
 </html>

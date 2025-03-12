@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "952393473776",
+    "project_id": "e-learning-app-533f4",
+    "storage_bucket": "e-learning-app-533f4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:952393473776:android:3d779d7615ec47cb162c35",
+        "android_client_info": {
+          "package_name": "com.example.flutter_elearning_project"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "952393473776-gbhm872etgniav3lgn56o4s6bi27su75.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.flutter_elearning_project",
+            "certificate_hash": "9413dd5550809cf9b64d0f18b66f67b1d167ad69"
+          }
+        },
+        {
+          "client_id": "952393473776-cv6ejg51lma29pndlc671up2h1s2500r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBTB8nICbJE1s0iVkzA8_D7wQ3Tr7p9NbU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "952393473776-cv6ejg51lma29pndlc671up2h1s2500r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

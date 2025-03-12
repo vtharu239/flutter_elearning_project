@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_elearning_project/utils/constants/colors.dart';
 import 'package:flutter_elearning_project/utils/constants/sizes.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -14,11 +15,14 @@ class TImageOptionsSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.all(TSizes.defaultSpace),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(TSizes.cardRadiusLg)),
+      decoration: BoxDecoration(
+        color: isDarkMode ? TColors.darkerGrey : Colors.white,
+        borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(TSizes.cardRadiusLg)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
