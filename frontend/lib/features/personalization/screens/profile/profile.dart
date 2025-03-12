@@ -4,13 +4,19 @@ import 'package:flutter_elearning_project/common/widgets/appbar/appbar.dart';
 import 'package:flutter_elearning_project/config/api_constants.dart';
 import 'package:flutter_elearning_project/features/personalization/controllers/auth_controller.dart';
 import 'package:flutter_elearning_project/features/personalization/controllers/profile_controller.dart';
-import 'package:flutter_elearning_project/features/personalization/screens/profile/component/change_email_dialog.dart';
-import 'package:flutter_elearning_project/features/personalization/screens/profile/component/change_password_dialog.dart';
 import 'package:flutter_elearning_project/features/personalization/screens/profile/component/edit_date_dialog.dart';
 import 'package:flutter_elearning_project/features/personalization/screens/profile/component/edit_gender_dialog.dart';
+import 'package:flutter_elearning_project/features/personalization/screens/profile/component/email_dialog.dart';
+import 'package:flutter_elearning_project/features/personalization/screens/profile/component/emailotp_for_change_password.dart';
+import 'package:flutter_elearning_project/features/personalization/screens/profile/component/phone_dialog.dart';
+import 'package:flutter_elearning_project/features/personalization/screens/profile/component/phoneotp_for_change_password.dart';
 import 'package:flutter_elearning_project/features/personalization/screens/profile/component/profile_dialog.dart';
 import 'package:flutter_elearning_project/features/personalization/screens/profile/component/image_options_sheet.dart';
 import 'package:flutter_elearning_project/features/personalization/screens/profile/component/image_viewer_dialog.dart';
+import 'package:flutter_elearning_project/features/personalization/screens/profile/component/unlink_email_screen.dart';
+import 'package:flutter_elearning_project/features/personalization/screens/profile/component/unlink_phone_screen.dart';
+import 'package:flutter_elearning_project/features/personalization/screens/profile/component/update_email_screen.dart';
+import 'package:flutter_elearning_project/features/personalization/screens/profile/component/update_phone_screen.dart';
 import 'package:flutter_elearning_project/features/personalization/screens/profile/widgets/profile_menu.dart';
 import 'package:flutter_elearning_project/utils/constants/image_strings.dart';
 import 'package:flutter_elearning_project/utils/constants/sizes.dart';
@@ -39,7 +45,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           context: context,
           builder: (context) => EditFieldDialog(
             title: 'Họ và tên',
-            initialValue: user.fullName.isEmpty ? null : user.fullName,
+            initialValue: user.fullName!.isEmpty ? null : user.fullName,
             onSave: (value) => profileController.updateProfile(fullName: value),
           ),
         );
@@ -50,29 +56,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
           context: context,
           builder: (context) => EditFieldDialog(
             title: 'Tên người dùng',
-            initialValue: user.username.isEmpty ? null : user.username,
+            initialValue: user.username!.isEmpty ? null : user.username,
             onSave: (value) => profileController.updateProfile(username: value),
           ),
         );
         break;
 
       case 'phoneNo':
-        showDialog(
-          context: context,
-          builder: (context) => EditFieldDialog(
-            title: 'Số điện thoại',
-            initialValue: user.phoneNo.isEmpty ? null : user.phoneNo,
-            keyboardType: TextInputType.phone,
-            onSave: (value) => profileController.updateProfile(phoneNo: value),
-          ),
-        );
+        _showPhoneDialog();
         break;
 
       case 'gender':
         showDialog(
           context: context,
           builder: (context) => EditGenderDialog(
-            initialValue: user.gender,
+            initialValue: user.gender != null ? user.gender! : '/',
             onSave: (value) => profileController.updateProfile(gender: value),
           ),
         );
@@ -91,6 +89,62 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         );
         break;
+    }
+  }
+
+  void _showPhoneDialog() {
+    final user = authController.user.value;
+    if (user == null) return;
+
+    if (user.phoneNo == null || user.phoneNo!.isEmpty) {
+      // Chưa có số điện thoại -> Chuyển thẳng đến trang cập nhật
+      Get.to(() => const UpdatePhoneScreen());
+    } else {
+      // Đã có số điện thoại -> Hiển thị popup
+      showDialog(
+        context: context,
+        builder: (context) => PhoneDialog(
+          phoneNo: user.phoneNo!,
+          onChange: () => Get.to(() => const UpdatePhoneScreen()),
+          onUnlink: () =>
+              Get.to(() => UnlinkPhoneScreen(phoneNo: user.phoneNo!)),
+        ),
+      );
+    }
+  }
+
+  void _showEmailDialog() {
+    final user = authController.user.value;
+    if (user == null) return;
+
+    if (user.email == null || user.email!.isEmpty) {
+      // Chưa có email -> Chuyển thẳng đến trang cập nhật
+      Get.to(() => const UpdateEmailScreen());
+    } else {
+      // Đã có email -> Hiển thị popup
+      showDialog(
+        context: context,
+        builder: (context) => EmailDialog(
+          email: user.email!,
+          onChange: () => Get.to(() => const UpdateEmailScreen()),
+          onUnlink: () => Get.to(() => UnlinkEmailScreen(email: user.email!)),
+        ),
+      );
+    }
+  }
+
+  void _initiatePasswordChange() {
+    final user = authController.user.value;
+    if (user == null) return;
+
+    // Ưu tiên số điện thoại nếu có, nếu không thì dùng email
+    if (user.phoneNo != null && user.phoneNo!.isNotEmpty) {
+      Get.to(() =>
+          InitiatePhoneOtpForPasswordChangeScreen(phoneNo: user.phoneNo!));
+    } else if (user.email != null && user.email!.isNotEmpty) {
+      Get.to(() => InitiateEmailOtpForPasswordChangeScreen(email: user.email!));
+    } else {
+      Get.snackbar('Lỗi', 'Không có email hoặc số điện thoại để gửi OTP!');
     }
   }
 
@@ -132,33 +186,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
     profileController.pickAndUploadImage(type);
   }
 
-  // Thêm phương thức hiển thị dialog đổi mật khẩu
-  void _showChangePasswordDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => const ChangePasswordDialog(),
-    );
-  }
-
-  // Thêm phương thức hiển thị dialog đổi email
-  void _showChangeEmailDialog() {
-    final user = authController.user.value;
-    if (user == null) return;
-
-    showDialog(
-      context: context,
-      builder: (context) => ChangeEmailDialog(currentEmail: user.email),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return GetBuilder<ProfileController>(
       builder: (controller) => Scaffold(
-        appBar:
-            const TAppBar(showBackArrow: true, title: Text('Hồ sơ cá nhân')),
+        appBar: const TAppBar(
+          showBackArrow: true,
+          title: Text('Hồ sơ cá nhân'),
+        ),
         backgroundColor: isDarkMode ? Colors.grey[850] : Colors.white,
 
         /// -- Body
@@ -202,7 +239,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               top: 10,
                               right: 10,
                               child: CircleAvatar(
-                                backgroundColor: Colors.white.withValues(alpha: 0.8),
+                                backgroundColor:
+                                    Colors.white.withValues(alpha: 0.8),
                                 child: IconButton(
                                   icon: const Icon(Iconsax.edit,
                                       color: Colors.blue),
@@ -310,12 +348,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     children: [
                       TProfileMenu(
                         title: 'Họ và tên',
-                        value: user.fullName,
+                        value: user.fullName ?? 'Chưa cập nhật',
                         onPressed: () => _showEditDialog(context, 'fullName'),
                       ),
                       TProfileMenu(
                         title: 'Tên người dùng',
-                        value: user.username,
+                        value: user.username ?? 'Chưa cập nhật',
                         onPressed: () => _showEditDialog(context, 'username'),
                       ),
                       const SizedBox(height: TSizes.spaceBtwItems),
@@ -328,21 +366,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       const SizedBox(height: TSizes.spaceBtwItems),
                       TProfileMenu(
                         title: 'E-mail',
-                        value: user.email,
-                        onPressed: _showChangeEmailDialog,
+                        value: user.email ?? 'Chưa cập nhật',
+                        onPressed: _showEmailDialog,
                       ),
                       TProfileMenu(
                         title: 'Số điện thoại',
-                        value: user.phoneNo,
-                        onPressed: () => _showEditDialog(context, 'phoneNo'),
+                        value: user.phoneNo != null
+                            ? user.phoneNo!
+                            : 'Chưa cập nhật',
+                        onPressed: _showPhoneDialog,
                       ),
                       TProfileMenu(
                         title: 'Giới tính',
-                        value: user.gender == 'male'
-                            ? 'Nam'
-                            : user.gender == 'female'
-                                ? 'Nữ'
-                                : 'Khác',
+                        value: user.gender != null
+                            ? (user.gender == 'male'
+                                ? 'Nam'
+                                : user.gender == 'female'
+                                    ? 'Nữ'
+                                    : 'Khác')
+                            : 'Chưa cập nhật',
                         onPressed: () => _showEditDialog(context, 'gender'),
                       ),
                       TProfileMenu(
@@ -364,7 +406,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   children: [
                     Expanded(
                       child: ElevatedButton.icon(
-                        onPressed: _showChangePasswordDialog,
+                        onPressed: _initiatePasswordChange,
                         icon: const Icon(Icons.lock_outline),
                         label: const Text('Đổi mật khẩu'),
                       ),

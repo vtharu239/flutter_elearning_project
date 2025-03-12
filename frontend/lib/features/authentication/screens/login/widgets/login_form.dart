@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_elearning_project/config/api_constants.dart';
 import 'package:flutter_elearning_project/features/authentication/screens/password_configuration/forget_password.dart';
@@ -20,12 +21,13 @@ class TLoginForm extends StatefulWidget {
 
 class _TLoginFormState extends State<TLoginForm> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
+  final _identifierController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _rememberMe = false;
   bool _isPasswordVisible = false;
   bool _isLoading = false;
 
+  // Đăng nhập thông thường bằng email/phone
   Future<void> _login() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -33,13 +35,15 @@ class _TLoginFormState extends State<TLoginForm> {
 
     try {
       final response = await http.post(
-        Uri.parse(ApiConstants.getUrl(ApiConstants.loginEndpoint)),
+        Uri.parse(ApiConstants.getUrl(ApiConstants.login)),
         headers: ApiConstants.getHeaders(),
         body: jsonEncode({
-          'email': _emailController.text.trim(),
+          'identifier': _identifierController.text.trim(),
           'password': _passwordController.text,
         }),
       );
+
+      log('Login response: ${response.statusCode} - ${response.body}');
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -74,21 +78,15 @@ class _TLoginFormState extends State<TLoginForm> {
           children: [
             // Email
             TextFormField(
-              controller: _emailController,
-              keyboardType: TextInputType.emailAddress,
+              controller: _identifierController,
               decoration: const InputDecoration(
                 prefixIcon: Icon(Iconsax.direct_right),
-                labelText: TTexts.email,
+                labelText: 'Email hoặc số điện thoại',
               ),
               validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Vui lòng nhập email';
-                }
-                if (!value.contains('@')) {
-                  return 'Email không hợp lệ';
-                }
-                return null;
-              },
+              if (value == null || value.isEmpty) return 'Vui lòng nhập email hoặc số điện thoại';
+              return null;
+            },
             ),
             const SizedBox(height: TSizes.spaceBtwInputFields),
 
@@ -174,7 +172,7 @@ class _TLoginFormState extends State<TLoginForm> {
 
   @override
   void dispose() {
-    _emailController.dispose();
+    _identifierController.dispose();
     _passwordController.dispose();
     super.dispose();
   }

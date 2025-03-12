@@ -27,18 +27,25 @@ class TAppBar extends StatelessWidget implements PreferredSizeWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(
           horizontal:
-              TSizes.md), // symetric horizontal: đối xứng theo chiều ngang
+              TSizes.iconXs), // symetric horizontal: đối xứng theo chiều ngang
       child: AppBar(
         automaticallyImplyLeading: false, //// Ngăn mũi tên quay lại
         leading: showBackArrow
             ? IconButton(
-                color: darkMode ? Colors.white : Colors.black, // Màu trắng cho dark mode, đen cho light mode
+                color: darkMode
+                    ? Colors.white
+                    : Colors
+                        .black, // Màu trắng cho dark mode, đen cho light mode
                 onPressed: () => Get.back(),
                 icon: const Icon(Iconsax.arrow_left))
             : leadingIcon != null
                 ? IconButton(
-                    color: darkMode ? Colors.white : Colors.black, // Màu trắng cho dark mode, đen cho light mode
-                    onPressed: leadingOnPressed, icon: Icon(leadingIcon))
+                    color: darkMode
+                        ? Colors.white
+                        : Colors
+                            .black, // Màu trắng cho dark mode, đen cho light mode
+                    onPressed: leadingOnPressed,
+                    icon: Icon(leadingIcon))
                 : null,
         title: title,
         actions: actions,

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_elearning_project/config/api_constants.dart';
 import 'package:flutter_elearning_project/features/authentication/screens/login/login.dart';
+import 'package:flutter_elearning_project/features/authentication/screens/password_configuration/widgets/reset_password_header.dart';
 import 'package:flutter_elearning_project/utils/constants/sizes.dart';
 import 'package:flutter_elearning_project/utils/constants/text_strings.dart';
 import 'package:get/get.dart';
@@ -9,13 +10,15 @@ import 'package:iconsax/iconsax.dart';
 import 'package:http/http.dart' as http;
 
 class ResetPassword extends StatefulWidget {
-  final String email;
+  final String identifier;
   final String resetToken;
+  final bool isEmail;
 
   const ResetPassword({
     super.key,
-    required this.email,
+    required this.identifier,
     required this.resetToken,
+    required this.isEmail,
   });
 
   @override
@@ -28,71 +31,20 @@ class _ResetPasswordState extends State<ResetPassword> {
   bool _newPasswordVisible = false;
   bool _confirmPasswordVisible = false;
   bool _isLoading = false;
-  String? _passwordStrengthMessage;
-  final Color _passwordStrengthColor = Colors.red;
 
-  // Kiểm tra độ mạnh của mật khẩu
   bool _isPasswordStrong(String password) {
     if (password.length < 8) return false;
-
-    // Kiểm tra có chữ hoa
     if (!password.contains(RegExp(r'[A-Z]'))) return false;
-
-    // Kiểm tra có chữ thường
     if (!password.contains(RegExp(r'[a-z]'))) return false;
-
-    // Kiểm tra có số
     if (!password.contains(RegExp(r'[0-9]'))) return false;
-
-    // Kiểm tra có ký tự đặc biệt
     if (!password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) return false;
-
     return true;
   }
-
-  // // Cập nhật thông báo độ mạnh mật khẩu
-  // void _updatePasswordStrength(String password) {
-  //   setState(() {
-  //     if (password.isEmpty) {
-  //       _passwordStrengthMessage = null;
-  //       _passwordStrengthColor = Colors.red;
-  //       return;
-  //     }
-
-  //     List<String> requirements = [];
-
-  //     if (password.length < 8) {
-  //       requirements.add("ít nhất 8 ký tự");
-  //     }
-  //     if (!password.contains(RegExp(r'[A-Z]'))) {
-  //       requirements.add("chữ hoa");
-  //     }
-  //     if (!password.contains(RegExp(r'[a-z]'))) {
-  //       requirements.add("chữ thường");
-  //     }
-  //     if (!password.contains(RegExp(r'[0-9]'))) {
-  //       requirements.add("số");
-  //     }
-  //     if (!password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) {
-  //       requirements.add("ký tự đặc biệt");
-  //     }
-
-  //     if (requirements.isEmpty) {
-  //       _passwordStrengthMessage = "Mật khẩu mạnh";
-  //       _passwordStrengthColor = Colors.green;
-  //     } else {
-  //       _passwordStrengthMessage =
-  //           "Mật khẩu cần có: ${requirements.join(", ")}";
-  //       _passwordStrengthColor = Colors.red;
-  //     }
-  //   });
-  // }
 
   Future<void> resetPassword() async {
     final newPassword = _newPasswordController.text;
     final confirmPassword = _confirmPasswordController.text;
 
-    // Validation cơ bản
     if (newPassword.isEmpty || confirmPassword.isEmpty) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -102,7 +54,6 @@ class _ResetPasswordState extends State<ResetPassword> {
       return;
     }
 
-    // Kiểm tra độ mạnh mật khẩu
     if (!_isPasswordStrong(newPassword)) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -119,71 +70,64 @@ class _ResetPasswordState extends State<ResetPassword> {
     if (newPassword != confirmPassword) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Mật khẩu không khớp"),
-            backgroundColor: Colors.red,
-          ),
+          const SnackBar(content: Text("Mật khẩu không khớp")),
         );
       }
       return;
     }
 
-    setState(() {
-      _isLoading = true;
-    });
+    if (mounted) {
+      setState(() => _isLoading = true);
+    }
 
     try {
       final response = await http.post(
         Uri.parse(ApiConstants.getUrl(ApiConstants.resetPassword)),
         headers: ApiConstants.getHeaders(),
         body: jsonEncode({
-          'email': widget.email,
+          'identifier': widget.identifier,
           'newPassword': newPassword,
           'resetToken': widget.resetToken,
+          'type': widget.isEmail ? 'email' : 'phone',
         }),
       );
 
+      if (!mounted) return;
+
       final responseData = jsonDecode(response.body);
-
       if (response.statusCode == 200) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Đặt lại mật khẩu thành công!'),
-              backgroundColor: Colors.green,
-            ),
-          );
-        }
-
-        await Future.delayed(const Duration(seconds: 2));
-
-        if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Đặt lại mật khẩu thành công!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        
+        // Use a local variable to track if widget is still mounted after delay
+        bool isStillMounted = true;
+        await Future.delayed(const Duration(seconds: 2)).then((_) {
+          isStillMounted = mounted;
+        });
+        
+        if (isStillMounted) {
           Get.offAll(() => const LoginScreen());
         }
       } else {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(responseData['message'] ?? 'Có lỗi xảy ra!'),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(responseData['message'] ?? 'Có lỗi xảy ra!'),
+          ),
+        );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Đã xảy ra lỗi: $e'),
-            backgroundColor: Colors.red,
-          ),
+          SnackBar(content: Text('Đã xảy ra lỗi: $e')),
         );
       }
     } finally {
       if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
+        setState(() => _isLoading = false);
       }
     }
   }
@@ -191,101 +135,66 @@ class _ResetPasswordState extends State<ResetPassword> {
   @override
   Widget build(BuildContext context) {
     final darkMode = Theme.of(context).brightness == Brightness.dark;
-
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            color: darkMode
-                ? Colors.white
-                : Colors.black, // Màu trắng cho dark mode, đen cho light mode
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          icon: Icon(Icons.arrow_back,
+              color: darkMode ? Colors.white : Colors.black),
+          onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(TSizes.defaultSpace),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            /// Headings
-            Text(TTexts.setNewPassword,
-                style: Theme.of(context).textTheme.headlineMedium),
-            const SizedBox(height: TSizes.spaceBtwItems),
-            Text(TTexts.setNewPasswordSubTitle,
-                style: Theme.of(context).textTheme.labelMedium),
-            const SizedBox(height: TSizes.spaceBtwSections),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(TSizes.defaultSpace),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              /// Logo, Title & Sub Title
+              const TResetPasswordHeader(),
+              const SizedBox(height: TSizes.spaceBtwSections),
 
-            /// New Password
-            TextFormField(
-              controller: _newPasswordController,
-              obscureText: !_newPasswordVisible,
-              decoration: InputDecoration(
-                labelText: TTexts.newPassword,
-                prefixIcon: const Icon(Iconsax.password_check),
-                suffixIcon: IconButton(
-                  icon: Icon(
-                      _newPasswordVisible ? Iconsax.eye : Iconsax.eye_slash),
-                  onPressed: () {
-                    setState(() {
-                      _newPasswordVisible = !_newPasswordVisible;
-                    });
-                  },
-                ),
-              ),
-            ),
-            const SizedBox(height: TSizes.spaceBtwInputFields),
-
-            // Password Strength Indicator
-            if (_passwordStrengthMessage != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: Text(
-                  _passwordStrengthMessage!,
-                  style: TextStyle(
-                    color: _passwordStrengthColor,
-                    fontSize: 12,
+              TextFormField(
+                controller: _newPasswordController,
+                obscureText: !_newPasswordVisible,
+                decoration: InputDecoration(
+                  labelText: TTexts.newPassword,
+                  prefixIcon: const Icon(Iconsax.password_check),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                        _newPasswordVisible ? Iconsax.eye : Iconsax.eye_slash),
+                    onPressed: () => setState(
+                        () => _newPasswordVisible = !_newPasswordVisible),
                   ),
                 ),
               ),
-
-            const SizedBox(height: TSizes.spaceBtwInputFields),
-
-            // Confirm Password Field
-            TextFormField(
-              controller: _confirmPasswordController,
-              obscureText: !_confirmPasswordVisible,
-              decoration: InputDecoration(
-                labelText: TTexts.confirmPassword,
-                prefixIcon: const Icon(Iconsax.password_check),
-                suffixIcon: IconButton(
-                  icon: Icon(_confirmPasswordVisible
-                      ? Iconsax.eye
-                      : Iconsax.eye_slash),
-                  onPressed: () {
-                    setState(() {
-                      _confirmPasswordVisible = !_confirmPasswordVisible;
-                    });
-                  },
+              const SizedBox(height: TSizes.spaceBtwInputFields),
+              TextFormField(
+                controller: _confirmPasswordController,
+                obscureText: !_confirmPasswordVisible,
+                decoration: InputDecoration(
+                  labelText: TTexts.confirmPassword,
+                  prefixIcon: const Icon(Iconsax.password_check),
+                  suffixIcon: IconButton(
+                    icon: Icon(_confirmPasswordVisible
+                        ? Iconsax.eye
+                        : Iconsax.eye_slash),
+                    onPressed: () => setState(() =>
+                        _confirmPasswordVisible = !_confirmPasswordVisible),
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: TSizes.spaceBtwSections),
-
-            /// Confirm Button
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: _isLoading ? null : resetPassword,
-                child: _isLoading
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text(TTexts.confirm),
+              const SizedBox(height: TSizes.spaceBtwSections),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: _isLoading ? null : resetPassword,
+                  child: _isLoading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : const Text(TTexts.confirm),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
