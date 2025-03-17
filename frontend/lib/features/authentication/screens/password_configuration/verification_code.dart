@@ -144,9 +144,23 @@ class _VerificationScreenState extends State<VerificationScreen> {
             /// Logo, Title & Sub Title
             const TVerificationCodeHeader(),
             const SizedBox(height: TSizes.spaceBtwItems),
-            Text(
-                'Nhập mã OTP đã gửi đến ${widget.isEmail ? 'email' : 'số điện thoại'} ${widget.identifier}',
-                style: Theme.of(context).textTheme.labelLarge),
+            RichText(
+              text: TextSpan(
+                style: Theme.of(context).textTheme.labelLarge, // Kiểu chữ chung
+                children: [
+                  TextSpan(
+                    text:
+                        'Nhập mã OTP đã gửi đến ${widget.isEmail ? 'email' : 'số điện thoại'} ',
+                  ),
+                  TextSpan(
+                    text: widget.identifier,
+                    style: const TextStyle(
+                        color: Color(0xFF00A2FF)), // Đổi màu của identifier
+                  ),
+                ],
+              ),
+            ),
+
             const SizedBox(height: TSizes.spaceBtwSections),
             PinCodeTextField(
               appContext: context,
@@ -164,6 +178,15 @@ class _VerificationScreenState extends State<VerificationScreen> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF00A2FF),
+                  foregroundColor: Colors.white, // Màu chữ trắng
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 12), // Điều chỉnh padding nếu cần
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10), // Bo góc
+                  ),
+                ),
                 onPressed: isLoading ? null : verifyOTP,
                 child: isLoading
                     ? const CircularProgressIndicator(color: Colors.white)

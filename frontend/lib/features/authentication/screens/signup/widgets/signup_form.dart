@@ -91,8 +91,28 @@ class _TSignupFormState extends State<TSignupForm>
     });
   }
 
-  Future<void> _sendOtp() async {
-    if (!_formKey.currentState!.validate()) return;
+  Future<void> _sendOtp({bool resend = false}) async {
+    // Nếu là gửi lại (resend = true), chỉ validate email/phone, không validate OTP
+    if (!resend && !_formKey.currentState!.validate()) return;
+
+    // Nếu là resend, cần validate riêng phần email/phone
+    if (resend) {
+      if (_isEmail) {
+        // Validate email
+        if (_emailController.text.trim().isEmpty ||
+            !_emailController.text.contains('@')) {
+          Get.snackbar('Lỗi', 'Email không hợp lệ');
+          return;
+        }
+      } else {
+        // Validate số điện thoại
+        if (_phoneController.text.trim().isEmpty ||
+            !RegExp(r'^\d{9,10}$').hasMatch(_phoneController.text.trim())) {
+          Get.snackbar('Lỗi', 'Số điện thoại không hợp lệ');
+          return;
+        }
+      }
+    }
 
     String identifier;
     if (_isEmail) {
@@ -302,7 +322,7 @@ class _TSignupFormState extends State<TSignupForm>
                 controller: _tabController,
                 indicatorSize: TabBarIndicatorSize.tab, // chia theo số tab
                 indicator: BoxDecoration(
-                  color: darkMode ? Colors.blue[700] : Colors.blue[300],
+                  color: const Color(0xFF00A2FF),
                   borderRadius: BorderRadius.circular(5),
                 ),
                 labelColor: darkMode ? Colors.white : Colors.black,
@@ -383,11 +403,14 @@ class _TSignupFormState extends State<TSignupForm>
                 ),
               ),
               const SizedBox(width: 10),
-              ElevatedButton(
-                onPressed: _isTimerActive ? null : _sendOtp,
-                child: Text(_isTimerActive
-                    ? 'Gửi lại ($_secondsRemaining)'
-                    : 'Gửi lại'),
+              TextButton(
+                onPressed: _isTimerActive ? null : () => _sendOtp(resend: true),
+                child: Text(
+                  _isTimerActive
+                      ? 'Gửi lại sau ($_secondsRemaining)'
+                      : 'Gửi lại mã',
+                  style: const TextStyle(color: Color(0xFF00A2FF)),
+                ),
               ),
             ],
           ),
@@ -395,6 +418,15 @@ class _TSignupFormState extends State<TSignupForm>
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF00A2FF), // Màu xanh #00A2FF
+                foregroundColor: Colors.white, // Màu chữ trắng
+                padding: const EdgeInsets.symmetric(
+                    vertical: 12), // Điều chỉnh padding nếu cần
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10), // Bo góc
+                ),
+              ),
               onPressed: _verifyOtp,
               child: const Text('Xác nhận OTP'),
             ),
@@ -403,6 +435,15 @@ class _TSignupFormState extends State<TSignupForm>
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF00A2FF), // Màu xanh #00A2FF
+                foregroundColor: Colors.white, // Màu chữ trắng
+                padding: const EdgeInsets.symmetric(
+                    vertical: 12), // Điều chỉnh padding nếu cần
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10), // Bo góc
+                ),
+              ),
               onPressed: _sendOtp,
               child: const Text('Gửi mã OTP'),
             ),
@@ -464,24 +505,50 @@ class _TSignupFormState extends State<TSignupForm>
                 ),
               ),
               const SizedBox(width: 10),
-              ElevatedButton(
-                onPressed: _isTimerActive ? null : _sendOtp,
-                child: Text(_isTimerActive ? '$_secondsRemaining' : 'Gửi lại'),
+              TextButton(
+                onPressed: _isTimerActive ? null : () => _sendOtp(resend: true),
+                child: Text(
+                  _isTimerActive
+                      ? 'Gửi lại sau ($_secondsRemaining)'
+                      : 'Gửi lại mã',
+                  style: const TextStyle(color: Color(0xFF00A2FF)),
+                ),
               ),
             ],
           ),
           const SizedBox(height: TSizes.spaceBtwItems),
           SizedBox(
             width: double.infinity,
-            child: ElevatedButton(
-              onPressed: _verifyOtp,
-              child: const Text('Xác nhận OTP'),
+            child: SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF00A2FF), // Màu xanh #00A2FF
+                  foregroundColor: Colors.white, // Màu chữ trắng
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 12), // Điều chỉnh padding nếu cần
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10), // Bo góc
+                  ),
+                ),
+                onPressed: _verifyOtp,
+                child: const Text('Xác nhận OTP'),
+              ),
             ),
           ),
         ] else ...[
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF00A2FF), // Màu xanh #00A2FF
+                foregroundColor: Colors.white, // Màu chữ trắng
+                padding: const EdgeInsets.symmetric(
+                    vertical: 12), // Điều chỉnh padding nếu cần
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10), // Bo góc
+                ),
+              ),
               onPressed: _sendOtp,
               child: const Text('Gửi mã OTP'),
             ),
@@ -571,6 +638,15 @@ class _TSignupFormState extends State<TSignupForm>
         SizedBox(
           width: double.infinity,
           child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF00A2FF), // Màu xanh #00A2FF
+              foregroundColor: Colors.white, // Màu chữ trắng
+              padding: const EdgeInsets.symmetric(
+                  vertical: 12), // Điều chỉnh padding nếu cần
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10), // Bo góc
+              ),
+            ),
             onPressed: _createAccount,
             child: const Text('Hoàn tất đăng ký'),
           ),

@@ -84,9 +84,11 @@ class _TLoginFormState extends State<TLoginForm> {
                 labelText: 'Email hoặc số điện thoại',
               ),
               validator: (value) {
-              if (value == null || value.isEmpty) return 'Vui lòng nhập email hoặc số điện thoại';
-              return null;
-            },
+                if (value == null || value.isEmpty) {
+                  return 'Vui lòng nhập email hoặc số điện thoại';
+                }
+                return null;
+              },
             ),
             const SizedBox(height: TSizes.spaceBtwInputFields),
 
@@ -130,6 +132,7 @@ class _TLoginFormState extends State<TLoginForm> {
                       onChanged: (value) {
                         setState(() => _rememberMe = value ?? false);
                       },
+                      activeColor: const Color(0xFF00A2FF),
                     ),
                     const Text(TTexts.rememberMe),
                   ],
@@ -138,7 +141,10 @@ class _TLoginFormState extends State<TLoginForm> {
                 // Forget Password
                 TextButton(
                   onPressed: () => Get.to(() => const ForgetPassword()),
-                  child: const Text(TTexts.forgetPassword),
+                  child: const Text(
+                    TTexts.forgetPassword,
+                    style: TextStyle(color: Color(0xFF00A2FF)),
+                  ),
                 ),
               ],
             ),
@@ -149,6 +155,15 @@ class _TLoginFormState extends State<TLoginForm> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: _isLoading ? null : _login,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF00A2FF), // Màu xanh #00A2FF
+                  foregroundColor: Colors.white, // Màu chữ trắng
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 12), // Điều chỉnh padding nếu cần
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10), // Bo góc
+                  ),
+                ),
                 child: _isLoading
                     ? const CircularProgressIndicator()
                     : const Text(TTexts.signIn),
@@ -160,6 +175,15 @@ class _TLoginFormState extends State<TLoginForm> {
             SizedBox(
               width: double.infinity,
               child: OutlinedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white, // Màu xanh #00A2FF
+                  foregroundColor: Colors.black, // Màu chữ trắng
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 12), // Điều chỉnh padding nếu cần
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10), // Bo góc
+                  ),
+                ),
                 onPressed: () => Get.to(() => const SignupScreen()),
                 child: const Text(TTexts.createAccount),
               ),

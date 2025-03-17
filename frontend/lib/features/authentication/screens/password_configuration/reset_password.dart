@@ -102,13 +102,13 @@ class _ResetPasswordState extends State<ResetPassword> {
             backgroundColor: Colors.green,
           ),
         );
-        
+
         // Use a local variable to track if widget is still mounted after delay
         bool isStillMounted = true;
         await Future.delayed(const Duration(seconds: 2)).then((_) {
           isStillMounted = mounted;
         });
-        
+
         if (isStillMounted) {
           Get.offAll(() => const LoginScreen());
         }
@@ -187,6 +187,15 @@ class _ResetPasswordState extends State<ResetPassword> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF00A2FF),
+                    foregroundColor: Colors.white, // Màu chữ trắng
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 12), // Điều chỉnh padding nếu cần
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10), // Bo góc
+                    ),
+                  ),
                   onPressed: _isLoading ? null : resetPassword,
                   child: _isLoading
                       ? const CircularProgressIndicator(color: Colors.white)

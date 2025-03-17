@@ -67,10 +67,12 @@ class PhoneDialog extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: onChange,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  foregroundColor: Colors.white,
+                  backgroundColor: const Color(0xFF00A2FF), // Màu xanh #00A2FF
+                  foregroundColor: Colors.white, // Màu chữ trắng
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 10), // Điều chỉnh padding nếu cần
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(10), // Bo góc
                   ),
                 ),
                 child: const Text('Thay đổi số điện thoại'),

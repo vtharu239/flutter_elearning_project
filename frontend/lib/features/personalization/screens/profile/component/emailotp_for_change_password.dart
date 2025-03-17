@@ -9,7 +9,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 class InitiateEmailOtpForPasswordChangeScreen extends StatelessWidget {
   final String email;
 
-  const InitiateEmailOtpForPasswordChangeScreen({super.key, required this.email});
+  const InitiateEmailOtpForPasswordChangeScreen(
+      {super.key, required this.email});
 
   Future<void> _sendOtp(BuildContext context) async {
     try {

@@ -84,7 +84,8 @@ class UpdateEmailScreenState extends State<UpdateEmailScreen> {
                   if (value == null || value.isEmpty) {
                     return 'Vui lòng nhập email';
                   }
-                  if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                  if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                      .hasMatch(value)) {
                     return 'Email không hợp lệ';
                   }
                   return null;
@@ -96,10 +97,13 @@ class UpdateEmailScreenState extends State<UpdateEmailScreen> {
                 child: ElevatedButton(
                   onPressed: _initiateEmailChange,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                    foregroundColor: Colors.white,
+                    backgroundColor:
+                        const Color(0xFF00A2FF), // Màu xanh #00A2FF
+                    foregroundColor: Colors.white, // Màu chữ trắng
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10), // Điều chỉnh padding nếu cần
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(10), // Bo góc
                     ),
                   ),
                   child: const Text('Tiếp tục'),

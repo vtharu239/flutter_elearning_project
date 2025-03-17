@@ -161,6 +161,16 @@ class NewPasswordScreenState extends State<NewPasswordScreen> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor:
+                        const Color(0xFF00A2FF), // Màu xanh #00A2FF
+                    foregroundColor: Colors.white, // Màu chữ trắng
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10), // Điều chỉnh padding nếu cần
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12), // Bo góc
+                    ),
+                  ),
                   onPressed: _isLoading ? null : _updatePassword,
                   child: _isLoading
                       ? const CircularProgressIndicator(color: Colors.white)
