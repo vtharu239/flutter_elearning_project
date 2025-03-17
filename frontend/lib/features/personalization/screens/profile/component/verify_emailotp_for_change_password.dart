@@ -157,10 +157,20 @@ class VerifyEmailOtpForPasswordChangeScreenState
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const SizedBox(height: TSizes.spaceBtwSections),
-            Text(
-              'Nhập mã OTP đã gửi đến ${widget.email}',
-              style: Theme.of(context).textTheme.labelLarge,
-              textAlign: TextAlign.center,
+            RichText(
+              text: TextSpan(
+                style: Theme.of(context).textTheme.labelLarge, // Kiểu chữ chung
+                children: [
+                  const TextSpan(
+                    text: 'Nhập mã OTP đã gửi đến ',
+                  ),
+                  TextSpan(
+                    text: widget.email, // Phần có màu xanh
+                    style: const TextStyle(
+                        color: Color(0xFF00A2FF)), // Đổi màu của identifier
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: TSizes.spaceBtwSections),
             PinCodeTextField(
@@ -172,16 +182,8 @@ class VerifyEmailOtpForPasswordChangeScreenState
                 borderRadius: BorderRadius.circular(8),
                 fieldHeight: 50,
                 fieldWidth: 40,
-                activeFillColor: darkMode ? Colors.grey[800] : Colors.white,
-                inactiveFillColor: darkMode ? Colors.grey[800] : Colors.white,
-                selectedFillColor:
-                    darkMode ? Colors.grey[700] : Colors.grey[200],
-                activeColor: Colors.blue,
-                inactiveColor: Colors.grey,
-                selectedColor: Colors.blue,
+                activeFillColor: Colors.white,
               ),
-              enableActiveFill: true,
-              keyboardType: TextInputType.number,
             ),
             const SizedBox(height: TSizes.spaceBtwItems),
             Row(
@@ -195,6 +197,9 @@ class VerifyEmailOtpForPasswordChangeScreenState
                 ),
                 if (!_isTimerActive)
                   TextButton(
+                    style: TextButton.styleFrom(
+                      foregroundColor: const Color(0xFF00A2FF),
+                    ),
                     onPressed: _resendOtp,
                     child: const Text('Gửi lại mã OTP'),
                   ),
@@ -204,6 +209,15 @@ class VerifyEmailOtpForPasswordChangeScreenState
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF00A2FF), // Màu xanh #00A2FF
+                  foregroundColor: Colors.white, // Màu chữ trắng
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 10), // Điều chỉnh padding nếu cần
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10), // Bo góc
+                  ),
+                ),
                 onPressed: isLoading ? null : _verifyOtp,
                 child: isLoading
                     ? const CircularProgressIndicator(color: Colors.white)

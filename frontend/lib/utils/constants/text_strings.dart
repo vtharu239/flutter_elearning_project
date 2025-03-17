@@ -50,7 +50,7 @@ class TTexts {
   static const String signupTitle = "Hãy tạo tài khoản của bạn";
   static const String signupSubTitle = "Cùng nhau bắt đầu hành trình theo đuổi tri thức nhé!";
   static const String forgetPasswordTitle = "Quên mật khẩu";
-  static const String forgetPasswordSubTitle = "Đừng lo, ai cũng có lúc quên. Hãy nhập email hoặc số điện thoại bạn đã đăng ký. Chúng tôi sẽ gửi cho bạn mã xác nhận để đặt lại mật khẩu.";
+  static const String forgetPasswordSubTitle = "Đừng lo, ai cũng có lúc quên. Hãy nhập email hoặc số điện thoại bạn đã đăng ký. StudyMate sẽ gửi cho bạn mã xác nhận để đặt lại mật khẩu.";
   static const String changeYourPasswordTitle = "Email đặt lại mật khẩu đã được gửi";
   static const String changeYourPasswordSubTitle = "Bảo mật tài khoản của bạn là ưu tiên hàng đầu của chúng tôi! Chúng tôi đã gửi cho bạn một liên kết an toàn để đặt lại mật khẩu và bảo vệ tài khoản của bạn.";
   static const String confirmEmail = "Xác minh địa chỉ email của bạn!";

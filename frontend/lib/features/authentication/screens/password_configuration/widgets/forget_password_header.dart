@@ -16,7 +16,7 @@ class TForgetPasswordHeader extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Image(
-          height: 130,
+          height: 150,
           image: AssetImage(dark ? TImages.lightAppLogo : TImages.darkAppLogo),
         ),
         const SizedBox(height: TSizes.spaceBtwItems),

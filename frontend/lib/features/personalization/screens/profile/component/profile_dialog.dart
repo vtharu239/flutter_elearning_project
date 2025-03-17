@@ -107,11 +107,24 @@ class _EditFieldDialogState extends State<EditFieldDialog> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   TextButton(
+                    style: TextButton.styleFrom(
+                      foregroundColor: const Color(0xFF00A2FF),
+                    ),
                     onPressed: () => Get.back(),
                     child: const Text('Hủy'),
                   ),
                   const SizedBox(width: TSizes.spaceBtwItems),
                   ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor:
+                          const Color(0xFF00A2FF), // Màu xanh #00A2FF
+                      foregroundColor: Colors.white, // Màu chữ trắng
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 10), // Điều chỉnh padding nếu cần
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12), // Bo góc
+                      ),
+                    ),
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
                         widget.onSave(_controller.text);

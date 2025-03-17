@@ -165,8 +165,7 @@ class _ForgetPasswordScreenState extends State<ForgetPassword>
                           controller: _tabController,
                           indicatorSize: TabBarIndicatorSize.tab,
                           indicator: BoxDecoration(
-                            color:
-                                darkMode ? Colors.blue[700] : Colors.blue[300],
+                            color: const Color(0xFF00A2FF),
                             borderRadius: BorderRadius.circular(5),
                           ),
                           labelColor: darkMode ? Colors.white : Colors.black,
@@ -238,13 +237,23 @@ class _ForgetPasswordScreenState extends State<ForgetPassword>
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              const Color(0xFF00A2FF), // Màu xanh #00A2FF
+                          foregroundColor: Colors.white, // Màu chữ trắng
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 12), // Điều chỉnh padding nếu cần
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10), // Bo góc
+                          ),
+                        ),
                         onPressed: _isLoading ? null : _sendOtp,
                         child: _isLoading
                             ? const CircularProgressIndicator(
                                 valueColor:
                                     AlwaysStoppedAnimation(Colors.white),
                               )
-                            : const Text('Gửi OTP'),
+                            : const Text('Gửi mã xác nhận'),
                       ),
                     ),
                   ],

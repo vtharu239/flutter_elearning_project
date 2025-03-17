@@ -137,7 +137,7 @@ class _SettingScreenState extends State<SettingScreen>
                               /// Cột chứa tên và email
                               Padding(
                                 padding:
-                                    const EdgeInsets.only(left: 90, top: 10),
+                                    const EdgeInsets.only(left: 90, top: 30),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
@@ -152,26 +152,26 @@ class _SettingScreenState extends State<SettingScreen>
                                               letterSpacing: 0.5,
                                               fontSize: 20),
                                     ),
-                                    Row(
-                                      children: [
-                                        const Icon(
-                                          Icons.email_outlined,
-                                          color: Colors.white,
-                                          size: 14,
-                                        ),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          user?.email ?? 'email@example.com',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodySmall!
-                                              .copyWith(
-                                                color: Colors.white,
-                                                fontSize: 14,
-                                              ),
-                                        ),
-                                      ],
-                                    ),
+                                    // Row(
+                                    //   children: [
+                                    //     const Icon(
+                                    //       Icons.email_outlined,
+                                    //       color: Colors.white,
+                                    //       size: 14,
+                                    //     ),
+                                    //     const SizedBox(width: 4),
+                                    //     Text(
+                                    //       user?.email ?? 'email@example.com',
+                                    //       style: Theme.of(context)
+                                    //           .textTheme
+                                    //           .bodySmall!
+                                    //           .copyWith(
+                                    //             color: Colors.white,
+                                    //             fontSize: 14,
+                                    //           ),
+                                    //     ),
+                                    //   ],
+                                    // ),
                                   ],
                                 ),
                               ),
@@ -383,6 +383,15 @@ class _SettingScreenState extends State<SettingScreen>
                       SizedBox(
                         width: double.infinity,
                         child: OutlinedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white, // Màu xanh #00A2FF
+                            foregroundColor: Colors.black, // Màu chữ trắng
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 12), // Điều chỉnh padding nếu cần
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12), // Bo góc
+                            ),
+                          ),
                           onPressed: () => AuthController.instance.logout(),
                           child: const Text('Đăng xuất'),
                         ),

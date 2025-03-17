@@ -30,6 +30,16 @@ class App extends StatelessWidget {
           backgroundColor:
               Colors.transparent, // Màu nền AppBar cho toàn bộ ứng dụng
         ),
+        inputDecorationTheme: const InputDecorationTheme(
+          floatingLabelStyle:
+              TextStyle(color: Color(0xFF00A2FF)), // Màu label khi focus
+          focusedBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: Color(0xFF00A2FF), width: 2.0),
+          ),
+        ),
+        textSelectionTheme: const TextSelectionThemeData(
+          cursorColor: Color(0xFF00A2FF), // Đặt màu dấu nháy (cursor)
+        ),
       ),
       darkTheme: ThemeData(
         brightness: Brightness.dark,
@@ -38,10 +48,20 @@ class App extends StatelessWidget {
         appBarTheme: const AppBarTheme(
           backgroundColor: Colors.transparent, // Màu nền AppBar cho chế độ dark
         ),
+        inputDecorationTheme: const InputDecorationTheme(
+          floatingLabelStyle:
+              TextStyle(color: Color(0xFF00A2FF)), // Màu label khi focus
+          focusedBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: Color(0xFF00A2FF), width: 2.0),
+          ),
+        ),
+        textSelectionTheme: const TextSelectionThemeData(
+          cursorColor: Color(0xFF00A2FF), // Đặt màu dấu nháy (cursor)
+        ),
       ),
-      home: Obx(() => authController.isLoggedIn.value 
-        ? const NavigationMenu() 
-        : const LoginScreen()),
+      home: Obx(() => authController.isLoggedIn.value
+          ? const NavigationMenu()
+          : const LoginScreen()),
     );
   }
 }

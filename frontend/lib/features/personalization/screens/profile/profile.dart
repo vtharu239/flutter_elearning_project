@@ -406,6 +406,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   children: [
                     Expanded(
                       child: ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              const Color(0xFF00A2FF), // Màu xanh #00A2FF
+                          foregroundColor: Colors.white, // Màu chữ trắng
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 10), // Điều chỉnh padding nếu cần
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10), // Bo góc
+                          ),
+                        ),
                         onPressed: _initiatePasswordChange,
                         icon: const Icon(Icons.lock_outline),
                         label: const Text('Đổi mật khẩu'),

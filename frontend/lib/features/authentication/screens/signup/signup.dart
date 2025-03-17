@@ -47,7 +47,8 @@ class SignupScreen extends StatelessWidget {
                   ),
                   TextButton(
                       onPressed: () => Get.to(() => const LoginScreen()),
-                      child: const Text("Đăng nhập ngay!")),
+                      child: const Text("Đăng nhập ngay!",
+                          style: TextStyle(color: Color(0xFF00A2FF)))),
                 ],
               ),
             ],
