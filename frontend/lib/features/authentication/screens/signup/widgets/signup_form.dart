@@ -11,6 +11,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class TSignupForm extends StatefulWidget {
   const TSignupForm({super.key});
@@ -120,15 +121,12 @@ class _TSignupFormState extends State<TSignupForm>
     } else {
       // Chuẩn hóa số điện thoại
       String rawPhone = _phoneController.text.trim();
-      // Loại bỏ ký tự không phải số (trừ dấu + ở đầu nếu có)
       rawPhone = rawPhone.replaceAll(RegExp(r'[^\d+]'), '');
       if (rawPhone.startsWith('+84')) {
-        // Nếu đã có +84, giữ nguyên nhưng đảm bảo không có số 0 đầu thừa
         identifier = rawPhone.startsWith('+840')
             ? '+84${rawPhone.substring(4)}'
             : rawPhone;
       } else {
-        // Nếu không có +84, thêm vào và loại bỏ số 0 đầu nếu có
         if (rawPhone.startsWith('0')) {
           rawPhone = rawPhone.substring(1);
         }
@@ -158,35 +156,42 @@ class _TSignupFormState extends State<TSignupForm>
         }
       } else {
         // Phone verification with Firebase
-        await fb.FirebaseAuth.instance.verifyPhoneNumber(
-          phoneNumber: identifier,
-          verificationCompleted: (fb.PhoneAuthCredential credential) async {
-            _verifyPhoneOtp(credential, identifier);
-          },
-          verificationFailed: (fb.FirebaseAuthException e) {
-            Get.snackbar('Lỗi', 'Không thể gửi OTP: ${e.message}');
-          },
-          codeSent: (String verificationId, int? resendToken) {
-            setState(() {
+        if (kIsWeb) {
+          // Web flow (dùng reCAPTCHA)
+          Get.snackbar(
+              'Lỗi', 'Đăng ký bằng số điện thoại không hỗ trợ trên web.');
+        } else {
+          // Mobile/emulator flow (gửi SMS trực tiếp)
+          await fb.FirebaseAuth.instance.verifyPhoneNumber(
+            phoneNumber: identifier,
+            verificationCompleted: (fb.PhoneAuthCredential credential) async {
+              _verifyPhoneOtp(credential, identifier);
+            },
+            verificationFailed: (fb.FirebaseAuthException e) {
+              Get.snackbar('Lỗi', 'Không thể gửi OTP: ${e.message}');
+            },
+            codeSent: (String verificationId, int? resendToken) {
+              setState(() {
+                _verificationId = verificationId;
+                _isOtpSent = true;
+                _verifiedIdentifier = identifier;
+              });
+              _startOtpTimer();
+              Get.snackbar('Thành công', 'Mã OTP đã được gửi qua SMS!');
+            },
+            codeAutoRetrievalTimeout: (String verificationId) {
               _verificationId = verificationId;
-              _isOtpSent = true;
-              _verifiedIdentifier = identifier;
-            });
-            _startOtpTimer();
-            Get.snackbar('Thành công', 'Mã OTP đã được gửi qua SMS!');
-          },
-          codeAutoRetrievalTimeout: (String verificationId) {
-            _verificationId = verificationId;
-          },
-          timeout: const Duration(seconds: 60),
-        );
+            },
+            timeout: const Duration(seconds: 60),
+          );
 
-        // Check with backend
-        await http.post(
-          Uri.parse(ApiConstants.getUrl(ApiConstants.signupPhone)),
-          headers: ApiConstants.getHeaders(),
-          body: jsonEncode({'phoneNo': identifier}),
-        );
+          // Check with backend
+          await http.post(
+            Uri.parse(ApiConstants.getUrl(ApiConstants.signupPhone)),
+            headers: ApiConstants.getHeaders(),
+            body: jsonEncode({'phoneNo': identifier}),
+          );
+        }
       }
     } catch (e) {
       Get.snackbar('Lỗi', 'Không thể gửi OTP: $e');

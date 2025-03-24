@@ -10,7 +10,7 @@
         android:enableOnBackInvokedCallback="true"
         android:label="flutter_elearning_project"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/launcher_icon">
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -57,5 +57,8 @@
             <data android:mimeType="text/plain"/>
         </intent>
     </queries>
-    <queries> <package android:name="com.facebook.katana" /> </queries>
+   <queries>
+    <package android:name="com.facebook.katana"/>
+    <package android:name="com.facebook.orca"/>
+  </queries>
 </manifest>
