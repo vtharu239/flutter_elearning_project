@@ -6,6 +6,9 @@ const Test = require('./Test');
 const TestPart = require('./TestPart');
 const Question = require('./Question');
 const Comment = require('./Comment');
+const UserTestAttempt = require('./UserTestAttempt');
+const ExamTypeTags = require('./ExamTypeTags');
+const Document = require('./Document');
 
 module.exports = {
   sequelize,
@@ -15,7 +18,10 @@ module.exports = {
   Test,
   TestPart,
   Question,
-  Comment
+  Comment,
+  UserTestAttempt,
+  ExamTypeTags,
+  Document
 };
 
 // Relationships
@@ -34,3 +40,6 @@ Question.belongsTo(TestPart, { foreignKey: 'testPartId', as: 'TestPart' });
 Test.hasMany(Comment, { foreignKey: 'testId', as: 'Comments' });
 Comment.belongsTo(Test, { foreignKey: 'testId', as: 'Test' });
 Comment.belongsTo(User, { foreignKey: 'userId', as: 'User' });
+
+UserTestAttempt.belongsTo(Test, { foreignKey: 'testId', as: 'Test' });
+Test.hasMany(UserTestAttempt, { foreignKey: 'testId', as: 'UserTestAttempts' });
