@@ -14,23 +14,26 @@ app.use(bodyParser.json());
 // Phục vụ các tệp tải lên tĩnh
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/uploads/profiles', express.static(path.join(__dirname, 'uploads/profiles')));
+app.use('/uploads/images', express.static(path.join(__dirname, 'uploads/images')));
+app.use('/uploads/audio', express.static(path.join(__dirname, 'uploads/audio')));
+app.use('/uploads/audio/full', express.static(path.join(__dirname, 'uploads/audio/full')));
 
 // Routes
 const authRoutes = require('./routes/authRoutes');
-const emailRoutes = require('./routes/emailRoutes');
 const passwordRoutes = require('./routes/passwordRoutes');
 const profileRoutes = require('./routes/profileRoutes');
 const categoryRoutes = require('./routes/category');
 const courseRoutes = require('./routes/course');
 const testRoutes = require('./routes/testRoutes');
+const documentRoutes = require('./routes/documentRoutes');
 
 app.use(authRoutes);
-app.use(emailRoutes);
 app.use(passwordRoutes);
 app.use(profileRoutes);
 app.use(categoryRoutes);
 app.use(courseRoutes);
 app.use(testRoutes);
+app.use(documentRoutes);
 
 // Initialize application
 async function startServer() {
@@ -39,7 +42,7 @@ async function startServer() {
     await initializeDatabase();
     
     // 2. Then sync models
-    await db.sequelize.sync({ force: false, alter: true });
+    await db.sequelize.sync({ force: false });
     console.log('Cơ sở dữ liệu đã được đồng bộ thành công');
     
     // 3. Finally start the server
