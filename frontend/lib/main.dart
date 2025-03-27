@@ -8,10 +8,10 @@ import 'app.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Khởi tạo các controllers
   final authController = Get.put(AuthController());
-  
+
   // Kiểm tra trạng thái đăng nhập trước khi render UI
   await authController.checkLoginStatus();
 
@@ -20,7 +20,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
-      ],    
+      ],
       child: const App(),
     ),
   );
