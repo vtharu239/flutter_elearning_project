@@ -10,10 +10,7 @@ const TestPart = sequelize.define('TestPart', {
   testId: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    references: {
-      model: 'Tests',
-      key: 'id'
-    }
+    references: { model: 'Tests', key: 'id' }
   },
   title: {
     type: DataTypes.STRING,
@@ -21,10 +18,19 @@ const TestPart = sequelize.define('TestPart', {
   },
   questionCount: {
     type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 0
+  },
+  partType: { // Loại part: Listening Part 1, Reading Part 5,...
+    type: DataTypes.STRING,
     allowNull: false
   },
   tags: {
     type: DataTypes.JSON, // Lưu trữ tags dưới dạng JSON
+    allowNull: true
+  },
+  audioUrl: { 
+    type: DataTypes.STRING,
     allowNull: true
   }
 }, {
