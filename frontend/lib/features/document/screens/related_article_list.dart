@@ -4,7 +4,7 @@ import 'package:flutter_elearning_project/features/document/model/RelatedArticle
 class RelatedArticleList extends StatelessWidget {
   final List<RelatedArticle> relatedArticles;
 
-  RelatedArticleList({required this.relatedArticles});
+  const RelatedArticleList({super.key, required this.relatedArticles});
 
   @override
   Widget build(BuildContext context) {

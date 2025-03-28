@@ -17,10 +17,10 @@ class TestDetailScreen extends StatefulWidget {
   const TestDetailScreen({super.key, required this.testId});
 
   @override
-  _TestDetailScreenState createState() => _TestDetailScreenState();
+  TestDetailScreenState createState() => TestDetailScreenState();
 }
 
-class _TestDetailScreenState extends State<TestDetailScreen>
+class TestDetailScreenState extends State<TestDetailScreen>
     with TickerProviderStateMixin {
   TabController? _mainTabController;
   TabController? _subTabController;
@@ -892,7 +892,7 @@ class TestInfoSection extends StatelessWidget {
                               ),
                             ],
                           );
-                        }).toList(),
+                        }),
                       ],
                     ),
                   ),

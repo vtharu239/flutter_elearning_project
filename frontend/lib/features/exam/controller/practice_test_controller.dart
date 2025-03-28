@@ -37,10 +37,10 @@ class PracticeTestController extends GetxController {
         'sort': selectedSort.value,
         if (selectedFilters.isNotEmpty) 'filters': selectedFilters.join(',')
       };
-      
+
       final uri = Uri.parse(ApiConstants.getUrl(ApiConstants.getAllTests))
           .replace(queryParameters: queryParams);
-      
+
       final response = await http.get(uri, headers: ApiConstants.getHeaders());
       if (response.statusCode == 200) {
         tests.value = json.decode(response.body);

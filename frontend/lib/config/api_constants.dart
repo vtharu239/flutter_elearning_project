@@ -19,13 +19,13 @@ class ApiConstants {
   static const String verifyOtpSetPassword = '/verify-otp-set-password';
   static const String login = '/login';
   static const String socialLogin = '/social-login';
-  
+
   static const String sendOTP = '/send-otp';
   static const String verifyOTP = '/verify-otp';
   static const String resetPassword = '/reset-password';
 
   static const String getProfile = '/profile';
-  
+
   static const String initiatePhoneChange = '/profile/initiate-phone-change';
   static const String completePhoneChange = '/profile/complete-phone-change';
   static const String unlinkPhone = '/profile/unlink-phone';
@@ -38,12 +38,12 @@ class ApiConstants {
   static const String getTest = '/getTest';
   static const String getTestDetail = '/getTestDetail';
   static const String addComment = '/addComment';
-  
+
   static const String getUserTestAttempts = '/getUserTestAttempts';
-  
-  static const String getAllCourse = '/getAllCourse';
-  static const String getAllCategory = '/getAllCategory';
-  
+
+  static const String getAllCourse = '/getAllCourses';
+  static const String getAllCategory = '/getAllCategories';
+
   static const String getCourseById = '/getCourseById';
   static const String courseObjectives = '/objectives';
   static const String courseRatingStats = '/rating-stats';

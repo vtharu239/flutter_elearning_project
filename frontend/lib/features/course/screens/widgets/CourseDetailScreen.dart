@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_elearning_project/config/api_constants.dart';
 import 'package:flutter_elearning_project/features/course/controller/CourseCurriculumItem.dart';
@@ -84,6 +85,18 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
     super.dispose();
   }
 
+  void showErrorSnackbar(String message) {
+    if (mounted) {
+      // Kiểm tra mounted để tránh lỗi liên quan đến BuildContext
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          backgroundColor: Colors.red, // Tùy chọn: thêm màu để nổi bật lỗi
+        ),
+      );
+    }
+  }
+
   Future<void> fetchCourseDetail() async {
     try {
       setState(() => isLoading = true);
@@ -115,7 +128,10 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
       }
     } catch (e) {
       setState(() => isLoading = false);
-      showErrorSnackbar('Error loading course: $e');
+      if (mounted) {
+        // Kiểm tra mounted trước khi sử dụng context
+        showErrorSnackbar('Error loading course: $e');
+      }
     }
   }
 
@@ -142,7 +158,10 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
       }
     } catch (e) {
       setState(() => isLoadingObjectives = false);
-      showErrorSnackbar('Error loading course objectives: $e');
+      if (mounted) {
+        // Kiểm tra mounted
+        showErrorSnackbar('Error loading course objectives: $e');
+      }
     }
   }
 
@@ -168,7 +187,10 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
       }
     } catch (e) {
       setState(() => isLoadingTeachers = false);
-      showErrorSnackbar('Error loading course teachers: $e');
+      if (mounted) {
+        // Kiểm tra mounted
+        showErrorSnackbar('Error loading course teachers: $e');
+      }
     }
   }
 
@@ -196,8 +218,11 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
       }
     } catch (e) {
       setState(() => isLoadingCurriculum = false);
-      print('Error loading course curriculum: $e');
-      showErrorSnackbar('Error loading course curriculum: $e');
+      log('Error loading course curriculum: $e');
+      if (mounted) {
+        // Kiểm tra mounted
+        showErrorSnackbar('Error loading course curriculum: $e');
+      }
     }
   }
 
@@ -416,36 +441,30 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
                                                   fontSize: 14,
                                                   fontWeight: FontWeight.bold),
                                             ),
-                                            ...word.examples
-                                                .map((example) => Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                              top: 4),
-                                                      child: Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        children: [
-                                                          Text(
-                                                            '- ${example.sentence}',
-                                                            style:
-                                                                const TextStyle(
-                                                                    fontSize:
-                                                                        14),
-                                                          ),
-                                                          Text(
-                                                            '  Dịch: ${example.translation}',
-                                                            style:
-                                                                const TextStyle(
-                                                                    fontSize:
-                                                                        12,
-                                                                    color: Colors
-                                                                        .grey),
-                                                          ),
-                                                        ],
+                                            ...word.examples.map((example) =>
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          top: 4),
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Text(
+                                                        '- ${example.sentence}',
+                                                        style: const TextStyle(
+                                                            fontSize: 14),
                                                       ),
-                                                    ))
-                                                .toList(),
+                                                      Text(
+                                                        '  Dịch: ${example.translation}',
+                                                        style: const TextStyle(
+                                                            fontSize: 12,
+                                                            color: Colors.grey),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                )),
                                             const SizedBox(height: 8),
                                             ElevatedButton(
                                               onPressed: () {
@@ -512,7 +531,10 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
       }
     } catch (e) {
       setState(() => isLoadingReviews = false);
-      showErrorSnackbar('Error loading course reviews: $e');
+      if (mounted) {
+        // Kiểm tra mounted
+        showErrorSnackbar('Error loading course reviews: $e');
+      }
     }
   }
 
@@ -536,14 +558,11 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
       }
     } catch (e) {
       setState(() => isLoadingRatingStats = false);
-      showErrorSnackbar('Error loading rating stats: $e');
+      if (mounted) {
+        // Kiểm tra mounted
+        showErrorSnackbar('Error loading rating stats: $e');
+      }
     }
-  }
-
-  void showErrorSnackbar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
   }
 
   @override
@@ -760,7 +779,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
               borderRadius: BorderRadius.circular(8),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey.withOpacity(0.1),
+                  color: Colors.grey.withValues(alpha: 0.1),
                   spreadRadius: 1,
                   blurRadius: 4,
                   offset: const Offset(0, 2),
@@ -932,25 +951,32 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
         orderDescription: 'Thanh toán khóa học: ${courseData!.title}',
       );
 
-      Navigator.of(context).pop();
+      if (mounted) {
+        // Kiểm tra mounted trước khi sử dụng Navigator
+        Navigator.of(context).pop();
+      }
 
       if (paymentResult['success'] == true &&
           paymentResult['paymentUrl'] != null) {
         final orderId = paymentResult['orderId'];
 
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => PaymentWebView(
-              paymentUrl: paymentResult['paymentUrl'],
-              orderId: orderId,
-              courseId: widget.courseId,
-              onPaymentComplete: (success) {
-                _handlePaymentComplete(success, orderId);
-              },
+        if (mounted) {
+          // Kiểm tra mounted trước khi push Navigator
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => PaymentWebView(
+                paymentUrl: paymentResult['paymentUrl'],
+                orderId: orderId,
+                courseId: widget.courseId,
+                onPaymentComplete: (success) {
+                  _handlePaymentComplete(success, orderId);
+                },
+              ),
             ),
-          ),
-        );
-      } else {
+          );
+        }
+      } else if (mounted) {
+        // Kiểm tra mounted trước khi sử dụng ScaffoldMessenger
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
@@ -960,13 +986,16 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
         );
       }
     } catch (e) {
-      Navigator.of(context, rootNavigator: true).pop();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Lỗi: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (mounted) {
+        // Kiểm tra mounted trước khi sử dụng Navigator và ScaffoldMessenger
+        Navigator.of(context, rootNavigator: true).pop();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Lỗi: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -974,14 +1003,18 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
     try {
       if (success) {
         await _savePurchaseStatus(true); // Lưu trạng thái đã mua
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content:
-                Text('Thanh toán thành công! Bạn đã đăng ký khóa học này.'),
-            backgroundColor: Colors.green,
-          ),
-        );
-      } else {
+        if (mounted) {
+          // Kiểm tra mounted
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content:
+                  Text('Thanh toán thành công! Bạn đã đăng ký khóa học này.'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+      } else if (mounted) {
+        // Kiểm tra mounted
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Bạn đã hủy thanh toán.'),
@@ -990,12 +1023,15 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Lỗi khi xác thực thanh toán: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (mounted) {
+        // Kiểm tra mounted
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Lỗi khi xác thực thanh toán: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
