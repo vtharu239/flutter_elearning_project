@@ -22,17 +22,33 @@ app.use('/uploads/audio/full', express.static(path.join(__dirname, 'uploads/audi
 const authRoutes = require('./routes/authRoutes');
 const passwordRoutes = require('./routes/passwordRoutes');
 const profileRoutes = require('./routes/profileRoutes');
+const testRoutes = require('./routes/testRoutes');
+
 const categoryRoutes = require('./routes/category');
 const courseRoutes = require('./routes/course');
-const testRoutes = require('./routes/testRoutes');
+const courseObjective = require('./routes/courseObjective');
+const courseTeacher = require('./routes/courseTeacher');
+const courseCurriculum = require('./routes/courseCurriculum');
+const courseReview = require('./routes/courseReview');
+const courseRatingStat = require('./routes/courseRatingStat');
+const paymentRoutes = require('./routes/paymentRoutes');
+
 const documentRoutes = require('./routes/documentRoutes');
 
 app.use(authRoutes);
 app.use(passwordRoutes);
 app.use(profileRoutes);
+app.use(testRoutes);
+
 app.use(categoryRoutes);
 app.use(courseRoutes);
-app.use(testRoutes);
+app.use(courseObjective);
+app.use(courseTeacher);
+app.use(courseCurriculum);
+app.use(courseReview);
+app.use(courseRatingStat);
+app.use(paymentRoutes);
+
 app.use(documentRoutes);
 
 // Initialize application

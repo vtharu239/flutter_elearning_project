@@ -52,6 +52,10 @@ const Course = sequelize.define('Course', {
       max: 100
     }
   },
+  topics: { type: DataTypes.INTEGER },
+  lessons: { type: DataTypes.INTEGER },
+  exercises: { type: DataTypes.INTEGER },
+  validity: { type: DataTypes.INTEGER },
   categoryId: {
     type: DataTypes.INTEGER,
     allowNull: false,

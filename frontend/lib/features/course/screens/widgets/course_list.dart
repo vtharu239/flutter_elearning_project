@@ -66,6 +66,7 @@ class CourseListSection extends StatelessWidget {
             itemCount: filteredCourses.length,
             items: filteredCourses
                 .map((course) => VerticalCourseCard(
+                      courseId: course.id,
                       title: course.title,
                       rating: course.rating,
                       ratingCount: course.ratingCount,

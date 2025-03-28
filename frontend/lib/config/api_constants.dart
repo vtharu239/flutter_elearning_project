@@ -4,11 +4,11 @@ class ApiConstants {
       // -- Phuong
       // 'https://equipped-living-osprey.ngrok-free.app';
 
-  // - Ngoc
-  // 'https://clear-tomcat-informally.ngrok-free.app';
+      // - Ngoc
+      // 'https://clear-tomcat-informally.ngrok-free.app';
 
-  // -- Xuan
-  'https://resolved-sawfish-equally.ngrok-free.app';
+      // -- Xuan
+      'https://resolved-sawfish-equally.ngrok-free.app';
 
   // API endpoints
 
@@ -26,13 +26,6 @@ class ApiConstants {
 
   static const String getProfile = '/profile';
   
-  static const String getAllCourse = '/getAllCourse';
-  static const String getAllCategory = '/getAllCategory';
-  static const String getAllTests = '/getAllTests';
-  static const String getTest = '/getTest';
-  static const String getTestDetail = '/getTestDetail';
-  static const String addComment = '/addComment';
-  
   static const String initiatePhoneChange = '/profile/initiate-phone-change';
   static const String completePhoneChange = '/profile/complete-phone-change';
   static const String unlinkPhone = '/profile/unlink-phone';
@@ -40,6 +33,25 @@ class ApiConstants {
   static const String initiateEmailChange = '/profile/initiate-email-change';
   static const String completeEmailChange = '/profile/complete-email-change';
   static const String unlinkEmail = '/profile/unlink-email';
+
+  static const String getAllTests = '/getAllTests';
+  static const String getTest = '/getTest';
+  static const String getTestDetail = '/getTestDetail';
+  static const String addComment = '/addComment';
+  
+  static const String getUserTestAttempts = '/getUserTestAttempts';
+  
+  static const String getAllCourse = '/getAllCourse';
+  static const String getAllCategory = '/getAllCategory';
+  
+  static const String getCourseById = '/getCourseById';
+  static const String courseObjectives = '/objectives';
+  static const String courseRatingStats = '/rating-stats';
+  static const String courseReviews = '/reviews';
+  static const String courseTeachers = '/teachers';
+  static const String courseCurriculum = '/curriculum';
+  static const String createPaymentUrl = '/api/payment/create-payment-url';
+  static const String getOrderInfo = '/api/orders/'; // Fixed the double slash
 
   // Headers mặc địnhs
   static Map<String, String> getHeaders({bool isImage = false}) {
@@ -56,5 +68,9 @@ class ApiConstants {
   }
 
   // Hàm tiện ích để lấy full URL
-  static String getUrl(String endpoint) => baseUrl + endpoint;
+  static String getUrl(String endpoint, {int? courseId}) {
+    return courseId != null
+        ? '$baseUrl$endpoint/$courseId'
+        : '$baseUrl$endpoint';
+  }
 }
