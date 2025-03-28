@@ -44,3 +44,4 @@ app.*.map.json
 
 # Bỏ qua thư mục build của Android
 android/app/build/
+
