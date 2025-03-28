@@ -34,6 +34,7 @@ class _EditGenderDialogState extends State<EditGenderDialog> {
             title: const Text('Nam'),
             value: 'male',
             groupValue: selectedGender,
+            activeColor: const Color(0xFF00A2FF),
             onChanged: (value) {
               setState(() {
                 selectedGender = value!;
@@ -44,6 +45,7 @@ class _EditGenderDialogState extends State<EditGenderDialog> {
             title: const Text('Nữ'),
             value: 'female',
             groupValue: selectedGender,
+            activeColor: const Color(0xFF00A2FF),
             onChanged: (value) {
               setState(() {
                 selectedGender = value!;
@@ -54,6 +56,7 @@ class _EditGenderDialogState extends State<EditGenderDialog> {
             title: const Text('Khác'),
             value: 'other',
             groupValue: selectedGender,
+            activeColor: const Color(0xFF00A2FF),
             onChanged: (value) {
               setState(() {
                 selectedGender = value!;
@@ -64,10 +67,22 @@ class _EditGenderDialogState extends State<EditGenderDialog> {
       ),
       actions: [
         TextButton(
+          style: TextButton.styleFrom(
+            foregroundColor: const Color(0xFF00A2FF),
+          ),
           onPressed: () => Navigator.pop(context),
           child: const Text('Hủy'),
         ),
         ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFF00A2FF), // Màu xanh #00A2FF
+            foregroundColor: Colors.white, // Màu chữ trắng
+            padding: const EdgeInsets.symmetric(
+                vertical: 10), // Điều chỉnh padding nếu cần
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12), // Bo góc
+            ),
+          ),
           onPressed: () {
             widget.onSave(selectedGender);
             Navigator.pop(context);

@@ -7,10 +7,15 @@ const {
   updateProfile, 
   updateAvatar,
   updateCoverImage,
-  verifyCurrentPassword,
   initiateEmailChange,
   completeEmailChange,
-  changePassword
+  initiatePhoneChange,
+  completePhoneChange,
+  unlinkPhone,
+  unlinkEmail,
+  initiatePasswordChange,
+  verifyPasswordOtp,
+  updatePassword
 } = require('../controllers/profileController');
 
 // Lấy thông tin profile
@@ -33,14 +38,19 @@ router.post('/profile/cover',
   updateCoverImage
 );
 
-// Route kiểm tra mật khẩu
-router.post('/profile/verify-password', authenticateUser, verifyCurrentPassword);
-
 // Route thay đổi email
 router.post('/profile/initiate-email-change', authenticateUser, initiateEmailChange);
 router.post('/profile/complete-email-change', authenticateUser, completeEmailChange);
+router.post('/profile/unlink-email', authenticateUser, unlinkEmail);
 
 // Thay đổi mật khẩu
-router.post('/profile/change-password', authenticateUser, changePassword);
+router.post('/profile/initiate-password-change', authenticateUser, initiatePasswordChange);
+router.post('/profile/verify-password-otp', authenticateUser, verifyPasswordOtp);
+router.post('/profile/update-password', authenticateUser, updatePassword);
+
+// Route cho số điện thoại
+router.post('/profile/initiate-phone-change', authenticateUser, initiatePhoneChange);
+router.post('/profile/complete-phone-change', authenticateUser, completePhoneChange);
+router.post('/profile/unlink-phone', authenticateUser, unlinkPhone);
 
 module.exports = router;

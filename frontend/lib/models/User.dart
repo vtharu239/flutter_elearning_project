@@ -1,24 +1,28 @@
 class User {
   final int id;
-  final String email;
-  final String username;
-  final String fullName;
-  final String gender;
+  final String? email;
+  final String? username;
+  final String? fullName;
+  final String? gender;
   final String? dateOfBirth;
-  final String phoneNo;
+  final String? phoneNo;
   final String? avatarUrl;
   final String? coverImageUrl;
+  final String? googleId;
+  final String? facebookId;
 
   User({
     required this.id,
-    required this.email,
-    required this.username,
-    required this.fullName,
-    required this.gender,
-    required this.dateOfBirth,
-    required this.phoneNo,
+    this.email,
+    this.username,
+    this.fullName,
+    this.gender,
+    this.dateOfBirth,
+    this.phoneNo,
     this.avatarUrl,
     this.coverImageUrl,
+    this.googleId,
+    this.facebookId,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -32,9 +36,11 @@ class User {
       phoneNo: json['phoneNo'],
       avatarUrl: json['avatarUrl'],
       coverImageUrl: json['coverImageUrl'],
+      googleId: json['googleId'],
+      facebookId: json['facebookId'],
     );
   }
-  
+
   // Convert User object to JSON
   Map<String, dynamic> toJson() {
     return {
@@ -47,6 +53,8 @@ class User {
       'phoneNo': phoneNo,
       'avatarUrl': avatarUrl,
       'coverImageUrl': coverImageUrl,
+      'googleId': googleId,
+      'facebookId': facebookId,
     };
   }
 }

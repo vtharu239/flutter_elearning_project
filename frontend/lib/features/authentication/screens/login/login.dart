@@ -38,4 +38,3 @@ class LoginScreen extends StatelessWidget {
     );
   }
 }
-

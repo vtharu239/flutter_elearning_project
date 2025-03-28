@@ -14,6 +14,7 @@ const sequelize = new Sequelize(
       timestamps: true,
       paranoid: true,
     },
+    timezone: '+07:00', // Đặt múi giờ theo giờ Việt Nam (GMT+7)
   }
 );
 

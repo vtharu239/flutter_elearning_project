@@ -1,11 +1,14 @@
 const { sequelize } = require('../config/database');
 const User = require('./User');
-const Category = require('./Category');
-const Course = require('./Course');
 const Test = require('./Test');
 const TestPart = require('./TestPart');
 const Question = require('./Question');
 const Comment = require('./Comment');
+const UserTestAttempt = require('./UserTestAttempt');
+const ExamTypeTags = require('./ExamTypeTags');
+
+const Category = require('./Category');
+const Course = require('./Course');
 const CourseObjective = require('./CourseObjective');
 const CourseTeacher = require('./CourseTeacher');
 const CourseCurriculum = require('./CourseCurriculum');
@@ -15,15 +18,20 @@ const CourseRatingStat = require('./CourseRatingStat');
 const Order = require('./order');
 const LessonSubItem = require('./LessonSubItem');
 const VocabularyWord = require('./VocabularyWord');
+
+const Document = require('./Document');
+
 module.exports = {
   sequelize,
   User,
-  Category,
-  Course,
   Test,
   TestPart,
   Question,
   Comment,
+  UserTestAttempt,
+  ExamTypeTags,
+  Category,
+  Course,
   CourseObjective, 
   CourseTeacher,
   CourseCurriculum, 
@@ -33,13 +41,16 @@ module.exports = {
   Order,
   LessonSubItem,
   VocabularyWord,
+  Document
 };
+
+// Relationships
 User.hasMany(Order, { foreignKey: 'userId', as: 'Orders', onDelete: 'CASCADE' });
 Order.belongsTo(User, { foreignKey: 'userId', as: 'User' });
 
 Course.hasMany(Order, { foreignKey: 'courseId', as: 'Orders', onDelete: 'CASCADE' });
 Order.belongsTo(Course, { foreignKey: 'courseId', as: 'Course' });
-// Relationships
+
 Category.hasMany(Course, { foreignKey: 'categoryId', as: 'Courses', onDelete: 'CASCADE' });
 Course.belongsTo(Category, { foreignKey: 'categoryId', as: 'Category' });
 
@@ -79,3 +90,6 @@ LessonSubItem.belongsTo(CourseCurriculum, { foreignKey: 'curriculumId', as: 'Cur
 
 LessonSubItem.hasMany(VocabularyWord, { foreignKey: 'subItemId', as: 'VocabularyWords', onDelete: 'CASCADE' });
 VocabularyWord.belongsTo(LessonSubItem, { foreignKey: 'subItemId', as: 'SubItem' });
+
+UserTestAttempt.belongsTo(Test, { foreignKey: 'testId', as: 'Test' });
+Test.hasMany(UserTestAttempt, { foreignKey: 'testId', as: 'UserTestAttempts' });

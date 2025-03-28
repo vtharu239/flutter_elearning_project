@@ -1,20 +1,38 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_elearning_project/features/authentication/screens/login/login.dart';
-import 'package:flutter_elearning_project/features/personalization/controllers/auth_controller.dart';
-import 'package:flutter_elearning_project/navigation_menu.dart';
 import 'package:flutter_elearning_project/providers/theme_provider.dart';
+import 'package:flutter_elearning_project/splash_screen.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
 /// -- Use this Class to setup theme s, initial Bindings, any animations and much
 
-class App extends StatelessWidget {
+class App extends StatefulWidget {
   const App({super.key});
+
+  @override
+  State<App> createState() => _AppState();
+}
+
+class _AppState extends State<App> {
+  @override
+  void initState() {
+    super.initState();
+    initialization();
+  }
+
+  void initialization() async {
+    log('pausing...');
+    await Future.delayed(const Duration(seconds: 3));
+    log('unpausing');
+    FlutterNativeSplash.remove();
+  }
 
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
-    final authController = Get.find<AuthController>();
 
     return GetMaterialApp(
       title: 'E-Learning App',
@@ -25,23 +43,33 @@ class App extends StatelessWidget {
               : ThemeMode.light,
       theme: ThemeData(
         brightness: Brightness.light,
-        scaffoldBackgroundColor: Colors.white, // Màu nền cho toàn bộ ứng dụng
-        appBarTheme: const AppBarTheme(
-          backgroundColor:
-              Colors.transparent, // Màu nền AppBar cho toàn bộ ứng dụng
+        scaffoldBackgroundColor: Colors.white,
+        appBarTheme: const AppBarTheme(backgroundColor: Colors.transparent),
+        inputDecorationTheme: const InputDecorationTheme(
+          floatingLabelStyle: TextStyle(color: Color(0xFF00A2FF)),
+          focusedBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: Color(0xFF00A2FF), width: 2.0),
+          ),
+        ),
+        textSelectionTheme: const TextSelectionThemeData(
+          cursorColor: Color(0xFF00A2FF),
         ),
       ),
       darkTheme: ThemeData(
         brightness: Brightness.dark,
-        scaffoldBackgroundColor: const Color.fromARGB(
-            155, 39, 36, 36), // Màu nền cho toàn bộ ứng dụng khi ở chế độ dark
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.transparent, // Màu nền AppBar cho chế độ dark
+        scaffoldBackgroundColor: const Color.fromARGB(155, 39, 36, 36),
+        appBarTheme: const AppBarTheme(backgroundColor: Colors.transparent),
+        inputDecorationTheme: const InputDecorationTheme(
+          floatingLabelStyle: TextStyle(color: Color(0xFF00A2FF)),
+          focusedBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: Color(0xFF00A2FF), width: 2.0),
+          ),
+        ),
+        textSelectionTheme: const TextSelectionThemeData(
+          cursorColor: Color(0xFF00A2FF),
         ),
       ),
-      home: Obx(() => authController.isLoggedIn.value 
-        ? const NavigationMenu() 
-        : const LoginScreen()),
+      home: const SplashScreen(),
     );
   }
 }

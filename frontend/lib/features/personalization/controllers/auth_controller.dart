@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter_elearning_project/config/api_constants.dart';
 import 'package:flutter_elearning_project/features/authentication/screens/login/login.dart';
 import 'package:flutter_elearning_project/models/user.dart';
+import 'package:flutter_elearning_project/navigation_menu.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -105,6 +106,8 @@ class AuthController extends GetxController {
       phoneNo: userData['phoneNo'],
       avatarUrl: userData['avatarUrl'],
       coverImageUrl: userData['coverImageUrl'],
+      googleId: userData['googleId'],
+      facebookId: userData['facebookId'],
     );
   }
 
@@ -118,6 +121,27 @@ class AuthController extends GetxController {
     isLoggedIn.value = false;
     if (shouldNavigate) {
       Get.offAll(() => const LoginScreen());
+    }
+  }
+
+  Future<void> socialLogin(String idToken, String provider) async {
+    try {
+      final response = await http.post(
+        Uri.parse(ApiConstants.getUrl(ApiConstants.socialLogin)),
+        headers: ApiConstants.getHeaders(),
+        body: jsonEncode({'idToken': idToken, 'provider': provider}),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        await setUserAndLoginState(data['user'], data['token'], false);
+        Get.offAll(() => const NavigationMenu());
+        Get.snackbar('Thành công', 'Đăng nhập $provider thành công!');
+      } else {
+        Get.snackbar('Lỗi', jsonDecode(response.body)['message']);
+      }
+    } catch (e) {
+      Get.snackbar('Lỗi', 'Không thể đăng nhập bằng $provider!');
     }
   }
 }

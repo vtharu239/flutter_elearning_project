@@ -34,8 +34,8 @@ class TTexts {
   static const String forgetPassword = "Quên mật khẩu?";
   static const String signIn = "Đăng nhập";
   static const String createAccount = "Tạo tại khoản";
-  static const String orSignInWith = "hoặc đăng ký với";
-  static const String orSignUpWith = "hoặc đăng nhập mới";
+  static const String orSignInWith = "hoặc đăng nhập với";
+  static const String orSignUpWith = "hoặc đăng ký với";
   static const String iAgreeTo = "Tôi đồng ý với";
   static const String privacyPolicy = "Chính sách bảo mật";
   static const String termsOfUse = "Điều khoản sử dụng";
@@ -48,8 +48,9 @@ class TTexts {
   static const String loginTitle = "Chào mừng trở lại,";
   static const String loginSubTitle = "Khám phá vô vàn lựa chọn và trải nghiệm học tập tiện lợi.";
   static const String signupTitle = "Hãy tạo tài khoản của bạn";
+  static const String signupSubTitle = "Cùng nhau bắt đầu hành trình theo đuổi tri thức nhé!";
   static const String forgetPasswordTitle = "Quên mật khẩu";
-  static const String forgetPasswordSubTitle = "Đừng lo, ai cũng có thể quên. Hãy nhập email và chúng tôi sẽ gửi cho bạn mã xác nhận để đặt lại mật khẩu.";
+  static const String forgetPasswordSubTitle = "Đừng lo, ai cũng có lúc quên. Hãy nhập email hoặc số điện thoại bạn đã đăng ký. StudyMate sẽ gửi cho bạn mã xác nhận để đặt lại mật khẩu.";
   static const String changeYourPasswordTitle = "Email đặt lại mật khẩu đã được gửi";
   static const String changeYourPasswordSubTitle = "Bảo mật tài khoản của bạn là ưu tiên hàng đầu của chúng tôi! Chúng tôi đã gửi cho bạn một liên kết an toàn để đặt lại mật khẩu và bảo vệ tài khoản của bạn.";
   static const String confirmEmail = "Xác minh địa chỉ email của bạn!";

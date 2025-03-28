@@ -13,16 +13,24 @@ class TLoginHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final dark = THelperFunctions.isDarkMode(context);
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Image(
-          height: 100,
+          height: 150,
           image: AssetImage(dark ? TImages.lightAppLogo : TImages.darkAppLogo),
         ),
         const SizedBox(height: TSizes.spaceBtwItems),
-        Text(TTexts.loginTitle, style: Theme.of(context).textTheme.headlineMedium),
+        Text(
+          TTexts.loginTitle,
+          style: Theme.of(context).textTheme.headlineMedium,
+          textAlign: TextAlign.center,
+        ),
         const SizedBox(height: TSizes.sm),
-        Text(TTexts.loginSubTitle, style: Theme.of(context).textTheme.bodyMedium),
+        Text(
+          TTexts.loginSubTitle,
+          style: Theme.of(context).textTheme.bodyLarge,
+          textAlign: TextAlign.center,
+        ),
       ],
     );
   }
