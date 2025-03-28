@@ -95,6 +95,7 @@ class CategoryCoursesScreen extends StatelessWidget {
                 itemBuilder: (context, index) {
                   final course = filteredCourses[index];
                   return VerticalCourseCard(
+                    courseId: course.id,
                     title: course.title,
                     rating: course.rating,
                     ratingCount: course.ratingCount,

@@ -2,10 +2,10 @@ class ApiConstants {
   static const String baseUrl =
 
       // -- Phuong
-      'https://equipped-living-osprey.ngrok-free.app';
+      // 'https://equipped-living-osprey.ngrok-free.app';
 
-  // - Ngoc
-  // 'https://clear-tomcat-informally.ngrok-free.app';
+      // - Ngoc
+      'https://clear-tomcat-informally.ngrok-free.app';
 
   // -- Xuan
   // 'https://resolved-sawfish-equally.ngrok-free.app';
@@ -28,13 +28,20 @@ class ApiConstants {
   static const String verifyOTP = '/verify-otp';
   static const String resetPassword = '/reset-password';
   static const String getProfile = '/profile';
-  static const String getAllCourse = '/getAllCourse';
-  static const String getAllCategory = '/getAllCategory';
+  static const String getAllCourse = '/getAllCourses';
+  static const String getAllCategory = '/getAllCategories';
   static const String getAllTests = '/getAllTests';
   static const String getTest = '/getTest';
   static const String getTestDetail = '/getTestDetail';
   static const String addComment = '/addComment';
-
+  static const String getCourseById = '/getCourseById';
+  static const String courseObjectives = '/objectives';
+  static const String courseRatingStats = '/rating-stats';
+  static const String courseReviews = '/reviews';
+  static const String courseTeachers = '/teachers';
+  static const String courseCurriculum = '/curriculum';
+  static const String createPaymentUrl = '/api/payment/create-payment-url';
+  static const String getOrderInfo = '/api/orders/'; // Fixed the double slash
   // Headers mặc địnhs
   static Map<String, String> getHeaders({bool isImage = false}) {
     final headers = {
@@ -50,5 +57,9 @@ class ApiConstants {
   }
 
   // Hàm tiện ích để lấy full URL
-  static String getUrl(String endpoint) => baseUrl + endpoint;
+  static String getUrl(String endpoint, {int? courseId}) {
+    return courseId != null
+        ? '$baseUrl$endpoint/$courseId'
+        : '$baseUrl$endpoint';
+  }
 }

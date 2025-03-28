@@ -10,7 +10,10 @@ class Course {
   final String? imageUrl;
   final int categoryId;
   final String? categoryName;
-
+  final int topics;
+  final int lessons;
+  final int exercises;
+  final int validity;
   Course({
     required this.id,
     required this.title,
@@ -23,6 +26,10 @@ class Course {
     this.imageUrl,
     required this.categoryId,
     this.categoryName,
+    required this.topics,
+    required this.lessons,
+    required this.exercises,
+    required this.validity,
   });
 
   factory Course.fromJson(Map<String, dynamic> json) {
@@ -37,6 +44,10 @@ class Course {
       discountPercentage: _parseDouble(json['discountPercentage']),
       categoryId: _parseInt(json['categoryId']),
       categoryName: json['categoryName'],
+      topics: _parseInt(json['topics']),
+      lessons: _parseInt(json['lessons']),
+      exercises: _parseInt(json['exercises']),
+      validity: _parseInt(json['validity']),
     );
   }
   static int _parseInt(dynamic value) {
