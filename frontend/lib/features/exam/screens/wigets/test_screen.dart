@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -24,10 +25,10 @@ class TestScreen extends StatefulWidget {
   });
 
   @override
-  _TestScreenState createState() => _TestScreenState();
+  TestScreenState createState() => TestScreenState();
 }
 
-class _TestScreenState extends State<TestScreen> {
+class TestScreenState extends State<TestScreen> {
   Map<String, dynamic>? testData;
   String? attemptId;
   List<Map<String, dynamic>> testParts = [];
@@ -93,7 +94,7 @@ class _TestScreenState extends State<TestScreen> {
 
     if (response.statusCode == 201) {
       final data = json.decode(response.body);
-      print('Start Test Response: $data');
+      log('Start Test Response: $data');
       setState(() {
         attemptId = data['attemptId'].toString();
         testParts = List<Map<String, dynamic>>.from(data['testParts'] ?? []);
@@ -135,37 +136,53 @@ class _TestScreenState extends State<TestScreen> {
     });
   }
 
+  Future<void> _showErrorSnackbar(String message) async {
+    // Use GetX for snackbar to avoid BuildContext issues
+    Get.snackbar('Error', message);
+  }
+
   Future<void> submitTest() async {
     if (isSubmitted) return;
     setState(() => isSubmitted = true);
 
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('token');
-    if (token == null) throw Exception('No token found');
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+      if (token == null) throw Exception('No token found');
 
-    final uri = Uri.parse(ApiConstants.getUrl(
-        widget.isFullTest ? '/submitFullTest' : '/submitPractice'));
-    final response = await http.post(
-      uri,
-      headers: {
-        ...ApiConstants.getHeaders(),
-        'Authorization': 'Bearer $token',
-      },
-      body: json.encode({
-        'attemptId': attemptId,
-        'answers': answers,
-        'testId': widget.testId,
-        'partIds': widget.selectedPartIds,
-        'startTime': startTime?.toIso8601String(), // Gửi startTime lên server
-      }),
-    );
+      final uri = Uri.parse(ApiConstants.getUrl(
+          widget.isFullTest ? '/submitFullTest' : '/submitPractice'));
+      final response = await http.post(
+        uri,
+        headers: {
+          ...ApiConstants.getHeaders(),
+          'Authorization': 'Bearer $token',
+        },
+        body: json.encode({
+          'attemptId': attemptId,
+          'answers': answers,
+          'testId': widget.testId,
+          'partIds': widget.selectedPartIds,
+          'startTime': startTime?.toIso8601String(),
+        }),
+      );
 
-    if (response.statusCode == 200) {
-      Get.snackbar('Thành công', 'Đã nộp bài!');
-      Navigator.popUntil(context, (route) => route.isFirst);
-    } else {
-      setState(() => isSubmitted = false);
-      throw Exception('Failed to submit test: ${response.body}');
+      if (response.statusCode == 200) {
+        // Use GetX for navigation to avoid BuildContext issues
+        Get.snackbar('Thành công', 'Đã nộp bài!');
+
+        // Safely navigate back to the first route
+        if (mounted) {
+          Navigator.popUntil(context, (route) => route.isFirst);
+        }
+      } else {
+        throw Exception('Failed to submit test: ${response.body}');
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => isSubmitted = false);
+      }
+      await _showErrorSnackbar('Failed to submit test: $e');
     }
   }
 
@@ -189,7 +206,7 @@ class _TestScreenState extends State<TestScreen> {
       ),
     );
 
-    if (shouldExit == true) {
+    if (shouldExit == true && mounted) {
       Navigator.popUntil(context, (route) => route.isFirst);
     }
   }
@@ -361,7 +378,7 @@ class _TestScreenState extends State<TestScreen> {
                         const SizedBox(height: 8),
                         ...optionKeys.map((option) => RadioListTile<String>(
                               title: Text(
-                                '${option}: ${options[option]}',
+                                '$option: ${options[option]}',
                                 style: const TextStyle(fontSize: 14),
                               ),
                               value: option,
@@ -424,10 +441,10 @@ class AudioPlayerWidget extends StatefulWidget {
   const AudioPlayerWidget({super.key, required this.audioUrl});
 
   @override
-  _AudioPlayerWidgetState createState() => _AudioPlayerWidgetState();
+  AudioPlayerWidgetState createState() => AudioPlayerWidgetState();
 }
 
-class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
+class AudioPlayerWidgetState extends State<AudioPlayerWidget> {
   late AudioPlayer _audioPlayer;
   bool isPlaying = false;
 

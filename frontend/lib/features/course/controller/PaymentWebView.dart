@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_elearning_project/features/course/screens/widgets/CourseDetailScreen.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -65,7 +67,7 @@ class _PaymentWebViewState extends State<PaymentWebView> {
         _handleDeepLink(uri);
       }
     } catch (e) {
-      print('Error getting initial link: $e');
+      log('Error getting initial link: $e');
     }
 
     // Listen for incoming deep links
@@ -74,7 +76,7 @@ class _PaymentWebViewState extends State<PaymentWebView> {
         _handleDeepLink(uri);
       }
     }, onError: (err) {
-      print('Error listening for deep links: $err');
+      log('Error listening for deep links: $err');
       _navigateToCourseDetailScreen(false);
     });
   }
@@ -82,7 +84,6 @@ class _PaymentWebViewState extends State<PaymentWebView> {
   // Handle deep link
   void _handleDeepLink(Uri uri) async {
     if (uri.scheme == 'myapp' && uri.host == 'payment-result') {
-      final success = uri.queryParameters['success'] == 'true';
       final orderId = int.tryParse(uri.queryParameters['orderId'] ?? '');
 
       if (orderId != null && orderId == widget.orderId) {
@@ -96,7 +97,7 @@ class _PaymentWebViewState extends State<PaymentWebView> {
             _navigateToCourseDetailScreen(false);
           }
         } catch (e) {
-          print('Error verifying payment status: $e');
+          log('Error verifying payment status: $e');
           _navigateToCourseDetailScreen(false);
         }
       } else {
@@ -123,13 +124,13 @@ class _PaymentWebViewState extends State<PaymentWebView> {
             _navigateToCourseDetailScreen(false);
           }
         } catch (e) {
-          print('Error polling order status: $e');
+          log('Error polling order status: $e');
           timer.cancel();
           _navigateToCourseDetailScreen(false);
         }
       });
     } else {
-      print('Could not launch ${widget.paymentUrl}');
+      log('Could not launch ${widget.paymentUrl}');
       _navigateToCourseDetailScreen(false);
     }
   }
@@ -171,7 +172,7 @@ class _PaymentWebViewState extends State<PaymentWebView> {
             }
           },
           onWebResourceError: (WebResourceError error) {
-            print('WebView error: ${error.description}');
+            log('WebView error: ${error.description}');
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content:

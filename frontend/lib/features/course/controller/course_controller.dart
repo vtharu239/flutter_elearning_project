@@ -87,7 +87,7 @@ class CourseController extends GetxController {
         _fetchReviews(courseId),
       ]);
     } catch (e) {
-      print('Error fetching course details: $e');
+      log('Error fetching course details: $e');
     } finally {
       isLoading.value = false;
     }
