@@ -14,10 +14,7 @@ const Test = sequelize.define('Test', {
   categoryId: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    references: {
-      model: 'Categories',
-      key: 'id'
-    }
+    references: { model: 'Categories', key: 'id' }
   },
   duration: { // Thời gian làm bài (phút)
     type: DataTypes.INTEGER,
@@ -40,6 +37,24 @@ const Test = sequelize.define('Test', {
     defaultValue: 0
   },
   imageUrl: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  totalQuestions: { // Tổng số câu hỏi
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 0
+  },
+  scaledScoreMax: { // Điểm tối đa scaled
+    type: DataTypes.INTEGER,
+    allowNull: true // Để null nếu không dùng scaled score
+  },
+  examType: { // Loại kỳ thi: TOEIC, IELTS, TOEFL,...
+    type: DataTypes.ENUM('TOEIC', 'IELTS', 'TOEFL', 'OTHER'),
+    allowNull: false,
+    defaultValue: 'TOEIC'
+  },
+  fullAudioUrl: { 
     type: DataTypes.STRING,
     allowNull: true
   }

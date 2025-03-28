@@ -1,30 +1,53 @@
 const express = require('express');
 const router = express.Router();
-const { testController, upload } = require('../controllers/testController');
+const { testController, upload: testUpload } = require('../controllers/testController');
+const { testPartController, upload: testPartUpload } = require('../controllers/testPartController');
+const { testQuestionController, upload: testQuestionUpload } = require('../controllers/testQuestionController');
+const { testCommentController } = require('../controllers/testCommentController');
+const { practiceController } = require('../controllers/practiceController');
+const { fullTestController } = require('../controllers/fullTestController');
+const { examTypeTagsController } = require('../controllers/examTypeTagsController');
+const { userTestAttemptController } = require('../controllers/userTestAttemptController');
 const authMiddleware = require('../middleware/auth');
 
 router.get('/getAllTests', testController.getAllTests);
 router.get('/getTest/:id', testController.getTestById);
 router.get('/getTestDetail/:id', testController.getTestDetail);
 
-// Test CRUD với upload ảnh
-router.post('/createTest', authMiddleware, upload, testController.createTest);
-router.put('/updateTest/:id', authMiddleware, upload, testController.updateTest);
+// Test CRUD
+router.post('/createTest', authMiddleware, testUpload, testController.createTest);
+router.put('/updateTest/:id', authMiddleware, testUpload, testController.updateTest);
 router.delete('/deleteTest/:id', authMiddleware, testController.deleteTest);
 
 // TestPart CRUD
-router.post('/createTestPart', authMiddleware, testController.createTestPart);
-router.put('/updateTestPart/:id', authMiddleware, testController.updateTestPart);
-router.delete('/deleteTestPart/:id', authMiddleware, testController.deleteTestPart);
+router.post('/createTestPart', authMiddleware, testPartUpload, testPartController.createTestPart);
+router.put('/updateTestPart/:id', authMiddleware, testPartUpload, testPartController.updateTestPart);
+router.delete('/deleteTestPart/:id', authMiddleware, testPartController.deleteTestPart);
 
 // Question CRUD
-router.post('/createQuestion', authMiddleware, testController.createQuestion);
-router.put('/updateQuestion/:id', authMiddleware, testController.updateQuestion);
-router.delete('/deleteQuestion/:id', authMiddleware, testController.deleteQuestion);
+router.post('/createQuestion', authMiddleware, testQuestionUpload, testQuestionController.createQuestion);
+router.put('/updateQuestion/:id', authMiddleware, testQuestionUpload, testQuestionController.updateQuestion);
+router.delete('/deleteQuestion/:id', authMiddleware, testQuestionController.deleteQuestion);
 
-// Comment CRUD với auth
-router.post('/addComment', authMiddleware, testController.addComment);
-router.put('/updateComment/:id', authMiddleware, testController.updateComment);
-router.delete('/deleteComment/:id', authMiddleware, testController.deleteComment);
+// Các route khác giữ nguyên
+router.post('/addComment', authMiddleware, testCommentController.addComment);
+router.put('/updateComment/:id', authMiddleware, testCommentController.updateComment);
+router.delete('/deleteComment/:id', authMiddleware, testCommentController.deleteComment);
+
+router.post('/startPractice', authMiddleware, practiceController.startPractice);
+router.post('/submitPractice', authMiddleware, practiceController.submitPractice);
+router.get('/getPracticeResult/:attemptId', authMiddleware, practiceController.getPracticeResult);
+router.get('/restorePractice/:testId', authMiddleware, practiceController.restorePractice);
+router.post('/savePractice', authMiddleware, practiceController.savePractice);
+
+router.post('/startFullTest', authMiddleware, fullTestController.startFullTest);
+router.post('/submitFullTest', authMiddleware, fullTestController.submitFullTest);
+router.get('/getFullTestResult/:attemptId', authMiddleware, fullTestController.getFullTestResult);
+
+router.post('/createExamTypeTags', authMiddleware, examTypeTagsController.createExamTypeTags);
+router.get('/getExamTypeTags/:examType', authMiddleware, examTypeTagsController.getExamTypeTags);
+router.delete('/deleteExamTypeTags/:examType', authMiddleware, examTypeTagsController.deleteExamTypeTags);
+
+router.get('/getUserTestAttempts/:testId', authMiddleware, userTestAttemptController.getUserTestAttempts);
 
 module.exports = router;
