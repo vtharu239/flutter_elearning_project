@@ -113,7 +113,7 @@ flutter:
     - assets/icons/payment_methods/
     - assets/images/on_boarding_images/
     - assets/images/content/
-
+    - assets/doc/
 
    #--------------- LOCAL FONTS ------------------#
   fonts:
