@@ -25,7 +25,7 @@ class RelatedArticleList extends StatelessWidget {
                   width: 80,
                   height: 80,
                   child: Image.asset(
-                    "assets/doc/thekeytoieltssuccess.png${article.imageUrl}", // Đường dẫn đến ảnh trong thư mục assets
+                    "assets/doc/thekeytoieltssuccess.png", // Đường dẫn đến ảnh trong thư mục assets
                     fit: BoxFit.cover,
                   ),
                 ),
