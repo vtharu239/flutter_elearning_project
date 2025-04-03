@@ -1,9 +1,6 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_elearning_project/providers/theme_provider.dart';
 import 'package:flutter_elearning_project/splash_screen.dart';
-import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
@@ -20,14 +17,6 @@ class _AppState extends State<App> {
   @override
   void initState() {
     super.initState();
-    initialization();
-  }
-
-  void initialization() async {
-    log('pausing...');
-    await Future.delayed(const Duration(seconds: 3));
-    log('unpausing');
-    FlutterNativeSplash.remove();
   }
 
   @override
