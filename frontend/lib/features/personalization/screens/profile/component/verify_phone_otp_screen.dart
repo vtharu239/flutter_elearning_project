@@ -116,7 +116,7 @@ class VerifyPhoneOtpScreenState extends State<VerifyPhoneOtpScreen> {
         Get.find<AuthController>().refreshUserData();
         Get.back(); // This will go back to previous screen
         Get.back(); // This will go back to ProfileScreen
-        Get.snackbar('Thành công', 'Thay đổi số điện thoại thành công!');
+        Get.snackbar('Thành công', 'Cập nhật số điện thoại thành công!');
       } else {
         Get.snackbar('Lỗi', jsonDecode(response.body)['message']);
       }
