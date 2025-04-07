@@ -114,8 +114,10 @@ class VerticalCourseCard extends StatelessWidget {
                   const SizedBox(height: TSizes.sm),
                   LayoutBuilder(
                     builder: (context, constraints) {
-                      if (constraints.maxWidth > 260) {
+                      if (constraints.maxWidth > 280) {
                         return Row(
+                          mainAxisSize: MainAxisSize
+                              .min, // Make row take minimum required space
                           children: [
                             RatingStars(
                                 rating: rating, ratingCount: ratingCount),
@@ -135,6 +137,8 @@ class VerticalCourseCard extends StatelessWidget {
                                     color: isDarkMode
                                         ? Colors.grey[400]
                                         : Colors.black,
+                                    overflow: TextOverflow
+                                        .ellipsis, // Truncate text if needed
                                   ),
                                 ),
                               ],
