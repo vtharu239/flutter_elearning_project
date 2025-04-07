@@ -11,6 +11,7 @@ import 'package:flutter_elearning_project/features/course/controller/course_obje
 import 'package:flutter_elearning_project/features/course/controller/course_rating_stat.dart';
 import 'package:flutter_elearning_project/features/course/controller/course_review.dart';
 import 'package:flutter_elearning_project/features/course/controller/course_teacher.dart';
+import 'package:flutter_elearning_project/features/course/screens/widgets/learning_screen.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart'; // Thêm thư viện
@@ -43,40 +44,93 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
   bool isLoadingReviews = true;
   bool isLoadingRatingStats = true;
   bool hasPurchased = false;
-
+  bool isLoadingPurchaseStatus = true;
   List<bool> _expandedItems = [];
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 5, vsync: this);
     courseController = Get.find<CourseController>();
-    // Khởi tạo hasPurchased từ SharedPreferences
-    _loadPurchaseStatus();
-    // Fetch dữ liệu khóa học
-    fetchCourseDetail().then((_) {
-      fetchCourseObjectives();
-      fetchCourseTeachers();
-      fetchCourseCurriculum();
-      fetchCourseReviews();
-      fetchCourseRatingStats();
+    // First check if we have cached purchase status in SharedPreferences
+    _checkCachedPurchaseStatus().then((cachedStatus) {
+      // Fetch dữ liệu khóa học
+      // Then fetch course data and other details
+      fetchCourseDetail().then((_) {
+        fetchCourseObjectives();
+        fetchCourseTeachers();
+        fetchCourseCurriculum();
+        fetchCourseReviews();
+        fetchCourseRatingStats();
+        fetchPurchaseStatus();
+// Ưu tiên trạng thái từ cache
+        setState(() {
+          hasPurchased = cachedStatus ?? false;
+          isLoadingPurchaseStatus = cachedStatus != null ? false : true;
+        });
+        // Kiểm tra paymentSuccess từ PaymentWebView
+        if (widget.paymentSuccess == true) {
+          setState(() {
+            hasPurchased = true;
+            isLoadingPurchaseStatus = false;
+          });
+          // Store this information in SharedPreferences
+          _storePurchaseStatus(true);
+          // Hiển thị SnackBar
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content:
+                    Text('Thanh toán thành công! Bạn đã đăng ký khóa học này.'),
+                backgroundColor: Colors.green,
+              ),
+            );
+          });
+        } else if (widget.paymentSuccess == false) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Thanh toán thất bại hoặc bị hủy.'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          });
+        } else {
+          // Nếu không có paymentSuccess, dùng cached status hoặc fetch từ backend
+          setState(() {
+            hasPurchased = cachedStatus ?? false;
+          });
+          fetchPurchaseStatus();
+        }
+      });
     });
   }
 
-  // Hàm load trạng thái đã mua từ SharedPreferences
-  Future<void> _loadPurchaseStatus() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      hasPurchased = prefs.getBool('hasPurchased_${widget.courseId}') ?? false;
-    });
+  Future<bool?> _checkCachedPurchaseStatus() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final userId = await _getUserId();
+      if (userId != null) {
+        return prefs.getBool('hasPurchased_${userId}_${widget.courseId}');
+      }
+      return null;
+    } catch (e) {
+      log('Error checking cached purchase status: $e');
+      return null;
+    }
   }
 
-  // Hàm lưu trạng thái đã mua vào SharedPreferences
-  Future<void> _savePurchaseStatus(bool value) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('hasPurchased_${widget.courseId}', value);
-    setState(() {
-      hasPurchased = value;
-    });
+// Add this method to store purchase status
+  Future<void> _storePurchaseStatus(bool status) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final userId = await _getUserId();
+      if (userId != null) {
+        await prefs.setBool(
+            'hasPurchased_${userId}_${widget.courseId}', status);
+      }
+    } catch (e) {
+      log('Error storing purchase status: $e');
+    }
   }
 
   @override
@@ -130,7 +184,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
       setState(() => isLoading = false);
       if (mounted) {
         // Kiểm tra mounted trước khi sử dụng context
-        showErrorSnackbar('Error loading course: $e');
+        //   showErrorSnackbar('Error loading course: $e');
       }
     }
   }
@@ -160,7 +214,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
       setState(() => isLoadingObjectives = false);
       if (mounted) {
         // Kiểm tra mounted
-        showErrorSnackbar('Error loading course objectives: $e');
+        //    showErrorSnackbar('Error loading course objectives: $e');
       }
     }
   }
@@ -189,7 +243,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
       setState(() => isLoadingTeachers = false);
       if (mounted) {
         // Kiểm tra mounted
-        showErrorSnackbar('Error loading course teachers: $e');
+        //  showErrorSnackbar('Error loading course teachers: $e');
       }
     }
   }
@@ -260,7 +314,9 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
   }
 
   Widget _buildCurriculumItem(int index, CourseCurriculumItem item) {
+    final controller = ExpansionTileController();
     return ExpansionTile(
+      controller: controller,
       title: Row(
         children: [
           Expanded(
@@ -296,10 +352,13 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
               backgroundColor: Colors.red,
             ),
           );
-          return;
+          if (controller.isExpanded) {
+            controller.collapse(); // Chỉ đóng nếu đang mở
+          }
+          return; // Thoát hàm để không cập nhật _expandedItems
         }
         setState(() {
-          _expandedItems[index] = expanded;
+          _expandedItems[index] = expanded; // Chỉ cập nhật nếu đã mua
         });
       },
       children: item.lessons.map((lesson) {
@@ -533,7 +592,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
       setState(() => isLoadingReviews = false);
       if (mounted) {
         // Kiểm tra mounted
-        showErrorSnackbar('Error loading course reviews: $e');
+        //  showErrorSnackbar('Error loading course reviews: $e');
       }
     }
   }
@@ -560,7 +619,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
       setState(() => isLoadingRatingStats = false);
       if (mounted) {
         // Kiểm tra mounted
-        showErrorSnackbar('Error loading rating stats: $e');
+        //  showErrorSnackbar('Error loading rating stats: $e');
       }
     }
   }
@@ -832,55 +891,58 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
                   ],
                 ),
                 const SizedBox(height: 24),
-                hasPurchased
-                    ? ElevatedButton(
-                        onPressed: () {
-                          _startLearning();
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green[700],
-                          minimumSize: const Size(double.infinity, 48),
-                        ),
-                        child: const Text(
-                          'Học ngay',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                      )
-                    : Column(
-                        children: [
-                          ElevatedButton(
+                // Check if loading purchase status
+                isLoadingPurchaseStatus
+                    ? const Center(child: CircularProgressIndicator())
+                    : hasPurchased
+                        ? ElevatedButton(
                             onPressed: () {
-                              _showCourseRegistrationDialog();
+                              _startLearning();
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue[700],
+                              backgroundColor: Colors.green[700],
                               minimumSize: const Size(double.infinity, 48),
                             ),
                             child: const Text(
-                              'ĐĂNG KÝ HỌC NGAY',
+                              'Học ngay',
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
                               ),
                             ),
+                          )
+                        : Column(
+                            children: [
+                              ElevatedButton(
+                                onPressed: () {
+                                  _showCourseRegistrationDialog();
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blue[700],
+                                  minimumSize: const Size(double.infinity, 48),
+                                ),
+                                child: const Text(
+                                  'ĐĂNG KÝ HỌC NGAY',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              OutlinedButton(
+                                onPressed: () {
+                                  _startFreeTrial();
+                                },
+                                style: OutlinedButton.styleFrom(
+                                  minimumSize: const Size(double.infinity, 48),
+                                ),
+                                child: const Text('Học thử miễn phí'),
+                              ),
+                            ],
                           ),
-                          const SizedBox(height: 12),
-                          OutlinedButton(
-                            onPressed: () {
-                              _startFreeTrial();
-                            },
-                            style: OutlinedButton.styleFrom(
-                              minimumSize: const Size(double.infinity, 48),
-                            ),
-                            child: const Text('Học thử miễn phí'),
-                          ),
-                        ],
-                      ),
                 const SizedBox(height: 24),
                 _buildCourseStats(),
                 const SizedBox(height: 16),
@@ -909,10 +971,11 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
   }
 
   void _startLearning() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Đang mở khóa học ${courseData?.title}...'),
-        backgroundColor: Colors.green,
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => LearningScreen(
+          courseTitle: courseData?.title ?? 'Complete TOEIC',
+        ),
       ),
     );
   }
@@ -953,27 +1016,34 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
 
       if (mounted) {
         // Kiểm tra mounted trước khi sử dụng Navigator
-        Navigator.of(context).pop();
+        Navigator.of(context).pop(); // Đóng dialog loading
       }
 
       if (paymentResult['success'] == true &&
           paymentResult['paymentUrl'] != null) {
         final orderId = paymentResult['orderId'];
 
-        if (mounted) {
-          // Kiểm tra mounted trước khi push Navigator
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => PaymentWebView(
-                paymentUrl: paymentResult['paymentUrl'],
-                orderId: orderId,
-                courseId: widget.courseId,
-                onPaymentComplete: (success) {
-                  _handlePaymentComplete(success, orderId);
-                },
-              ),
+        // Đẩy sang PaymentWebView và chờ kết quả
+        final paymentSuccess = await Navigator.of(context).push<bool>(
+          MaterialPageRoute(
+            builder: (context) => PaymentWebView(
+              paymentUrl: paymentResult['paymentUrl'],
+              orderId: orderId,
+              courseId: widget.courseId,
+              onPaymentComplete: (success) {
+                _handlePaymentComplete(success, orderId);
+              },
             ),
-          );
+          ),
+        );
+        // Cập nhật state ngay khi quay lại từ PaymentWebView
+        if (paymentSuccess == true) {
+          setState(() {
+            hasPurchased = true;
+            isLoadingPurchaseStatus = false;
+          });
+          // Lưu trạng thái vào SharedPreferences
+          _storePurchaseStatus(true);
         }
       } else if (mounted) {
         // Kiểm tra mounted trước khi sử dụng ScaffoldMessenger
@@ -1002,7 +1072,17 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
   void _handlePaymentComplete(bool success, int orderId) async {
     try {
       if (success) {
-        await _savePurchaseStatus(true); // Lưu trạng thái đã mua
+        final userId = await _getUserId();
+        if (userId != null) {
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setBool(
+              'hasPurchased_${userId}_${widget.courseId}', true);
+          setState(() {
+            hasPurchased = true;
+            isLoadingPurchaseStatus = false;
+          });
+        }
+
         if (mounted) {
           // Kiểm tra mounted
           ScaffoldMessenger.of(context).showSnackBar(
@@ -1036,6 +1116,12 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
   }
 
   void _showCourseRegistrationDialog() {
+    // First check if user has already purchased
+    if (hasPurchased) {
+      _startLearning();
+      return;
+    }
+
     final discountedPrice = courseData?.originalPrice != null
         ? courseData!.originalPrice *
             (1 - (courseData!.discountPercentage / 100))
@@ -1718,6 +1804,84 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
         );
       }).toList(),
     );
+  }
+
+  Future<void> fetchPurchaseStatus() async {
+    try {
+      setState(() => isLoadingPurchaseStatus = true);
+
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+      if (token == null) {
+        setState(() {
+          hasPurchased = false;
+          isLoadingPurchaseStatus = false;
+        });
+        return;
+      }
+
+      // Direct API call to get all user orders
+      final response = await http.get(
+        Uri.parse('${ApiConstants.baseUrl}/api/user/orders'),
+        headers: {
+          ...ApiConstants.getHeaders(),
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      log('Orders API response status: ${response.statusCode}');
+      log('Response body: ${response.body}');
+      if (response.statusCode == 200) {
+        final List<dynamic> orders = jsonDecode(response.body);
+        log('Orders received: ${orders.length}');
+
+        // Debug output to check what's in the orders
+        orders.forEach((order) {
+          log('Order: courseId=${order['courseId']}, status=${order['status']}');
+        });
+
+        // Check specifically for any "completed" order for this course
+        final bool hasCompletedOrder = orders.any((order) =>
+            order['courseId'] == widget.courseId &&
+            order['status'] == 'completed');
+
+        log('Has completed order for course ${widget.courseId}: $hasCompletedOrder');
+
+        // Chỉ cập nhật nếu chưa có trạng thái từ thanh toán
+        if (!hasPurchased) {
+          setState(() {
+            hasPurchased = hasCompletedOrder;
+            isLoadingPurchaseStatus = false;
+          });
+          _storePurchaseStatus(hasCompletedOrder);
+        } else {
+          setState(() => isLoadingPurchaseStatus = false);
+        }
+      } else {
+        log('Failed to fetch orders: ${response.statusCode}, ${response.body}');
+        setState(() {
+          hasPurchased = false;
+          isLoadingPurchaseStatus = false;
+        });
+      }
+    } catch (e) {
+      log('Error fetching purchase status: $e');
+      setState(() {
+        hasPurchased = false;
+        isLoadingPurchaseStatus = false;
+      });
+    }
+  }
+
+  Future<int?> _getUserId() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      return prefs.getInt('userId');
+    } catch (e) {
+      log('Error getting user ID: $e');
+      return null;
+    }
   }
 }
 

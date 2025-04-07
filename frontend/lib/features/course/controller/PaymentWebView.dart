@@ -1,7 +1,6 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_elearning_project/features/course/screens/widgets/CourseDetailScreen.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:webview_flutter_android/webview_flutter_android.dart';
@@ -35,7 +34,7 @@ class _PaymentWebViewState extends State<PaymentWebView> {
   late AppLinks _appLinks; // Use AppLinks
   StreamSubscription<Uri>? _linkSubscription;
   Timer? _pollingTimer;
-
+  bool _hasNavigated = false;
   @override
   void initState() {
     super.initState();
@@ -83,25 +82,29 @@ class _PaymentWebViewState extends State<PaymentWebView> {
 
   // Handle deep link
   void _handleDeepLink(Uri uri) async {
-    if (uri.scheme == 'myapp' && uri.host == 'payment-result') {
+    if (uri.scheme == 'myapp' &&
+        uri.host == 'payment-result' &&
+        !_hasNavigated) {
       final orderId = int.tryParse(uri.queryParameters['orderId'] ?? '');
-
+      final responseCode = uri.queryParameters['vnp_ResponseCode'];
       if (orderId != null && orderId == widget.orderId) {
         // Verify the payment status with the backend
         try {
           final paymentService = PaymentService();
           final orderInfo = await paymentService.getOrderInfo(widget.orderId);
-          if (orderInfo['status'] == 'completed') {
+          log('Order info from deep link: $orderInfo');
+          if (orderInfo['status'] == 'completed' || responseCode == '00') {
+            setState(() => _hasNavigated = true);
             _navigateToCourseDetailScreen(true);
           } else {
+            setState(() => _hasNavigated = true);
             _navigateToCourseDetailScreen(false);
           }
         } catch (e) {
           log('Error verifying payment status: $e');
+          setState(() => _hasNavigated = true);
           _navigateToCourseDetailScreen(false);
         }
-      } else {
-        _navigateToCourseDetailScreen(false);
       }
     }
   }
@@ -159,15 +162,43 @@ class _PaymentWebViewState extends State<PaymentWebView> {
               _isLoading = true;
             });
           },
-          onPageFinished: (String url) {
+          onPageFinished: (String url) async {
             setState(() {
-              _isLoading = false;
+              _isLoading = true;
             });
-            if (url.contains('vnpay-return')) {
-              if (url.contains('vnp_ResponseCode=00')) {
-                _navigateToCourseDetailScreen(true);
-              } else if (url.contains('vnp_ResponseCode=')) {
-                _navigateToCourseDetailScreen(false);
+            log('Redirect URL: $url'); // Log URL để kiểm tra
+
+            if (url.contains('vnpay-return') && !_hasNavigated) {
+              try {
+                final uri = Uri.parse(url);
+                final responseCode = uri.queryParameters['vnp_ResponseCode'];
+                final orderId =
+                    int.tryParse(uri.queryParameters['vnp_TxnRef'] ?? '');
+                log('Response Code: $responseCode, Order ID: $orderId');
+
+                if (orderId != null && orderId == widget.orderId) {
+                  final paymentService = PaymentService();
+                  final orderInfo =
+                      await paymentService.getOrderInfo(widget.orderId);
+                  log('Order Info: $orderInfo');
+                  if (orderInfo['status'] == 'completed' ||
+                      responseCode == '00') {
+                    if (mounted && !_hasNavigated) {
+                      _hasNavigated = true; // Đánh dấu đã chuyển màn hình
+                      _navigateToCourseDetailScreen(true);
+                    }
+                  } else {
+                    if (mounted) {
+                      _hasNavigated = true; // Đánh dấu đã chuyển màn hình
+                      _navigateToCourseDetailScreen(false);
+                    }
+                  }
+                }
+              } catch (e) {
+                log('Error processing payment return: $e');
+                if (mounted) {
+                  _navigateToCourseDetailScreen(false);
+                }
               }
             }
           },
@@ -187,6 +218,23 @@ class _PaymentWebViewState extends State<PaymentWebView> {
       ..loadRequest(Uri.parse(widget.paymentUrl));
   }
 
+// Hàm retry để chờ backend cập nhật
+  Future<void> checkOrderStatusWithRetry(int orderId, {int retries = 5}) async {
+    for (int i = 0; i < retries; i++) {
+      final orderInfo = await PaymentService().getOrderInfo(orderId);
+      log('Retry $i: $orderInfo');
+      if (orderInfo['status'] == 'completed') {
+        _navigateToCourseDetailScreen(true);
+        return;
+      } else if (orderInfo['status'] == 'failed') {
+        _navigateToCourseDetailScreen(false);
+        return;
+      }
+      await Future.delayed(Duration(seconds: 2)); // Chờ 2 giây
+    }
+    _navigateToCourseDetailScreen(false); // Hết retries, coi như thất bại
+  }
+
   void _initializeWebViewPlatform() {
     if (kIsWeb) {
       //WebViewPlatform.instance = WebWebViewPlatform();
@@ -199,11 +247,7 @@ class _PaymentWebViewState extends State<PaymentWebView> {
 
   void _navigateToCourseDetailScreen(bool success) {
     widget.onPaymentComplete(success);
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (context) => CourseDetailScreen(courseId: widget.courseId),
-      ),
-    );
+    Navigator.of(context).pop(success);
   }
 
   @override
