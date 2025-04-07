@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/database');
+const DocumentCategory = require('./DocumentCategory');
 
 const Document = sequelize.define('Document', {
   id: {
@@ -7,9 +8,13 @@ const Document = sequelize.define('Document', {
     autoIncrement: true,
     primaryKey: true,
   },
-  category: {
-    type: DataTypes.STRING,
+  categoryId: {
+    type: DataTypes.INTEGER,
     allowNull: false,
+    references: {
+      model: DocumentCategory,
+      key: 'id',
+    },
   },
   title: {
     type: DataTypes.STRING,
@@ -35,9 +40,16 @@ const Document = sequelize.define('Document', {
     type: DataTypes.DATE,
     allowNull: false,
     defaultValue: DataTypes.NOW,
+  },
+  status: {
+    type: DataTypes.STRING,
+    defaultValue: 'pending'
   }
+  
 }, {
-  tableName: 'Documents'
+  tableName: 'Documents',
 });
+
+Document.belongsTo(DocumentCategory, { foreignKey: 'categoryId', as: 'category' });
 
 module.exports = Document;
