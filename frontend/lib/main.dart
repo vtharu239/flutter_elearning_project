@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_elearning_project/features/personalization/controllers/auth_controller.dart';
 import 'package:flutter_elearning_project/providers/auth_provider.dart';
 import 'package:flutter_elearning_project/providers/theme_provider.dart';
-import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'app.dart';
@@ -14,7 +13,7 @@ import 'package:intl/date_symbol_data_local.dart';
 void main() async {
   // debugPaintSizeEnabled = true; // Bật Debug Paint
 
-  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting(
       'vi_VN', null); //intl để định dạng ngày theo ngôn ngữ
 
@@ -33,10 +32,6 @@ void main() async {
 
   // Kiểm tra trạng thái đăng nhập trước khi render UI
   await authController.checkLoginStatus();
-
-  // Chờ 3 giây trước khi loại bỏ Splash Screen Native
-  await Future.delayed(const Duration(seconds: 3));
-  FlutterNativeSplash.remove(); // Loại bỏ Splash Screen Native
 
   runApp(
     MultiProvider(

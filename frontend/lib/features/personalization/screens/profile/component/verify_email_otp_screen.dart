@@ -117,7 +117,7 @@ class VerifyEmailOtpScreenState extends State<VerifyEmailOtpScreen> {
         Get.back(); // This will go back to previous screen
         Get.back(); // This will go back to ProfileScreen
         Get.back(); // This will go back to ProfileScreen
-        Get.snackbar('Thành công', 'Thay đổi email thành công!');
+        Get.snackbar('Thành công', 'Cập nhật email thành công!');
       } else {
         Get.snackbar('Lỗi', jsonDecode(response.body)['message']);
       }

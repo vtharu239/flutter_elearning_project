@@ -8,7 +8,6 @@ environment:
   sdk: ^3.5.3
 
 
-
 #--------------- PACKAGES ------------------#
 dependencies:
   flutter:
@@ -26,7 +25,6 @@ dependencies:
   logger: ^2.2.0
   url_launcher: ^6.2.6
   carousel_slider: ^5.0.0
-  flutter_native_splash: ^2.4.0
   smooth_page_indicator: ^1.1.0
   connectivity_plus: ^6.0.3
   lottie: ^3.1.0 # OR RIVE
@@ -46,7 +44,6 @@ dependencies:
   flutter_rating_bar: ^4.0.1
   capped_progress_indicator: ^0.0.2
 
-  
   provider: ^6.1.2
   page_transition: ^2.1.0
   google_fonts: ^6.2.1
@@ -64,7 +61,6 @@ dependencies:
   flutter_facebook_auth: ^7.1.1
   country_code_picker: ^3.2.0
   platform: ^3.1.6
-  flutter_launcher_icons: ^0.14.3
   audioplayers: ^5.2.1
   
   
@@ -76,17 +72,6 @@ dev_dependencies:
 
   intl_translation: ^0.20.1
   flutter_lints: ^5.0.0
-
-flutter_native_splash:
-  color: "#00A2FF" # Màu nền xanh
-  image: assets/logos/studymate_logo.png
-  android: true
-  ios: true
-
-flutter_launcher_icons:
-  android: "launcher_icon"
-  ios: true
-  image_path: "assets/logos/studymate_icon.png"
 
 flutter:
 
