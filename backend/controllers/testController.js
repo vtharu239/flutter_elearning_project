@@ -14,15 +14,11 @@ const ensureDirectoryExists = (dir) => {
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     if (file.fieldname === 'image') {
-      const dir = 'uploads/images/';
-      ensureDirectoryExists(dir);
-      cb(null, dir);
-    } else if (file.fieldname === 'audio') {
-      const dir = 'uploads/audio/';
+      const dir = 'uploads/test_images/';
       ensureDirectoryExists(dir);
       cb(null, dir);
     } else if (file.fieldname === 'fullAudio') {
-      const dir = 'uploads/audio/full/';
+      const dir = 'uploads/test_audio/full/';
       ensureDirectoryExists(dir);
       cb(null, dir);
     }
@@ -59,7 +55,6 @@ const upload = multer({
   }
 }).fields([
   { name: 'image', maxCount: 1 },
-  { name: 'audio', maxCount: 1 },
   { name: 'fullAudio', maxCount: 1 }
 ]);
 
@@ -115,7 +110,7 @@ const testController = {
       const test = await Test.findByPk(id, {
         include: [
           { model: Category, as: 'Category', attributes: ['id', 'name'] },
-          { model: TestPart, as: 'Parts', include: [{ model: Question, as: 'Questions', attributes: ['id', 'content', 'answer'] }] },
+          { model: TestPart, as: 'Parts', include: [{ model: Question, as: 'Questions', attributes: ['id', 'content', 'answer', 'imageUrl', 'audioUrl', 'transcript'] }] },
           { model: Comment, as: 'Comments', include: [{ model: User, as: 'User', attributes: ['id', 'username', 'avatarUrl'] }] }
         ]
       });
@@ -130,7 +125,7 @@ const testController = {
     try {
       const { title, categoryId, duration, parts, difficulty, totalQuestions, scaledScoreMax, examType } = req.body;
       const imageUrl = req.files && req.files['image'] ? `/uploads/images/${req.files['image'][0].filename}` : null;
-      const fullAudioUrl = req.files && req.files['fullAudio'] ? `/uploads/audio/full/${req.files['fullAudio'][0].filename}` : null;
+      const fullAudioUrl = req.files && req.files['fullAudio'] ? `/uploads/test_audio/full/${req.files['fullAudio'][0].filename}` : null;
 
       if (!title || !categoryId || !duration || !parts || !difficulty || !examType) {
         return res.status(400).json({ message: 'Thiếu các trường bắt buộc!' });
@@ -154,7 +149,7 @@ const testController = {
       const { id } = req.params;
       const { title, categoryId, duration, parts, difficulty, totalQuestions, scaledScoreMax, examType } = req.body;
       const imageUrl = req.files && req.files['image'] ? `/uploads/images/${req.files['image'][0].filename}` : undefined;
-      const fullAudioUrl = req.files && req.files['fullAudio'] ? `/uploads/audio/full/${req.files['fullAudio'][0].filename}` : undefined;
+      const fullAudioUrl = req.files && req.files['fullAudio'] ? `/uploads/test_audio/full/${req.files['fullAudio'][0].filename}` : undefined;
 
       const test = await Test.findByPk(id);
       if (!test) return res.status(404).json({ message: 'Không tìm thấy test!' });

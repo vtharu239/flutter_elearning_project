@@ -14,9 +14,9 @@ app.use(bodyParser.json());
 // Phục vụ các tệp tải lên tĩnh
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/uploads/profiles', express.static(path.join(__dirname, 'uploads/profiles')));
-app.use('/uploads/images', express.static(path.join(__dirname, 'uploads/images')));
-app.use('/uploads/audio', express.static(path.join(__dirname, 'uploads/audio')));
-app.use('/uploads/audio/full', express.static(path.join(__dirname, 'uploads/audio/full')));
+app.use('/uploads/test_images', express.static(path.join(__dirname, 'uploads/test_images')));
+app.use('/uploads/test_audio/question', express.static(path.join(__dirname, 'uploads/test_audio/question')));
+app.use('/uploads/test_audio/full', express.static(path.join(__dirname, 'uploads/test_audio/full')));
 
 // Routes
 const authRoutes = require('./routes/authRoutes');
@@ -58,7 +58,7 @@ async function startServer() {
     await initializeDatabase();
     
     // 2. Then sync models
-    await db.sequelize.sync({ force: false });
+    await db.sequelize.sync({ force: false, alter: true });
     console.log('Cơ sở dữ liệu đã được đồng bộ thành công');
     
     // 3. Finally start the server

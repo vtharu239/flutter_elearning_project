@@ -1,64 +1,77 @@
 const { UserTestAttempt, Test, TestPart } = require('../models');
 
 const userTestAttemptController = {
-    getUserTestAttempts: async (req, res) => {
-      try {
-        const userId = req.user.userId; // Lấy từ middleware auth
-        const { testId } = req.params; // Lấy testId từ params
-  
-        // Kiểm tra testId hợp lệ
-        if (!testId || isNaN(testId)) {
-          return res.status(400).json({ message: 'testId không hợp lệ!' });
-        }
-  
-        const attempts = await UserTestAttempt.findAll({
-          where: { userId, testId: parseInt(testId) },
-          include: [{ model: Test, as: 'Test', include: [{ model: TestPart, as: 'Parts' }] }],
-        });
-  
-        const formattedAttempts = await Promise.all(
-          attempts.map(async (attempt) => {
-            let totalQuestions;
-            if (attempt.isFullTest) {
-              // Full Test: Tổng số câu hỏi từ test.totalQuestions
-              totalQuestions = attempt.Test.totalQuestions;
-            } else {
-              // Practice Mode: Tổng số câu hỏi từ các Part được chọn
-              const selectedParts = attempt.selectedParts
-                ? JSON.parse(attempt.selectedParts)
-                : attempt.Test.Parts.map((part) => part.id); // Nếu không lưu selectedParts, lấy tất cả
-              const parts = await TestPart.findAll({
-                where: { id: selectedParts, testId: attempt.testId },
-              });
-              totalQuestions = parts.reduce((sum, part) => sum + part.questionCount, 0);
-            }
-  
-            // Tính completionTime (tính bằng giây)
-            const completionTime = attempt.submitTime && attempt.startTime
-              ? Math.floor((new Date(attempt.submitTime) - new Date(attempt.startTime)) / 1000)
-              : 0;
-  
-            return {
-              id: attempt.id,
-              date: attempt.startTime.toISOString().split('T')[0],
-              correctCount: attempt.correctCount,
-              wrongCount: totalQuestions - attempt.correctCount - attempt.skippedCount,
-              skippedCount: attempt.skippedCount,
-              scaledScore: attempt.scaledScore,
-              completionTime: completionTime, // Thời gian hoàn thành (giây)
-              totalQuestions: totalQuestions, // Tổng số câu hỏi
-              isFullTest: attempt.isFullTest || false,
-              selectedParts: attempt.selectedParts
-            };
-          })
-        );
-  
-        res.json({ attempts: formattedAttempts });
-      } catch (error) {
-        res.status(500).json({ message: 'Lỗi khi lấy kết quả bài làm!', error: error.message });
-      }
-    },
+  getUserTestAttempts: async (req, res) => {
+    try {
+      const { testId } = req.params;
+      const userId = req.user.userId;
 
+      const attempts = await UserTestAttempt.findAll({
+        where: {
+          userId,
+          testId,
+          isSubmitted: true, // Only fetch submitted attempts
+        },
+        include: [
+          {
+            model: Test,
+            as: 'Test',
+            attributes: ['id', 'title', 'duration', 'totalQuestions'],
+          },
+        ],
+        order: [['submitTime', 'DESC']], // Sort by submission time, most recent first
+      });
+
+      const formattedAttempts = await Promise.all(
+        attempts.map(async (attempt) => {
+          const test = attempt.Test;
+          let totalQuestions = test.totalQuestions;
+
+          if (!attempt.isFullTest) {
+            // For practice tests, calculate total questions based on selected parts
+            const selectedParts = attempt.selectedParts ? JSON.parse(attempt.selectedParts) : [];
+            const testParts = await TestPart.findAll({
+              where: { id: selectedParts, testId },
+              attributes: ['questionCount'],
+            });
+            totalQuestions = testParts.reduce((sum, part) => sum + part.questionCount, 0);
+          }
+
+          return {
+            id: attempt.id,
+            date: attempt.submitTime ? attempt.submitTime.toISOString().substring(0, 10) : 'N/A',
+            correctCount: attempt.correctCount,
+            wrongCount: attempt.wrongCount,
+            skippedCount: attempt.skippedCount,
+            totalQuestions,
+            scaledScore: attempt.scaledScore,
+            completionTime: attempt.completionTime, // Now in HH:mm:ss format
+            isFullTest: attempt.isFullTest,
+            selectedParts: attempt.selectedParts,
+          };
+        })
+      );
+
+      res.json({ attempts: formattedAttempts });
+    } catch (error) {
+      res.status(500).json({ message: 'Lỗi khi lấy danh sách bài làm!', error: error.message });
+    }
+  },
 };
 
-module.exports = { userTestAttemptController };
+// helpers/timeHelper.js
+const formatTimeToString = (seconds) => {
+  const hours = Math.floor(seconds / 3600).toString().padLeft(2, '0');
+  const minutes = Math.floor((seconds % 3600) / 60).toString().padLeft(2, '0');
+  const secs = (seconds % 60).toString().padLeft(2, '0');
+  return `${hours}:${minutes}:${secs}`;
+};
+
+// Add padLeft to String prototype if not already available
+if (!String.prototype.padLeft) {
+  String.prototype.padLeft = function (length, char = '0') {
+    return char.repeat(Math.max(0, length - this.length)) + this;
+  };
+}
+
+module.exports = { userTestAttemptController, formatTimeToString };

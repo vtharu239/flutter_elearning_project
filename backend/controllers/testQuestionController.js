@@ -13,9 +13,15 @@ const ensureDirectoryExists = (dir) => {
 // Cấu hình multer để upload file
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const dir = 'uploads/images/';
-    ensureDirectoryExists(dir);
-    cb(null, dir);
+    if (file.fieldname === 'image') {
+      const dir = 'uploads/test_images/';
+      ensureDirectoryExists(dir);
+      cb(null, dir);
+    } else if (file.fieldname === 'audio') {
+      const dir = 'uploads/test_audio/question/';
+      ensureDirectoryExists(dir);
+      cb(null, dir);
+    }
   },
   filename: (req, file, cb) => {
     cb(null, Date.now() + path.extname(file.originalname));
@@ -31,8 +37,8 @@ const upload = multer({
       mimetype: file.mimetype
     });
 
-    const allowedExtnames = /jpeg|jpg|png/;
-    const allowedMimetypes = ['image/jpeg', 'image/png'];
+    const allowedExtnames = /jpeg|jpg|png|mp3|wav/;
+    const allowedMimetypes = ['image/jpeg', 'image/png', 'audio/mpeg', 'audio/wav'];
 
     const extname = allowedExtnames.test(path.extname(file.originalname).toLowerCase());
     const mimetype = allowedMimetypes.includes(file.mimetype.toLowerCase());
@@ -44,16 +50,20 @@ const upload = multer({
         extname: path.extname(file.originalname).toLowerCase(),
         mimetype: file.mimetype
       });
-      cb(new Error('Chỉ hỗ trợ file ảnh (jpeg, jpg, png)!'));
+      cb(new Error('Chỉ hỗ trợ file ảnh (jpeg, jpg, png) hoặc audio (mp3, wav)!'));
     }
   }
-}).single('image'); // Chỉ nhận field 'image'
+}).fields([
+  { name: 'image', maxCount: 1 },
+  { name: 'audio', maxCount: 1 }
+]);
 
 const testQuestionController = {
   createQuestion: async (req, res) => {
     try {
       const { testPartId, content, options, answer, transcript, explanation, tag } = req.body;
-      const imageUrl = req.file ? `/uploads/images/${req.file.filename}` : null;
+      const imageUrl = req.files && req.files['image'] ? `/uploads/test_images/${req.files['image'][0].filename}` : null;
+      const audioUrl = req.files && req.files['audio'] ? `/uploads/test_audio/question/${req.files['audio'][0].filename}` : null;
 
       if (!testPartId || !content || !options || !answer) {
         return res.status(400).json({ message: 'Thiếu các trường bắt buộc!' });
@@ -83,7 +93,7 @@ const testQuestionController = {
         });
       }
 
-      const question = await Question.create({ testPartId, content, options: parsedOptions, answer, transcript, explanation, tag, imageUrl });
+      const question = await Question.create({ testPartId, content, options: parsedOptions, answer, transcript, explanation, tag, imageUrl, audioUrl });
       await testPart.increment('questionCount');
       await Test.increment('totalQuestions', { where: { id: testPart.testId } });
       await updateTestPartTags(testPartId);
@@ -97,7 +107,9 @@ const testQuestionController = {
     try {
       const { id } = req.params;
       const { testPartId, content, options, answer, transcript, explanation, tag } = req.body;
-      const imageUrl = req.file ? `/uploads/images/${req.file.filename}` : undefined;
+      const imageUrl = req.files && req.files['image'] ? `/uploads/test_images/${req.files['image'][0].filename}` : undefined;
+      const audioUrl = req.files && req.files['audio'] ? `/uploads/test_audio/question/${req.files['audio'][0].filename}` : undefined;
+
       const question = await Question.findByPk(id);
       if (!question) return res.status(404).json({ message: 'Không tìm thấy question!' });
 
@@ -136,10 +148,15 @@ const testQuestionController = {
       }
 
       await question.update({ 
-        testPartId: testPartId || question.testPartId, content: content || question.content, options: parsedOptions,
-        answer: answer || question.answer, transcript: transcript !== undefined ? transcript : question.transcript,
-        explanation: explanation !== undefined ? explanation : question.explanation, tag: tag !== undefined ? tag : question.tag,
-        imageUrl: imageUrl !== undefined ? imageUrl : question.imageUrl
+        testPartId: testPartId || question.testPartId, 
+        content: content || question.content, 
+        options: parsedOptions,
+        answer: answer || question.answer, 
+        transcript: transcript !== undefined ? transcript : question.transcript,
+        explanation: explanation !== undefined ? explanation : question.explanation, 
+        tag: tag !== undefined ? tag : question.tag,
+        imageUrl: imageUrl !== undefined ? imageUrl : question.imageUrl,
+        audioUrl: audioUrl !== undefined ? audioUrl : question.audioUrl
       });
 
       if (testPartId && testPartId !== oldTestPartId) {
