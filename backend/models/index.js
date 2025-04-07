@@ -1,5 +1,8 @@
+const { Sequelize, DataTypes } = require('sequelize');
 const { sequelize } = require('../config/database');
 const User = require('./User');
+const Category = require('./Category')
+const Course = require('./Course');
 const Test = require('./Test');
 const TestPart = require('./TestPart');
 const Question = require('./Question');
@@ -7,8 +10,9 @@ const Comment = require('./Comment');
 const UserTestAttempt = require('./UserTestAttempt');
 const ExamTypeTags = require('./ExamTypeTags');
 
-const Category = require('./Category');
-const Course = require('./Course');
+
+
+
 const CourseObjective = require('./CourseObjective');
 const CourseTeacher = require('./CourseTeacher');
 const CourseCurriculum = require('./CourseCurriculum');
@@ -20,18 +24,21 @@ const LessonSubItem = require('./LessonSubItem');
 const VocabularyWord = require('./VocabularyWord');
 
 const Document = require('./Document');
+const DocumentComment = require('./DocumentComment')(sequelize, DataTypes);
+const DocumentCategory = require('./DocumentCategory'); 
+
 
 module.exports = {
   sequelize,
   User,
+  Category,
+  Course,
   Test,
   TestPart,
   Question,
   Comment,
   UserTestAttempt,
   ExamTypeTags,
-  Category,
-  Course,
   CourseObjective, 
   CourseTeacher,
   CourseCurriculum, 
@@ -41,7 +48,9 @@ module.exports = {
   Order,
   LessonSubItem,
   VocabularyWord,
-  Document
+  Document,
+  DocumentComment,
+  DocumentCategory,
 };
 
 // Relationships
@@ -93,3 +102,13 @@ VocabularyWord.belongsTo(LessonSubItem, { foreignKey: 'subItemId', as: 'SubItem'
 
 UserTestAttempt.belongsTo(Test, { foreignKey: 'testId', as: 'Test' });
 Test.hasMany(UserTestAttempt, { foreignKey: 'testId', as: 'UserTestAttempts' });
+
+DocumentComment.belongsTo(User, { foreignKey: 'userId', as: 'User' });
+User.hasMany(DocumentComment, { foreignKey: 'userId', as: 'DocumentComments' });
+
+Document.belongsTo(DocumentCategory, { foreignKey: 'categoryId', as: 'documentCategory' }); // ✅ sửa alias
+DocumentCategory.hasMany(Document, { foreignKey: 'categoryId', as: 'documents' });
+
+Document.hasMany(DocumentComment, { as: 'comments', foreignKey: 'documentId' });
+DocumentComment.belongsTo(Document, { foreignKey: 'documentId' });
+
