@@ -34,6 +34,17 @@ const courseRatingStat = require('./routes/courseRatingStat');
 const paymentRoutes = require('./routes/paymentRoutes');
 
 const documentRoutes = require('./routes/documentRoutes');
+const docCommentRoutes = require('./routes/documentComments');
+const docCategoryRoutes = require('./routes/docCategory'); 
+
+
+app.use(express.json());
+app.use('/api', documentRoutes);
+app.use(docCommentRoutes);
+app.use('/api', docCategoryRoutes); 
+
+
+
 
 app.use(authRoutes);
 app.use(passwordRoutes);
@@ -49,7 +60,8 @@ app.use(courseReview);
 app.use(courseRatingStat);
 app.use(paymentRoutes);
 
-app.use(documentRoutes);
+
+
 
 // Initialize application
 async function startServer() {
@@ -58,11 +70,12 @@ async function startServer() {
     await initializeDatabase();
     
     // 2. Then sync models
-    await db.sequelize.sync({ force: false });
+    await db.sequelize.sync({ alter: true });
     console.log('Cơ sở dữ liệu đã được đồng bộ thành công');
     
     // 3. Finally start the server
     const PORT = process.env.PORT || 80;
+    //const PORT = process.env.PORT || 3000;
     app.listen(PORT, '0.0.0.0', () => {
       console.log(`Máy chủ đang chạy trên port ${PORT}`);
     });
