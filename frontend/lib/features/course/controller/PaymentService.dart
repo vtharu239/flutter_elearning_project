@@ -104,7 +104,7 @@ class PaymentService {
 
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
-        return data.cast<Map<String, dynamic>>();
+        return data.map((order) => order as Map<String, dynamic>).toList();
       } else if (response.statusCode == 401) {
         throw Exception('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
       } else {
@@ -113,6 +113,18 @@ class PaymentService {
       }
     } catch (e) {
       throw Exception('Lỗi khi gọi API lấy danh sách đơn hàng: $e');
+    }
+  }
+
+  Future<bool> hasUserPurchasedCourse(int courseId) async {
+    try {
+      final orders = await getUserOrders();
+
+      // Check if there's any completed order for this course
+      return orders.any((order) =>
+          order['courseId'] == courseId && order['status'] == 'completed');
+    } catch (e) {
+      throw Exception('Error checking course purchase status: $e');
     }
   }
 }

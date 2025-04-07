@@ -2,13 +2,13 @@ class ApiConstants {
   static const String baseUrl =
 
       // -- Phuong
-      // 'https://equipped-living-osprey.ngrok-free.app';
+      'https://equipped-living-osprey.ngrok-free.app';
 
-      // - Ngoc
-      // 'https://clear-tomcat-informally.ngrok-free.app';
+  // - Ngoc
+  // 'https://clear-tomcat-informally.ngrok-free.app';
 
-      // -- Xuan
-      'https://resolved-sawfish-equally.ngrok-free.app';
+  // -- Xuan
+  //'https://resolved-sawfish-equally.ngrok-free.app';
 
   // API endpoints
 
@@ -52,6 +52,15 @@ class ApiConstants {
   static const String courseCurriculum = '/curriculum';
   static const String createPaymentUrl = '/api/payment/create-payment-url';
   static const String getOrderInfo = '/api/orders/'; // Fixed the double slash
+
+  static const String getAllDocuments = '/api/documents';
+  static const String createDocument = '/api/documents'; // POST
+  static const String updateDocument = '/api/documents'; // PUT
+  static const String deleteDocument = '/api/documents'; // DELETE
+
+  static const String getDocumentComments = '/api/document-comments';
+  static const String postDocumentComment = '/api/document-comments';
+  static const String getAllDocCategories = '/api/categories';
 
   // Headers mặc địnhs
   static Map<String, String> getHeaders({bool isImage = false}) {
