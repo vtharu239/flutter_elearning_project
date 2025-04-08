@@ -1,4 +1,6 @@
 class RelatedArticle {
+  final int id;
+  final int categoryId;
   final String title;
   final String description;
   final String imageUrl;
@@ -6,6 +8,8 @@ class RelatedArticle {
   final String date;
 
   RelatedArticle({
+    required this.id,
+    required this.categoryId,
     required this.title,
     required this.description,
     required this.imageUrl,
@@ -13,14 +17,15 @@ class RelatedArticle {
     required this.date,
   });
 
-  // Nếu lấy từ API, có thể thêm phương thức fromJson
   factory RelatedArticle.fromJson(Map<String, dynamic> json) {
     return RelatedArticle(
+      id: json['id'],
+      categoryId: json['categoryId'],
       title: json['title'],
-      description: json['description'],
-      imageUrl: json['imageUrl'],
-      author: json['author'],
-      date: json['date'],
+      description: json['description'] ?? '',
+      imageUrl: json['imageUrl'] ?? '',
+      author: json['author'] ?? '',
+      date: json['date'] ?? '',
     );
   }
 }
