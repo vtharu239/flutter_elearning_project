@@ -215,8 +215,7 @@ class _MatchingGameScreenState extends State<MatchingGameScreen> {
     final currentPairs = questions[currentQuestionIndex];
     final List<String> words =
         currentPairs.map((pair) => pair['word']!).toList();
-    final List<String> definitions =
-        currentPairs.map((pair) => pair['definition']!).toList();
+    currentPairs.map((pair) => pair['definition']!).toList();
 
     return Scaffold(
       appBar: AppBar(

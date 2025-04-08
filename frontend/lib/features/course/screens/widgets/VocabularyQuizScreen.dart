@@ -115,9 +115,9 @@ class _VocabularyQuizScreenState extends State<VocabularyQuizScreen> {
                     decoration: BoxDecoration(
                       color: showCorrectAnswer
                           ? (isCorrect
-                              ? Colors.green.withOpacity(0.2)
+                              ? Colors.green.withValues(alpha: 0.2)
                               : (isSelected
-                                  ? Colors.red.withOpacity(0.2)
+                                  ? Colors.red.withValues(alpha: 0.2)
                                   : Colors.white))
                           : Colors.white,
                       border: Border.all(

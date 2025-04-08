@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_elearning_project/features/course/controller/CourseCurriculumItem.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
@@ -116,8 +115,9 @@ class VocabularyDetailScreen extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 4),
-                        if (word.examples != null && word.examples!.isNotEmpty)
-                          ...word.examples!.map((example) => Padding(
+
+                        if (word.examples.isNotEmpty)
+                          ...word.examples.map((example) => Padding(
                                 padding: const EdgeInsets.only(bottom: 4),
                                 child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.start,

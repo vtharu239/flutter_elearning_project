@@ -1837,9 +1837,9 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
         log('Orders received: ${orders.length}');
 
         // Debug output to check what's in the orders
-        orders.forEach((order) {
+        for (var order in orders) {
           log('Order: courseId=${order['courseId']}, status=${order['status']}');
-        });
+        }
 
         // Check specifically for any "completed" order for this course
         final bool hasCompletedOrder = orders.any((order) =>

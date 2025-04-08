@@ -10,9 +10,6 @@ const Comment = require('./Comment');
 const UserTestAttempt = require('./UserTestAttempt');
 const ExamTypeTags = require('./ExamTypeTags');
 
-
-
-
 const CourseObjective = require('./CourseObjective');
 const CourseTeacher = require('./CourseTeacher');
 const CourseCurriculum = require('./CourseCurriculum');
@@ -26,7 +23,6 @@ const VocabularyWord = require('./VocabularyWord');
 const Document = require('./Document');
 const DocumentComment = require('./DocumentComment')(sequelize, DataTypes);
 const DocumentCategory = require('./DocumentCategory'); 
-
 
 module.exports = {
   sequelize,
@@ -106,9 +102,8 @@ Test.hasMany(UserTestAttempt, { foreignKey: 'testId', as: 'UserTestAttempts' });
 DocumentComment.belongsTo(User, { foreignKey: 'userId', as: 'User' });
 User.hasMany(DocumentComment, { foreignKey: 'userId', as: 'DocumentComments' });
 
-Document.belongsTo(DocumentCategory, { foreignKey: 'categoryId', as: 'documentCategory' }); // ✅ sửa alias
+Document.belongsTo(DocumentCategory, { foreignKey: 'categoryId', as: 'documentCategory' }); 
 DocumentCategory.hasMany(Document, { foreignKey: 'categoryId', as: 'documents' });
 
 Document.hasMany(DocumentComment, { as: 'comments', foreignKey: 'documentId' });
 DocumentComment.belongsTo(Document, { foreignKey: 'documentId' });
-

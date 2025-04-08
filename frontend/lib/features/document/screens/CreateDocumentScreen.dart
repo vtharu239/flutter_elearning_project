@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_elearning_project/config/api_constants.dart';
 import 'package:flutter_elearning_project/features/document/model/doc_category_model.dart';
@@ -45,7 +46,7 @@ class _CreateDocumentScreenState extends State<CreateDocumentScreen> {
         throw Exception("Lỗi lấy danh mục");
       }
     } catch (e) {
-      print("Lỗi: $e");
+      log("Lỗi: $e");
     }
   }
 

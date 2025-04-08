@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_elearning_project/features/document/model/cmt_model.dart';
 import 'package:flutter_elearning_project/features/personalization/controllers/auth_controller.dart';
@@ -39,10 +40,10 @@ class _CommentSectionState extends State<CommentSection> {
           isLoading = false;
         });
       } else {
-        print('Loi khi load comment: ${response.statusCode}');
+        log('Loi khi load comment: ${response.statusCode}');
       }
     } catch (e) {
-      print("Loi: $e");
+      log("Loi: $e");
     }
   }
 
@@ -71,10 +72,11 @@ class _CommentSectionState extends State<CommentSection> {
         setState(() => replyingToCommentId = null);
         fetchComments();
       } else {
-        print("Lỗi gửi comment: ${response.statusCode}");
+
+        log("Lỗi gửi comment: ${response.statusCode}");
       }
     } catch (e) {
-      print("Lỗi gửi comment: $e");
+      log("Lỗi gửi comment: $e");
     }
   }
 

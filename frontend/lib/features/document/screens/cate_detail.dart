@@ -79,7 +79,7 @@ class CategoryDetailScreen extends StatelessWidget {
                           final sub = category.subCategories[index];
 
                           return TRoundedContainer(
-                            backgroundColor: TColors.primary.withOpacity(0.05),
+                            backgroundColor: TColors.primary.withValues(alpha: 0.05),
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 16, vertical: 12),
                             radius: 16,

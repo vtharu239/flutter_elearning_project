@@ -60,7 +60,7 @@ class _ListenAndChooseScreenState extends State<ListenAndChooseScreen> {
         currentAudioWord =
             remainingWords[Random().nextInt(remainingWords.length)];
       });
-      print('Playing audio for word: $currentAudioWord'); // For debugging
+      log('Playing audio for word: $currentAudioWord' as num); // For debugging
     }
   }
 

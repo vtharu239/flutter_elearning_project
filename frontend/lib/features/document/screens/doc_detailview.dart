@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_elearning_project/features/document/model/RelatedArticle_model.dart';
 import 'package:flutter_elearning_project/features/document/model/doc_list_model.dart';
@@ -8,8 +9,6 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_elearning_project/config/api_constants.dart';
 import 'package:intl/intl.dart';
-
-// ✅ Import widget bo góc style đẹp
 import 'package:flutter_elearning_project/common/widgets/custom_shapes/container/primary_header_container.dart';
 
 class DocumentDetailScreen extends StatefulWidget {
@@ -65,7 +64,7 @@ class _DocumentDetailScreenState extends State<DocumentDetailScreen> {
         throw Exception('Lỗi tải bài viết liên quan');
       }
     } catch (e) {
-      print('Lỗi: $e');
+      log('Lỗi: $e');
       setState(() => isLoadingRelated = false);
     }
   }
