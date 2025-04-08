@@ -102,7 +102,7 @@ Test.hasMany(UserTestAttempt, { foreignKey: 'testId', as: 'UserTestAttempts' });
 DocumentComment.belongsTo(User, { foreignKey: 'userId', as: 'User' });
 User.hasMany(DocumentComment, { foreignKey: 'userId', as: 'DocumentComments' });
 
-Document.belongsTo(DocumentCategory, { foreignKey: 'categoryId', as: 'documentCategory' }); // ✅ sửa alias
+Document.belongsTo(DocumentCategory, { foreignKey: 'categoryId', as: 'documentCategory' }); 
 DocumentCategory.hasMany(Document, { foreignKey: 'categoryId', as: 'documents' });
 
 Document.hasMany(DocumentComment, { as: 'comments', foreignKey: 'documentId' });

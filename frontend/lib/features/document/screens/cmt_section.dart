@@ -72,6 +72,7 @@ class _CommentSectionState extends State<CommentSection> {
         setState(() => replyingToCommentId = null);
         fetchComments();
       } else {
+
         log("Lỗi gửi comment: ${response.statusCode}");
       }
     } catch (e) {

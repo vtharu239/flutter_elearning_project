@@ -14,7 +14,7 @@ void main() async {
   // debugPaintSizeEnabled = true; // Bật Debug Paint
 
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   await initializeDateFormatting(
       'vi_VN', null); //intl để định dạng ngày theo ngôn ngữ
 
