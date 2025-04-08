@@ -115,7 +115,6 @@ class VocabularyDetailScreen extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 4),
-
                         if (word.examples.isNotEmpty)
                           ...word.examples.map((example) => Padding(
                                 padding: const EdgeInsets.only(bottom: 4),
