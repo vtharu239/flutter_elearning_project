@@ -124,7 +124,7 @@ const testController = {
   createTest: async (req, res) => {
     try {
       const { title, categoryId, duration, parts, difficulty, totalQuestions, scaledScoreMax, examType } = req.body;
-      const imageUrl = req.files && req.files['image'] ? `/uploads/images/${req.files['image'][0].filename}` : null;
+      const imageUrl = req.files && req.files['image'] ? `/uploads/test_images/${req.files['image'][0].filename}` : null;
       const fullAudioUrl = req.files && req.files['fullAudio'] ? `/uploads/test_audio/full/${req.files['fullAudio'][0].filename}` : null;
 
       if (!title || !categoryId || !duration || !parts || !difficulty || !examType) {
@@ -148,7 +148,7 @@ const testController = {
     try {
       const { id } = req.params;
       const { title, categoryId, duration, parts, difficulty, totalQuestions, scaledScoreMax, examType } = req.body;
-      const imageUrl = req.files && req.files['image'] ? `/uploads/images/${req.files['image'][0].filename}` : undefined;
+      const imageUrl = req.files && req.files['image'] ? `/uploads/test_images/${req.files['image'][0].filename}` : undefined;
       const fullAudioUrl = req.files && req.files['fullAudio'] ? `/uploads/test_audio/full/${req.files['fullAudio'][0].filename}` : undefined;
 
       const test = await Test.findByPk(id);
