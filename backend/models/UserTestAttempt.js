@@ -41,13 +41,18 @@ const UserTestAttempt = sequelize.define('UserTestAttempt', {
     type: DataTypes.INTEGER,
     defaultValue: 0
   },
+  wrongCount: { 
+    type: DataTypes.INTEGER,
+    defaultValue: 0
+  },
   scaledScore: {
     type: DataTypes.INTEGER,
     allowNull: true
   },
   completionTime: {
-    type: DataTypes.INTEGER, // Thời gian hoàn thành (giây)
-    defaultValue: 0,
+    type: DataTypes.STRING, // Changed from INTEGER to STRING to store HH:mm:ss
+    allowNull: false,
+    defaultValue: '00:00:00',
   },
   isFullTest: {
     type: DataTypes.BOOLEAN, // Phân biệt Practice hay Full Test

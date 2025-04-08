@@ -14,7 +14,7 @@ const Question = sequelize.define('Question', {
   },
   content: {
     type: DataTypes.STRING,
-    allowNull: false
+    allowNull: true
   },
   options: { // Các lựa chọn A, B, C, D dưới dạng JSON
     type: DataTypes.JSON,
@@ -39,7 +39,11 @@ const Question = sequelize.define('Question', {
   imageUrl: {
     type: DataTypes.STRING,
     allowNull: true
-  }
+  },
+  audioUrl: { 
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
 }, {
   tableName: 'Questions'
 });

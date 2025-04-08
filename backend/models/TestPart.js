@@ -28,10 +28,6 @@ const TestPart = sequelize.define('TestPart', {
   tags: {
     type: DataTypes.JSON, // Lưu trữ tags dưới dạng JSON
     allowNull: true
-  },
-  audioUrl: { 
-    type: DataTypes.STRING,
-    allowNull: true
   }
 }, {
   tableName: 'TestParts'

@@ -1,11 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_elearning_project/config/api_constants.dart';
+import 'package:flutter_elearning_project/features/exam/screens/wigets/audio_player.dart';
+import 'package:flutter_elearning_project/features/exam/screens/wigets/full_audio_player.dart';
 import 'package:flutter_elearning_project/features/exam/screens/wigets/review_screen.dart';
+import 'package:flutter_elearning_project/features/exam/screens/wigets/test_result_screen.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -37,13 +38,15 @@ class TestScreenState extends State<TestScreen> {
   Map<String, String> answers = {};
   Map<String, bool> markedForReview = {};
   Timer? timer;
-  late ValueNotifier<int> elapsedSecondsNotifier; // Đếm số giây đã trôi qua
-  DateTime? startTime; // Lưu thời gian bắt đầu
-  int? totalDurationInSeconds; // Tổng thời gian (nếu có giới hạn)
-  bool isUnlimitedTime =
-      false; // Cờ để kiểm tra chế độ không giới hạn thời gian
+  late ValueNotifier<int> elapsedSecondsNotifier;
+  DateTime? startTime;
+  int? totalDurationInSeconds;
+  bool isUnlimitedTime = false;
   bool isLoading = true;
   bool isSubmitted = false;
+  final Map<String, GlobalKey<AudioPlayerWidgetState>> _audioPlayerKeys = {};
+  final ScrollController _scrollController = ScrollController();
+  final Map<int, GlobalKey> _questionKeys = {};
 
   @override
   void initState() {
@@ -56,6 +59,12 @@ class TestScreenState extends State<TestScreen> {
   void dispose() {
     timer?.cancel();
     elapsedSecondsNotifier.dispose();
+    // Dừng audio trước, sau đó dispose
+    for (var key in _audioPlayerKeys.values) {
+      key.currentState?.stopAudio(); // Dừng trước
+      key.currentState?.disposeAudioPlayer(); // Dispose sau
+    }
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -63,6 +72,13 @@ class TestScreenState extends State<TestScreen> {
     setState(() => isLoading = true);
     try {
       await startTest();
+      final uri = Uri.parse(ApiConstants.getUrl('/getTest/${widget.testId}'));
+      final response = await http.get(uri, headers: ApiConstants.getHeaders());
+      if (response.statusCode == 200) {
+        setState(() {
+          testData = json.decode(response.body);
+        });
+      }
     } catch (e) {
       Get.snackbar('Error', 'Failed to initialize test: $e');
     } finally {
@@ -94,7 +110,6 @@ class TestScreenState extends State<TestScreen> {
 
     if (response.statusCode == 201) {
       final data = json.decode(response.body);
-      log('Start Test Response: $data');
       setState(() {
         attemptId = data['attemptId'].toString();
         testParts = List<Map<String, dynamic>>.from(data['testParts'] ?? []);
@@ -102,13 +117,12 @@ class TestScreenState extends State<TestScreen> {
         final duration = widget.isFullTest
             ? data['duration']
             : (widget.duration ?? data['duration']);
-        startTime = DateTime.now(); // Lưu thời gian bắt đầu
+        startTime = DateTime.now();
         if (duration == null) {
-          isUnlimitedTime = true; // Chế độ không giới hạn thời gian
+          isUnlimitedTime = true;
           elapsedSecondsNotifier.value = 0;
         } else {
-          totalDurationInSeconds =
-              (duration as int) * 60; // Chuyển phút thành giây
+          totalDurationInSeconds = (duration as int) * 60;
           elapsedSecondsNotifier.value = 0;
         }
         startTimer();
@@ -130,19 +144,67 @@ class TestScreenState extends State<TestScreen> {
         if (!isUnlimitedTime &&
             elapsedSecondsNotifier.value >= totalDurationInSeconds!) {
           timer.cancel();
-          submitTest(); // Tự động nộp bài khi hết thời gian
+          submitTest(autoSubmit: true); // Tự động submit khi hết thời gian
         }
       });
     });
   }
 
+  int getQuestionNumber(int partIndex, int questionIndex) {
+    int questionNumber = 0;
+    // Sum the number of questions in all previous parts
+    for (int i = 0; i < partIndex; i++) {
+      questionNumber += (testParts[i]['questions'].length as int);
+    }
+    // Add the current question index (1-based)
+    return questionNumber + questionIndex + 1;
+  }
+
   Future<void> _showErrorSnackbar(String message) async {
-    // Use GetX for snackbar to avoid BuildContext issues
     Get.snackbar('Error', message);
   }
 
-  Future<void> submitTest() async {
+  Future<void> submitTest({bool autoSubmit = false}) async {
     if (isSubmitted) return;
+
+    // Nếu không phải autoSubmit (hết thời gian), hiển thị popup xác nhận
+    if (!autoSubmit) {
+      final bool? confirmSubmit = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          backgroundColor: Colors.white,
+          title: const Text('Xác nhận nộp bài'),
+          content: const Text(
+            'Bạn có chắc chắn muốn nộp bài? Hành động này sẽ tổng kết bài làm.',
+            style: TextStyle(fontSize: 16),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              style: TextButton.styleFrom(
+                foregroundColor: const Color(0xFF00A2FF),
+              ),
+              child: const Text('Hủy'),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF00A2FF),
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('Nộp bài'),
+            ),
+          ],
+        ),
+      );
+
+      if (confirmSubmit != true) return;
+    }
+
     setState(() => isSubmitted = true);
 
     try {
@@ -164,16 +226,31 @@ class TestScreenState extends State<TestScreen> {
           'testId': widget.testId,
           'partIds': widget.selectedPartIds,
           'startTime': startTime?.toIso8601String(),
+          'completionTime': elapsedSecondsNotifier.value,
+          'duration': widget.isFullTest
+              ? (testData?['duration'] ?? 0)
+              : (widget.duration ?? 0),
         }),
       );
 
       if (response.statusCode == 200) {
-        // Use GetX for navigation to avoid BuildContext issues
+        final responseData = json.decode(response.body);
         Get.snackbar('Thành công', 'Đã nộp bài!');
-
-        // Safely navigate back to the first route
         if (mounted) {
+          for (var key in _audioPlayerKeys.values) {
+            key.currentState?.stopAudio();
+          }
           Navigator.popUntil(context, (route) => route.isFirst);
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => TestResultScreen(
+                attemptId: responseData['attemptId'].toString(),
+                testId: widget.testId,
+                isFullTest: widget.isFullTest,
+              ),
+            ),
+          );
         }
       } else {
         throw Exception('Failed to submit test: ${response.body}');
@@ -190,15 +267,30 @@ class TestScreenState extends State<TestScreen> {
     final bool? shouldExit = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
         title: const Text('Xác nhận thoát'),
         content: const Text(
-            'Bạn có chắc chắn muốn thoát? Bài làm của bạn sẽ không được lưu.'),
+          'Bạn có chắc chắn muốn thoát? Bài làm của bạn sẽ không được lưu.',
+          style: TextStyle(fontSize: 16),
+        ),
         actions: [
           TextButton(
+            style: TextButton.styleFrom(
+              foregroundColor: const Color(0xFF00A2FF),
+            ),
             onPressed: () => Navigator.of(context).pop(false),
             child: const Text('Hủy'),
           ),
-          TextButton(
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF00A2FF), // Màu xanh #00A2FF
+              foregroundColor: Colors.white, // Màu chữ trắng
+              padding: const EdgeInsets.symmetric(
+                  vertical: 10), // Điều chỉnh padding nếu cần
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12), // Bo góc
+              ),
+            ),
             onPressed: () => Navigator.of(context).pop(true),
             child: const Text('Thoát'),
           ),
@@ -207,23 +299,40 @@ class TestScreenState extends State<TestScreen> {
     );
 
     if (shouldExit == true && mounted) {
+      // Stop all audio before exiting
+      for (var key in _audioPlayerKeys.values) {
+        key.currentState?.stopAudio();
+      }
       Navigator.popUntil(context, (route) => route.isFirst);
     }
   }
 
   String formatTime(int elapsedSeconds) {
     if (isUnlimitedTime) {
-      // Đếm lên từ 00:00
       final minutes = (elapsedSeconds ~/ 60).toString().padLeft(2, '0');
       final seconds = (elapsedSeconds % 60).toString().padLeft(2, '0');
       return '$minutes:$seconds';
     } else {
-      // Đếm ngược từ totalDurationInSeconds
       final remainingSeconds = totalDurationInSeconds! - elapsedSeconds;
       if (remainingSeconds <= 0) return '00:00';
       final minutes = (remainingSeconds ~/ 60).toString().padLeft(2, '0');
       final seconds = (remainingSeconds % 60).toString().padLeft(2, '0');
       return '$minutes:$seconds';
+    }
+  }
+
+  void _stopCurrentPartAudio() {
+    // Dừng tất cả audio của part hiện tại
+    final currentPart = testParts[currentPartIndex];
+    final questions = List<Map<String, dynamic>>.from(currentPart['questions']);
+    for (var question in questions) {
+      final questionId = question['id'].toString();
+      final audioKey = 'part_${currentPartIndex}_question_$questionId';
+      final audioPlayerState = _audioPlayerKeys[audioKey]?.currentState;
+      if (audioPlayerState != null) {
+        // Kiểm tra null trước khi gọi
+        audioPlayerState.stopAudio();
+      }
     }
   }
 
@@ -243,66 +352,118 @@ class TestScreenState extends State<TestScreen> {
 
     final currentPart = testParts[currentPartIndex];
     final questions = List<Map<String, dynamic>>.from(currentPart['questions']);
+    final isListeningPart =
+        currentPart['partType']?.toLowerCase() == 'listening';
+
+    // Clear old keys and create new ones for the current part's questions
+    _questionKeys.clear();
+    for (int i = 0; i < questions.length; i++) {
+      _questionKeys[i] = GlobalKey();
+    }
 
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text(widget.isFullTest ? 'Full Test' : 'Luyện tập'),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: TextButton(
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Flexible(
+              child: Text(
+                testData?['title'] ?? 'Loading...',
+                style: const TextStyle(fontSize: 18),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            const SizedBox(width: 8),
+            TextButton(
               onPressed: showExitConfirmationDialog,
               child: const Text(
                 'Thoát',
-                style: TextStyle(color: Colors.white, fontSize: 16),
+                style: TextStyle(color: Colors.blue, fontSize: 16),
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Center(
-              child: ValueListenableBuilder<int>(
-                valueListenable: elapsedSecondsNotifier,
-                builder: (context, elapsedSeconds, child) {
-                  return Text(
-                    formatTime(elapsedSeconds),
-                    style: const TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.bold),
-                  );
-                },
-              ),
+          ],
+        ),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(30),
+          child: Padding(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                ValueListenableBuilder<int>(
+                  valueListenable: elapsedSecondsNotifier,
+                  builder: (context, elapsedSeconds, child) {
+                    return Text(
+                      formatTime(elapsedSeconds),
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    );
+                  },
+                ),
+              ],
             ),
           ),
-        ],
+        ),
       ),
       body: Column(
         children: [
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
-            child: Row(
-              children: testParts.asMap().entries.map((entry) {
-                final index = entry.key;
-                final part = entry.value;
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                  child: ChoiceChip(
-                    label: Text(part['title']),
-                    selected: currentPartIndex == index,
-                    onSelected: (selected) {
-                      if (selected) {
-                        setState(() => currentPartIndex = index);
-                      }
-                    },
-                  ),
-                );
-              }).toList(),
+            child: Padding(
+              padding: const EdgeInsets.only(left: 10.0),
+              child: Row(
+                children: testParts.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final part = entry.value;
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                    child: ChoiceChip(
+                      label: Text(
+                        part['title'],
+                        style: TextStyle(
+                          color: currentPartIndex == index
+                              ? Colors.white
+                              : Colors.black,
+                        ),
+                      ),
+                      selected: currentPartIndex == index,
+                      selectedColor: const Color(0xFF00A2FF),
+                      backgroundColor: Colors.grey[200],
+                      onSelected: (selected) {
+                        if (selected && !widget.isFullTest) {
+                          // Chỉ áp dụng cho bài luyện tập
+                          _stopCurrentPartAudio(); // Dừng audio của part hiện tại
+                          setState(() {
+                            currentPartIndex = index;
+                            _scrollController.jumpTo(0);
+                          });
+                        } else if (selected) {
+                          setState(() {
+                            currentPartIndex = index;
+                            _scrollController.jumpTo(0);
+                          });
+                        }
+                      },
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 4),
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                  );
+                }).toList(),
+              ),
             ),
           ),
           const Divider(),
+          if (widget.isFullTest && fullAudioUrl != null)
+            FullAudioPlayerWidget(audioUrl: ApiConstants.getUrl(fullAudioUrl!)),
           Expanded(
             child: ListView.builder(
-              padding: const EdgeInsets.all(16.0),
+              controller: _scrollController,
+              padding: const EdgeInsets.only(left: 16.0, right: 16.0),
               cacheExtent: 1000.0,
               itemCount: questions.length,
               itemBuilder: (context, index) {
@@ -312,83 +473,129 @@ class TestScreenState extends State<TestScreen> {
                     Map<String, dynamic>.from(question['options'] ?? {});
                 final optionKeys = options.keys.toList();
 
-                return Card(
-                  margin: const EdgeInsets.only(bottom: 16.0),
+                final audioKey =
+                    'part_${currentPartIndex}_question_$questionId';
+                _audioPlayerKeys[audioKey] ??=
+                    GlobalKey<AudioPlayerWidgetState>();
+
+                // Calculate the sequential question number
+                final questionNumber =
+                    getQuestionNumber(currentPartIndex, index);
+                final isMarked = markedForReview[questionId] == true;
+
+                return Container(
+                  color: Colors.white,
+                  key: _questionKeys[index],
                   child: Padding(
-                    padding: const EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.only(
+                        left: 16.0, top: 16.0, right: 16.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Câu ${index + 1}',
-                              style: const TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold),
+                        if (question['content'] !=
+                            null) // Chỉ hiển thị nếu content không null
+                          Text(
+                            question['content'],
+                            style: const TextStyle(
+                              fontSize: 16,
                             ),
-                            IconButton(
-                              icon: Icon(
-                                markedForReview[questionId] == true
-                                    ? Icons.star
-                                    : Icons.star_border,
-                                color: markedForReview[questionId] == true
-                                    ? Colors.orange
-                                    : Colors.grey,
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  markedForReview[questionId] =
-                                      !(markedForReview[questionId] ?? false);
-                                });
-                              },
-                            ),
-                          ],
-                        ),
+                          ),
                         const SizedBox(height: 8),
-                        Text(
-                          question['content'] ?? 'Không có nội dung câu hỏi',
-                          style: const TextStyle(fontSize: 16),
-                        ),
-                        const SizedBox(height: 8),
-                        if (currentPart['audioUrl'] != null)
+                        if (!widget.isFullTest &&
+                            isListeningPart &&
+                            question['audioUrl'] != null)
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 8.0),
                             child: AudioPlayerWidget(
+                              key: _audioPlayerKeys[audioKey],
                               audioUrl:
-                                  ApiConstants.getUrl(currentPart['audioUrl']),
+                                  ApiConstants.getUrl(question['audioUrl']),
                             ),
                           ),
                         if (question['imageUrl'] != null)
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: CachedNetworkImage(
-                              imageUrl:
-                                  ApiConstants.getUrl(question['imageUrl']),
-                              httpHeaders:
-                                  ApiConstants.getHeaders(isImage: true),
-                              height: 200,
-                              fit: BoxFit.cover,
-                              placeholder: (context, url) =>
-                                  const CircularProgressIndicator(),
-                              errorWidget: (context, url, error) =>
-                                  const Icon(Icons.error),
+                            child: Center(
+                              child: CachedNetworkImage(
+                                imageUrl:
+                                    ApiConstants.getUrl(question['imageUrl']),
+                                httpHeaders:
+                                    ApiConstants.getHeaders(isImage: true),
+                                height: 200,
+                                width: 400,
+                                fit: BoxFit.cover,
+                                placeholder: (context, url) =>
+                                    const CircularProgressIndicator(),
+                                errorWidget: (context, url, error) =>
+                                    const Icon(Icons.error),
+                              ),
                             ),
                           ),
-                        const SizedBox(height: 8),
-                        ...optionKeys.map((option) => RadioListTile<String>(
-                              title: Text(
-                                '$option: ${options[option]}',
-                                style: const TextStyle(fontSize: 14),
-                              ),
-                              value: option,
-                              groupValue: answers[questionId],
-                              onChanged: (value) {
+                        const SizedBox(height: 12),
+
+                        // Đặt số thứ tự câu hỏi ở đây (sau phần imageUrl)
+                        Row(
+                          children: [
+                            GestureDetector(
+                              onTap: () {
                                 setState(() {
-                                  answers[questionId] = value!;
+                                  markedForReview[questionId] =
+                                      !(markedForReview[questionId] ?? false);
                                 });
                               },
+                              child: Container(
+                                width: 40,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: isMarked
+                                      ? Colors.orange
+                                      : Colors.blue.withValues(alpha: 0.1),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    '$questionNumber',
+                                    style: TextStyle(
+                                      color: isMarked
+                                          ? Colors.white
+                                          : Colors.blueAccent,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                          ],
+                        ),
+
+                        const SizedBox(height: 8),
+                        ...optionKeys.map((option) => Padding(
+                              padding: const EdgeInsets.only(left: 16.0),
+                              child: Column(
+                                children: [
+                                  RadioListTile<String>(
+                                    title: Text(
+                                      '$option: ${options[option]}',
+                                      style: const TextStyle(fontSize: 14),
+                                    ),
+                                    value: option,
+                                    activeColor: const Color(0xFF00A2FF),
+                                    groupValue: answers[questionId],
+                                    onChanged: (value) {
+                                      setState(() {
+                                        answers[questionId] = value!;
+                                      });
+                                    },
+                                    contentPadding: const EdgeInsets.symmetric(
+                                        horizontal: 0, vertical: 0),
+                                    dense: true,
+                                  ),
+                                ],
+                              ),
                             )),
+                        const Divider(),
                       ],
                     ),
                   ),
@@ -402,8 +609,8 @@ class TestScreenState extends State<TestScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
+                  onPressed: () async {
+                    final result = await Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => ReviewScreen(
@@ -413,71 +620,58 @@ class TestScreenState extends State<TestScreen> {
                         ),
                       ),
                     );
+                    if (result != null) {
+                      setState(() {
+                        currentPartIndex = result['partIndex'];
+                        final questionIndex = result['questionIndex'] as int;
+                        // Scroll to the specific question using GlobalKey
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          final targetKey = _questionKeys[questionIndex];
+                          if (targetKey != null &&
+                              targetKey.currentContext != null) {
+                            final RenderBox renderBox =
+                                targetKey.currentContext!.findRenderObject()
+                                    as RenderBox;
+                            final position = renderBox.localToGlobal(
+                                Offset.zero,
+                                ancestor: context.findRenderObject());
+                            final offset = position.dy +
+                                _scrollController.offset -
+                                240; // Adjust for AppBar
+                            _scrollController.animateTo(
+                              offset,
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                            );
+                          }
+                        });
+                      });
+                    }
                   },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                  ),
-                  child: const Text('Review'),
-                ),
-                ElevatedButton(
-                  onPressed: submitTest,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,
                   ),
-                  child: const Text('Nộp bài'),
+                  child: const Text(
+                    'Review',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () =>
+                      submitTest(autoSubmit: false), // Người dùng nhấn nút
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF00A2FF),
+                  ),
+                  child: const Text(
+                    'Nộp bài',
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
               ],
             ),
           ),
         ],
       ),
-    );
-  }
-}
-
-class AudioPlayerWidget extends StatefulWidget {
-  final String audioUrl;
-
-  const AudioPlayerWidget({super.key, required this.audioUrl});
-
-  @override
-  AudioPlayerWidgetState createState() => AudioPlayerWidgetState();
-}
-
-class AudioPlayerWidgetState extends State<AudioPlayerWidget> {
-  late AudioPlayer _audioPlayer;
-  bool isPlaying = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _audioPlayer = AudioPlayer();
-  }
-
-  @override
-  void dispose() {
-    _audioPlayer.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        IconButton(
-          icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow),
-          onPressed: () async {
-            if (isPlaying) {
-              await _audioPlayer.pause();
-              setState(() => isPlaying = false);
-            } else {
-              await _audioPlayer.play(UrlSource(widget.audioUrl));
-              setState(() => isPlaying = true);
-            }
-          },
-        ),
-      ],
     );
   }
 }

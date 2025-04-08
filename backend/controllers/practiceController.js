@@ -1,4 +1,5 @@
 const { Test, TestPart, Question, UserTestAttempt } = require('../models');
+const { formatTimeToString } = require('../controllers/userTestAttemptController');
 
 const practiceController = {
   startPractice: async (req, res) => {
@@ -23,12 +24,12 @@ const practiceController = {
           id: part.id,
           title: part.title,
           partType: part.partType,
-          audioUrl: part.audioUrl,
           questions: part.Questions.map(q => ({
             id: q.id,
             content: q.content,
             options: q.options,
             imageUrl: q.imageUrl,
+            audioUrl: q.audioUrl,
           })),
         })),
         duration: duration || null,
@@ -40,30 +41,30 @@ const practiceController = {
 
   submitPractice: async (req, res) => {
     try {
-      const { attemptId, answers, testId, partIds, startTime } = req.body;
+      const { attemptId, answers, testId, partIds, startTime, completionTime, duration } = req.body;
       const userId = req.user.userId;
-
+  
       if (!testId) return res.status(400).json({ message: 'Thiếu testId!' });
-
+  
       const test = await Test.findByPk(testId, {
         include: [{ model: TestPart, as: 'Parts', include: [{ model: Question, as: 'Questions' }] }],
       });
       if (!test) return res.status(404).json({ message: 'Không tìm thấy bài test!' });
-
+  
       const startTimeDate = startTime ? new Date(startTime) : new Date();
       const submitTime = new Date();
-      const completionTime = Math.floor((submitTime - startTimeDate) / 1000); // Tính bằng giây
-
+  
       const questions = test.Parts.flatMap(part => part.Questions);
       const totalQuestions = questions.length;
-      let correctCount = 0, skippedCount = 0;
-
+      let correctCount = 0, skippedCount = 0, wrongCount = 0;
+  
       questions.forEach(q => {
         const userAnswer = answers[q.id];
         if (userAnswer === undefined || userAnswer === null) skippedCount++;
         else if (userAnswer === q.answer) correctCount++;
+        else wrongCount++;
       });
-
+  
       const attempt = await UserTestAttempt.create({
         userId,
         testId,
@@ -73,11 +74,13 @@ const practiceController = {
         isSubmitted: true,
         correctCount,
         skippedCount,
-        completionTime,
+        wrongCount,
+        completionTime: formatTimeToString(completionTime || Math.floor((submitTime - startTimeDate) / 1000)), // Convert to HH:mm:ss
         isFullTest: false,
         selectedParts: JSON.stringify(partIds || []),
+        duration: duration || 0,
       });
-
+  
       await Test.increment('testCount', { where: { id: testId } });
       res.json({ message: 'Nộp bài thành công!', attemptId: attempt.id });
     } catch (error) {
@@ -89,46 +92,80 @@ const practiceController = {
     try {
       const { attemptId } = req.params;
       const attempt = await UserTestAttempt.findByPk(attemptId, {
-        include: [{ model: Test, as: 'Test', include: [{ model: TestPart, as: 'Parts', include: [{ model: Question, as: 'Questions' }] }] }],
+        include: [
+          {
+            model: Test,
+            as: 'Test',
+            attributes: ['id', 'title', 'examType'],
+            include: [
+              {
+                model: TestPart,
+                as: 'Parts',
+                include: [{ model: Question, as: 'Questions' }],
+              },
+            ],
+          },
+        ],
       });
       if (!attempt) return res.status(404).json({ message: 'Không tìm thấy bài làm!' });
-
-      const questions = attempt.Test.Parts.flatMap(part => part.Questions);
+  
+      const selectedPartIds = attempt.selectedParts ? JSON.parse(attempt.selectedParts) : [];
+      let parts = attempt.Test.Parts || [];
+      let questions = parts.flatMap(part => part.Questions || []);
+  
+      if (!attempt.isFullTest && selectedPartIds.length > 0) {
+        parts = parts.filter(part => selectedPartIds.includes(part.id));
+        questions = parts.flatMap(part => part.Questions || []);
+      }
+  
       const totalQuestions = questions.length;
-      const accuracy = (attempt.correctCount / totalQuestions) * 100;
-
-      const tagStats = {};
+      const answers = attempt.answers || {};
+      let correctCount = 0;
+      let wrongCount = 0;
+      let skippedCount = 0;
+  
       questions.forEach(q => {
-        const tag = q.tag || 'Không phân loại';
-        if (!tagStats[tag]) tagStats[tag] = { total: 0, correct: 0 };
-        tagStats[tag].total++;
-        if (attempt.answers[q.id] === q.answer) tagStats[tag].correct++;
+        const userAnswer = answers[q.id.toString()];
+        if (userAnswer === undefined || userAnswer === null) {
+          skippedCount++;
+        } else if (userAnswer === q.answer) {
+          correctCount++;
+        } else {
+          wrongCount++;
+        }
       });
-
-      const tagAccuracy = Object.keys(tagStats).reduce((acc, tag) => {
-        acc[tag] = (tagStats[tag].correct / tagStats[tag].total) * 100;
-        return acc;
-      }, {});
-
+  
+      const accuracy = totalQuestions > 0 ? (correctCount / totalQuestions) * 100 : 0;
+  
       const result = {
+        testTitle: attempt.Test.title,
+        examType: attempt.Test.examType,
+        isFullTest: attempt.isFullTest,
+        parts: parts.map(part => ({
+          id: part.id,
+          title: part.title,
+          Questions: part.Questions || [],
+        })),
         date: attempt.submitTime,
         totalQuestions,
-        correctCount: attempt.correctCount,
-        wrongCount: totalQuestions - attempt.correctCount - attempt.skippedCount,
-        skippedCount: attempt.skippedCount,
+        correctCount,
+        wrongCount,
+        skippedCount,
         accuracy: accuracy.toFixed(2),
-        completionTime: attempt.completionTime, // Sử dụng completionTime đã lưu
+        completionTime: attempt.completionTime,
+        answers,
         questions: questions.map(q => ({
           id: q.id,
           content: q.content,
           options: q.options,
-          userAnswer: attempt.answers[q.id] || null,
+          userAnswer: answers[q.id.toString()] || null,
           correctAnswer: q.answer,
           transcript: q.transcript,
           explanation: q.explanation,
           tag: q.tag,
+          audioUrl: q.audioUrl,
+          imageUrl: q.imageUrl,
         })),
-        tagAccuracy,
       };
       res.json(result);
     } catch (error) {

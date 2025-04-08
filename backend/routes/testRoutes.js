@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { testController, upload: testUpload } = require('../controllers/testController');
-const { testPartController, upload: testPartUpload } = require('../controllers/testPartController');
+const { testPartController} = require('../controllers/testPartController');
 const { testQuestionController, upload: testQuestionUpload } = require('../controllers/testQuestionController');
 const { testCommentController } = require('../controllers/testCommentController');
 const { practiceController } = require('../controllers/practiceController');
@@ -20,8 +20,8 @@ router.put('/updateTest/:id', authMiddleware, testUpload, testController.updateT
 router.delete('/deleteTest/:id', authMiddleware, testController.deleteTest);
 
 // TestPart CRUD
-router.post('/createTestPart', authMiddleware, testPartUpload, testPartController.createTestPart);
-router.put('/updateTestPart/:id', authMiddleware, testPartUpload, testPartController.updateTestPart);
+router.post('/createTestPart', authMiddleware, testPartController.createTestPart);
+router.put('/updateTestPart/:id', authMiddleware, testPartController.updateTestPart);
 router.delete('/deleteTestPart/:id', authMiddleware, testPartController.deleteTestPart);
 
 // Question CRUD
