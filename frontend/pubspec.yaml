@@ -31,6 +31,7 @@ dependencies:
   dio: ^5.4.0
   pin_code_fields: ^8.0.1
   app_links: ^6.4.0 
+  flutter_tts: ^4.0.2 #Vocaibulary
   # Icons
   iconsax: ^0.0.8
   cupertino_icons: ^1.0.8

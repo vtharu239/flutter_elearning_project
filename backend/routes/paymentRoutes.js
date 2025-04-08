@@ -19,4 +19,6 @@ router.get('/api/orders/:id', authenticateUser, vnpayController.getOrderInfo);
 // Get user's orders - requires authentication
 router.get('/api/user/orders', authenticateUser, vnpayController.getUserOrders);
 
+router.get('/check-purchase/:userId/:courseId', authenticateUser, vnpayController.checkPurchaseStatus);
+
 module.exports = router;

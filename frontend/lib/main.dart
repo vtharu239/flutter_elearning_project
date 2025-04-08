@@ -17,9 +17,6 @@ void main() async {
   await initializeDateFormatting(
       'vi_VN', null); //intl để định dạng ngày theo ngôn ngữ
 
-  FlutterNativeSplash.preserve(
-      widgetsBinding: widgetsBinding); // Giữ Splash Screen Native
-
   // Khởi tạo Firebase trước
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 

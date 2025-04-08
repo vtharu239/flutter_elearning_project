@@ -48,18 +48,5 @@ const { sequelize } = require('../config/database');
     }, {
       timestamps: true
     });
-  
-    Order.associate = (models) => {
-      Order.belongsTo(models.User, {
-        foreignKey: 'userId',
-        as: 'User'
-      });
-      
-      Order.belongsTo(models.Course, {
-        foreignKey: 'courseId',
-        as: 'Course'
-      });
-    };
-  
 
     module.exports = Order;
