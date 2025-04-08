@@ -7,7 +7,7 @@ class CourseObjective {
   factory CourseObjective.fromJson(Map<String, dynamic> json) {
     return CourseObjective(
       id: json['id'],
-      description: json['description'],
+      description: json['objective'],
     );
   }
 }
