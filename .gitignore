@@ -1,1 +1,2 @@
-backend/node_modules/
+# Ignore Node.js dependencies
+**/node_modules/
