@@ -152,26 +152,6 @@ class _SettingScreenState extends State<SettingScreen>
                                               letterSpacing: 0.5,
                                               fontSize: 20),
                                     ),
-                                    // Row(
-                                    //   children: [
-                                    //     const Icon(
-                                    //       Icons.email_outlined,
-                                    //       color: Colors.white,
-                                    //       size: 14,
-                                    //     ),
-                                    //     const SizedBox(width: 4),
-                                    //     Text(
-                                    //       user?.email ?? 'email@example.com',
-                                    //       style: Theme.of(context)
-                                    //           .textTheme
-                                    //           .bodySmall!
-                                    //           .copyWith(
-                                    //             color: Colors.white,
-                                    //             fontSize: 14,
-                                    //           ),
-                                    //     ),
-                                    //   ],
-                                    // ),
                                   ],
                                 ),
                               ),
@@ -310,7 +290,6 @@ class _SettingScreenState extends State<SettingScreen>
                                 ),
                               ],
                             ),
-                            const SizedBox(height: TSizes.spaceBtwItems),
                             const LatestTestResultsSection(),
                           ],
                         ),

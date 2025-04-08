@@ -30,6 +30,7 @@ class TAppBar extends StatelessWidget implements PreferredSizeWidget {
               TSizes.iconXs), // symetric horizontal: đối xứng theo chiều ngang
       child: AppBar(
         automaticallyImplyLeading: false, //// Ngăn mũi tên quay lại
+        toolbarHeight: 100, // Tăng chiều cao của AppBar
         leading: showBackArrow
             ? IconButton(
                 color: darkMode

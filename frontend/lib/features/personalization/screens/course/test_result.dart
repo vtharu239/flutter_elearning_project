@@ -30,18 +30,20 @@ class LatestTestResultsSection extends StatelessWidget {
             //   score: '35/39',
             // ),
             TestResultDetailCard(
-              testName: 'Practice Test 3',
+              testName: 'Practice Test 2',
               parts: ['Part 1', 'Part 2', 'Part 3'],
               date: '02/01/2025',
               duration: '1:00:00',
               score: '28/39',
+              imageUrl: TImages.toeicTest, // Có ảnh
             ),
             TestResultDetailCard(
               testName: 'Practice Test 3',
               parts: ['Part 2', 'Part 3'],
               date: '02/01/2025',
-              duration: '1:00:00',
-              score: '28/39',
+              duration: '40:35',
+              score: '22/39',
+              imageUrl: TImages.toeicTest, // Có ảnh
             ),
           ],
         ),
@@ -99,7 +101,8 @@ class TestResultDetailCard extends StatelessWidget {
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
-      padding: const EdgeInsets.all(TSizes.md),
+      padding: const EdgeInsets.only(
+          left: TSizes.md, right: TSizes.md, bottom: TSizes.md),
       decoration: BoxDecoration(
         color: isDarkMode ? Colors.grey[850] : Colors.white,
         borderRadius: BorderRadius.circular(TSizes.cardRadiusMd),

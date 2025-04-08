@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_elearning_project/common/products/cart/cart_menu_icon.dart';
 import 'package:flutter_elearning_project/common/widgets/appbar/appbar.dart';
-import 'package:flutter_elearning_project/utils/constants/colors.dart';
+import 'package:flutter_elearning_project/features/document/screens/CreateDocumentScreen.dart';
 import 'package:flutter_elearning_project/utils/constants/text_strings.dart';
 
-class TExamAppBar extends StatelessWidget {
-  const TExamAppBar({super.key});
+class TDocumentAppBar extends StatelessWidget {
+  const TDocumentAppBar({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +13,7 @@ class TExamAppBar extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            TTexts.examAppbarTitle,
+            TTexts.documentAppbarTitle,
             style: Theme.of(context)
                 .textTheme
                 .titleLarge
@@ -24,7 +23,7 @@ class TExamAppBar extends StatelessWidget {
                 .visible, // Allow text to overflow into next line if necessary
           ),
           Text(
-            TTexts.examAppbarSubTitle,
+            TTexts.documentAppbarSubTitle,
             style: Theme.of(context)
                 .textTheme
                 .bodyLarge
@@ -36,9 +35,16 @@ class TExamAppBar extends StatelessWidget {
         ],
       ),
       actions: [
-        TNotifyCounterIcon(
-          onPressed: () {},
-          iconColor: TColors.white,
+        IconButton(
+          icon: const Icon(Icons.add, color: Colors.white),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const CreateDocumentScreen(),
+              ),
+            );
+          },
         ),
       ],
     );

@@ -32,7 +32,6 @@ class HomeScreen extends StatelessWidget {
                 children: [
                   /// -- AppBar
                   const THomeAppBar(),
-                  const SizedBox(height: TSizes.spaceBtwSections),
 
                   Padding(
                     padding: const EdgeInsets.symmetric(
@@ -86,7 +85,7 @@ class HomeScreen extends StatelessWidget {
 
                   // Section Kết quả luyện thi mới nhất
                   TSectionHeading(
-                      title: 'Kết quả luyện thi mới nhất',
+                      title: 'Kết quả thi mới nhất',
                       onPressed: () => Get.find<NavigationController>()
                           .selectedIndex
                           .value = 4),

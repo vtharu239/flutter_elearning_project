@@ -197,19 +197,41 @@ class _TSignupFormState extends State<TSignupForm>
 
     try {
       if (_isEmail) {
-        // Email OTP verification
-        setState(() {
-          _isOtpVerified = true;
-          _verifiedIdentifier = _emailController.text.trim();
-        });
-        Get.snackbar('Thành công', 'Mã OTP hợp lệ. Vui lòng tạo mật khẩu.');
+        // Gửi yêu cầu xác minh OTP đến server trước khi chuyển bước
+        final response = await http.post(
+          Uri.parse(ApiConstants.getUrl(ApiConstants.verifyOtpSetPassword)),
+          headers: ApiConstants.getHeaders(),
+          body: jsonEncode({
+            'otpToken': _otpToken,
+            'otp': _otpController.text.trim(),
+            'type': 'email',
+            'email': _emailController.text.trim(),
+            // Gửi password rỗng để chỉ xác minh OTP, không tạo tài khoản ngay
+            'password': '',
+            'confirmPassword': '',
+          }),
+        );
+
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          setState(() {
+            _isOtpVerified = true;
+            _verifiedIdentifier = _emailController.text.trim();
+          });
+          Get.snackbar('Thành công', 'Mã OTP hợp lệ. Vui lòng tạo mật khẩu.');
+        } else {
+          final errorData = jsonDecode(response.body);
+          Get.snackbar('Lỗi', errorData['message'] ?? 'Mã OTP không hợp lệ!');
+        }
       } else {
-        // Phone OTP verification
+        // Phone OTP verification với Firebase
         final credential = fb.PhoneAuthProvider.credential(
           verificationId: _verificationId!,
           smsCode: _otpController.text.trim(),
         );
-        // Không đăng nhập ngay, chỉ lưu credential
+
+        // Kiểm tra credential với Firebase trước
+        await fb.FirebaseAuth.instance.signInWithCredential(credential);
+
         setState(() {
           _isOtpVerified = true;
           _verifiedIdentifier =
@@ -243,7 +265,6 @@ class _TSignupFormState extends State<TSignupForm>
     if (!_formKey.currentState!.validate() || !_isOtpVerified) return;
 
     try {
-      // Chuẩn hóa lại _verifiedIdentifier trước khi gửi (đề phòng)
       String phoneNo = _verifiedIdentifier!;
       if (!_isEmail && phoneNo.startsWith('+840')) {
         phoneNo = '+84${phoneNo.substring(4)}';
@@ -263,8 +284,6 @@ class _TSignupFormState extends State<TSignupForm>
         requestBody['phoneNo'] = phoneNo;
       }
 
-      log('Sending request to backend: ${jsonEncode(requestBody)}'); // Debug
-
       final response = await http.post(
         Uri.parse(ApiConstants.getUrl(ApiConstants.verifyOtpSetPassword)),
         headers: ApiConstants.getHeaders(),
@@ -275,7 +294,6 @@ class _TSignupFormState extends State<TSignupForm>
         final data = jsonDecode(response.body);
 
         if (!_isEmail) {
-          // Chỉ đăng nhập vào Firebase sau khi MySQL lưu thành công
           final credential = fb.PhoneAuthProvider.credential(
             verificationId: _verificationId!,
             smsCode: _otpController.text.trim(),
@@ -283,7 +301,7 @@ class _TSignupFormState extends State<TSignupForm>
           final userCredential =
               await fb.FirebaseAuth.instance.signInWithCredential(credential);
           final idToken = await userCredential.user!.getIdToken();
-          log('Firebase idToken after signup: $idToken'); // Debug
+          log('Firebase idToken after signup: $idToken');
         }
 
         await Get.find<AuthController>()

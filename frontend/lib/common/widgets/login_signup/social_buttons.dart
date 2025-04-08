@@ -67,11 +67,15 @@ class TSocialButtons extends StatelessWidget {
         // Mobile/emulator flow
         log('Starting Facebook Sign In');
         log('Attempting to log out from previous session');
-        // await FacebookAuth.instance.logOut();
+        await FacebookAuth.instance.logOut();
+
         final LoginResult result = await FacebookAuth.instance.login(
-          permissions: ['public_profile'], // Chỉ yêu cầu public_profile
+          loginBehavior: LoginBehavior.webOnly,
+          permissions: ['public_profile', 'email'],
         );
+
         log('Login result: ${result.status} - ${result.message}');
+
         if (result.status != LoginStatus.success) {
           log('Facebook login failed: ${result.status} - ${result.message}');
           Get.snackbar('Lỗi', 'Không thể đăng nhập: ${result.message}');

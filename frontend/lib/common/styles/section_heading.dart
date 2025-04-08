@@ -12,7 +12,8 @@ class TSectionHeading extends StatelessWidget {
 
   final String title;
   final Color? textColor;
-  final String? buttonTitle; // Cho phép null, dùng giá trị mặc định nếu không truyền vào
+  final String?
+      buttonTitle; // Cho phép null, dùng giá trị mặc định nếu không truyền vào
   final bool showActionButton;
   final VoidCallback? onPressed;
 
@@ -21,16 +22,25 @@ class TSectionHeading extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          title,
-          style: Theme.of(context).textTheme.titleMedium?.apply(color: textColor).copyWith(fontWeight: FontWeight.bold),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
+        Expanded(
+          child: Text(
+            title,
+            style: Theme.of(context)
+                .textTheme
+                .titleLarge
+                ?.apply(color: textColor)
+                .copyWith(fontWeight: FontWeight.bold),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
         ),
         if (showActionButton)
           TextButton(
             onPressed: onPressed,
-            child: Text(buttonTitle ?? "Xem tất cả"), // Mặc định là "Xem tất cả" nếu không truyền vào
+            child: Text(
+              buttonTitle ?? "Xem tất cả",
+              style: TextStyle(color: Color(0xFF00A2FF)),
+            ), // Mặc định là "Xem tất cả" nếu không truyền vào
           ),
       ],
     );

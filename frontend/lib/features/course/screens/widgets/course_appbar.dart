@@ -17,7 +17,7 @@ class TCourseAppBar extends StatelessWidget {
             TTexts.courseAppbarTitle,
             style: Theme.of(context)
                 .textTheme
-                .titleMedium
+                .titleLarge
                 ?.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
             softWrap: true, // Ensure the text wraps
             overflow: TextOverflow
@@ -27,7 +27,7 @@ class TCourseAppBar extends StatelessWidget {
             TTexts.courseAppbarSubTitle,
             style: Theme.of(context)
                 .textTheme
-                .bodyMedium
+                .bodyLarge
                 ?.copyWith(color: Colors.white70),
             softWrap: true, // Ensure the text wraps
             overflow: TextOverflow

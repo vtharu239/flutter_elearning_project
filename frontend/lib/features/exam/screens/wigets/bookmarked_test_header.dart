@@ -14,7 +14,7 @@ class BookmarkedTestsHeader extends StatelessWidget {
         TextButton.icon(
           onPressed: () {},
           icon: const Icon(Iconsax.bookmark),
-          label: const Text('Đã lưu'),
+          label: const Text('Đã lưu', style: TextStyle(color: Color(0xFF00A2FF)),),
         ),
       ],
     );
