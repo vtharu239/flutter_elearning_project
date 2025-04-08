@@ -1,8 +1,15 @@
+import 'dart:convert';
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_elearning_project/features/document/model/cmt_model.dart';
+import 'package:flutter_elearning_project/features/personalization/controllers/auth_controller.dart';
+import 'package:http/http.dart' as http;
+import 'package:flutter_elearning_project/config/api_constants.dart';
+import 'package:get/get.dart';
 
 class CommentSection extends StatefulWidget {
-  const CommentSection({super.key});
+  final int documentId;
+  const CommentSection({super.key, required this.documentId});
 
   @override
   State<CommentSection> createState() => _CommentSectionState();
@@ -10,51 +17,65 @@ class CommentSection extends StatefulWidget {
 
 class _CommentSectionState extends State<CommentSection> {
   final TextEditingController _commentController = TextEditingController();
-  List<Comment> comments = [
-    Comment(
-      username: "hanhphuong44",
-      date: "Tháng 2. 17, 2025",
-      content: "Tìm partner luyện nói hàng ngày chăm chỉ",
-      replies: [
-        Comment(
-          username: "hanhphuong44",
-          date: "Tháng 2. 17, 2025",
-          content:
-              "Band 5.5=60 cần lên 6.5, tháng sau thi rồi cần luyện hàng ngày",
-        ),
-        Comment(
-          username: "luongsuong61",
-          date: "Tháng 2. 25, 2025",
-          content:
-              "Bạn ơi bạn tìm được chưa nếu chưa liên hệ mình nha, mình cũng tháng sau thi :<",
-        ),
-      ],
-    ),
-    Comment(
-      username: "ngocd2584",
-      date: "Tháng 2. 21, 2025",
-      content: "Bạn ơi bạn tìm được partner chưa ạ?",
-    ),
-    Comment(
-      username: "nguyenhuong.2007vng",
-      date: "Tháng 3. 02, 2025",
-      content:
-          "Mình thi 15/03 mình cần tìm partner ạ, mình học 12 sdt 0941042079 nhé",
-    ),
-    Comment(
-      username: "ducanhhhh",
-      date: "Tháng 3. 02, 2025",
-      content: "T thi 16/3 nè, ông cùng t không",
-    ),
-  ];
+  List<Comment> comments = [];
+  bool isLoading = true;
+  int? replyingToCommentId;
 
-  void _addComment(String text) {
-    if (text.isNotEmpty) {
-      setState(() {
-        comments.insert(
-            0, Comment(username: "Bạn", date: "Hôm nay", content: text));
+  @override
+  void initState() {
+    super.initState();
+    fetchComments();
+  }
+
+  Future<void> fetchComments() async {
+    final url = Uri.parse(
+        "${ApiConstants.baseUrl}/api/document-comments?documentId=${widget.documentId}");
+
+    try {
+      final response = await http.get(url, headers: ApiConstants.getHeaders());
+      if (response.statusCode == 200) {
+        final List data = json.decode(response.body);
+        setState(() {
+          comments = data.map((e) => Comment.fromJson(e)).toList();
+          isLoading = false;
+        });
+      } else {
+        log('Loi khi load comment: ${response.statusCode}');
+      }
+    } catch (e) {
+      log("Loi: $e");
+    }
+  }
+
+  Future<void> _addComment(String text) async {
+    if (text.isEmpty) return;
+
+    final userId = Get.find<AuthController>().user.value?.id;
+    if (userId == null) {
+      Get.snackbar("Lỗi", "Bạn chưa đăng nhập!");
+      return;
+    }
+
+    final url = Uri.parse("${ApiConstants.baseUrl}/api/document-comments");
+    final body = json.encode({
+      'documentId': widget.documentId,
+      'userId': userId,
+      'content': text,
+      if (replyingToCommentId != null) 'parentId': replyingToCommentId,
+    });
+
+    try {
+      final response =
+          await http.post(url, headers: ApiConstants.getHeaders(), body: body);
+      if (response.statusCode == 201) {
         _commentController.clear();
-      });
+        setState(() => replyingToCommentId = null);
+        fetchComments();
+      } else {
+        log("Lỗi gửi comment: ${response.statusCode}");
+      }
+    } catch (e) {
+      log("Lỗi gửi comment: $e");
     }
   }
 
@@ -64,23 +85,21 @@ class _CommentSectionState extends State<CommentSection> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 20),
-        const Text(
-          "Bình luận",
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
+        const Text("Bình luận",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         const SizedBox(height: 10),
-
-        // Ô nhập bình luận
         Row(
           children: [
             Expanded(
               child: TextField(
                 controller: _commentController,
-                decoration: const InputDecoration(
-                  hintText: "Chia sẻ cảm nghĩ của bạn...",
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  hintText: replyingToCommentId != null
+                      ? "Trả lời bình luận..."
+                      : "Chia sẻ cảm nghĩ của bạn...",
+                  border: const OutlineInputBorder(),
                   contentPadding:
-                      EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                 ),
               ),
             ),
@@ -92,56 +111,79 @@ class _CommentSectionState extends State<CommentSection> {
           ],
         ),
         const SizedBox(height: 10),
-
-        // Danh sách bình luận
-        ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: comments.length,
-          itemBuilder: (context, index) {
-            return _buildComment(comments[index]);
-          },
-        ),
+        isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : comments.isEmpty
+                ? const Text("Chưa có bình luận nào.")
+                : ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: comments.length,
+                    itemBuilder: (context, index) {
+                      return _buildComment(comments[index]);
+                    },
+                  ),
       ],
     );
   }
 
   Widget _buildComment(Comment comment, {int level = 0}) {
     return Padding(
-      padding: EdgeInsets.only(left: level * 20.0, top: 8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              CircleAvatar(
-                radius: 15,
-                child: Text(comment.username[0].toUpperCase()),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                comment.username,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                comment.date,
-                style: const TextStyle(color: Colors.black54, fontSize: 12),
-              ),
-            ],
-          ),
-          const SizedBox(height: 4),
-          Text(comment.content, style: const TextStyle(fontSize: 14)),
-          const SizedBox(height: 4),
-
-          // Nếu có trả lời thì hiển thị danh sách trả lời
-          if (comment.replies.isNotEmpty)
-            Column(
-              children: comment.replies.map((reply) {
-                return _buildComment(reply, level: level + 1);
-              }).toList(),
+      padding: EdgeInsets.only(left: level * 16.0, top: 12.0, right: 8),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.grey[100],
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.grey.shade300),
+        ),
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 16,
+                  backgroundColor: Colors.purple.shade100,
+                  child: Text(
+                    comment.username[0].toUpperCase(),
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        comment.username,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        comment.date,
+                        style: const TextStyle(
+                            color: Colors.black54, fontSize: 12),
+                      ),
+                    ],
+                  ),
+                ),
+                TextButton(
+                  onPressed: () =>
+                      setState(() => replyingToCommentId = comment.id),
+                  child: const Text("Trả lời", style: TextStyle(fontSize: 12)),
+                ),
+              ],
             ),
-        ],
+            const SizedBox(height: 8),
+            Text(comment.content, style: const TextStyle(fontSize: 15)),
+            if (comment.replies.isNotEmpty)
+              Column(
+                children: comment.replies
+                    .map((reply) => _buildComment(reply, level: level + 1))
+                    .toList(),
+              ),
+          ],
+        ),
       ),
     );
   }

@@ -247,7 +247,30 @@ const vnpayController = {
       console.error('Get user orders error:', error);
       res.status(500).json({ message: 'Lỗi server!' });
     }
-  }
+  },
+  checkPurchaseStatus: async (req, res) => {
+    try {
+      const { userId, courseId } = req.params;
+
+      const order = await Order.findOne({
+        where: {
+          userId,
+          courseId,
+          status: 'completed', // Only consider completed orders
+        },
+      });
+
+      if (order) {
+        res.status(200).json({ hasPurchased: true });
+      } else {
+        res.status(200).json({ hasPurchased: false });
+      }
+    } catch (error) {
+      console.error('Check purchase status error:', error);
+      res.status(500).json({ message: 'Lỗi server!', error: error.message });
+    }
+  },
 };
 
 module.exports = vnpayController;
+

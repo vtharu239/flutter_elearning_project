@@ -8,17 +8,22 @@ import 'package:provider/provider.dart';
 import 'app.dart';
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
+import 'package:intl/date_symbol_data_local.dart';
 
 void main() async {
   // debugPaintSizeEnabled = true; // Bật Debug Paint
-  
+
   WidgetsFlutterBinding.ensureInitialized();
+  
+  await initializeDateFormatting(
+      'vi_VN', null); //intl để định dạng ngày theo ngôn ngữ
 
   // Khởi tạo Firebase trước
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   // Sau khi Firebase đã khởi tạo, mới gọi các dịch vụ của Firebase
-  await fb.FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: true);
+  await fb.FirebaseAuth.instance
+      .setSettings(appVerificationDisabledForTesting: true);
 
   // Khởi tạo các controllers
   final authController = Get.put(AuthController());
