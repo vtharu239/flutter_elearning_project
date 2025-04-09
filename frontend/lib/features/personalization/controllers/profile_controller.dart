@@ -177,14 +177,39 @@ class ProfileController extends GetxController {
           snackPosition: SnackPosition.BOTTOM,
         );
       } else {
+        // Xử lý các mã lỗi khác
         final error = jsonDecode(response.body);
-        throw error['message'] ?? 'Cập nhật thất bại';
+        String errorMsg = error['message'] ?? 'Cập nhật thất bại';
+
+        if (response.statusCode == 400 &&
+            errorMsg == 'Tên người dùng đã tồn tại!') {
+          errorMessage.value = errorMsg;
+          Get.snackbar(
+            'Lỗi',
+            'Tên người dùng đã tồn tại, vui lòng chọn tên khác!',
+            snackPosition: SnackPosition.BOTTOM,
+          );
+        } else if (response.statusCode == 404) {
+          errorMessage.value = errorMsg;
+          Get.snackbar(
+            'Lỗi',
+            'Không tìm thấy người dùng!',
+            snackPosition: SnackPosition.BOTTOM,
+          );
+        } else {
+          errorMessage.value = errorMsg;
+          Get.snackbar(
+            'Lỗi',
+            errorMsg,
+            snackPosition: SnackPosition.BOTTOM,
+          );
+        }
       }
     } catch (e) {
-      errorMessage.value = e.toString();
+      errorMessage.value = 'Đã xảy ra lỗi không xác định: $e';
       Get.snackbar(
         'Lỗi',
-        e.toString(),
+        'Đã xảy ra lỗi không xác định: $e',
         snackPosition: SnackPosition.BOTTOM,
       );
     } finally {

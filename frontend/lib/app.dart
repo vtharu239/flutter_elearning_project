@@ -33,7 +33,12 @@ class _AppState extends State<App> {
       theme: ThemeData(
         brightness: Brightness.light,
         scaffoldBackgroundColor: Colors.white,
-        appBarTheme: const AppBarTheme(backgroundColor: Colors.transparent),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.transparent,
+          scrolledUnderElevation: 0, // Ngăn hiệu ứng nổi khi cuộn
+          surfaceTintColor: Colors.transparent, // Ngăn màu tint xuất hiện
+        ),
+        bottomAppBarTheme: BottomAppBarTheme(color: Color(0xFF00A2FF)),
         inputDecorationTheme: const InputDecorationTheme(
           floatingLabelStyle: TextStyle(color: Color(0xFF00A2FF)),
           focusedBorder: UnderlineInputBorder(
@@ -47,7 +52,11 @@ class _AppState extends State<App> {
       darkTheme: ThemeData(
         brightness: Brightness.dark,
         scaffoldBackgroundColor: const Color.fromARGB(155, 39, 36, 36),
-        appBarTheme: const AppBarTheme(backgroundColor: Colors.transparent),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.transparent,
+          scrolledUnderElevation: 0, // Ngăn hiệu ứng nổi khi cuộn
+          surfaceTintColor: Colors.transparent, // Ngăn màu tint xuất hiện
+        ),
         inputDecorationTheme: const InputDecorationTheme(
           floatingLabelStyle: TextStyle(color: Color(0xFF00A2FF)),
           focusedBorder: UnderlineInputBorder(

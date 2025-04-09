@@ -1,6 +1,7 @@
-// models/DocumentComment.js
-module.exports = (sequelize, DataTypes) => {
-  const DocumentComment = sequelize.define('DocumentComment', {
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../config/database');
+
+const DocumentComment = sequelize.define('DocumentComment', {
     id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
@@ -24,12 +25,14 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: null,
     },
     date: {
-      type: DataTypes.STRING,
-      defaultValue: () => new Date().toISOString(),
+      type: DataTypes.DATE,
+      allowNull: false,
     },
   }, {
     tableName: 'DocumentComments',
-  });
+});
 
-  return DocumentComment;
-};
+// DocumentComment.belongsTo(Document, { foreignKey: 'documentId', as: 'Document' });
+// DocumentComment.belongsTo(User, { foreignKey: 'userId', as: 'User' });
+
+module.exports = DocumentComment;

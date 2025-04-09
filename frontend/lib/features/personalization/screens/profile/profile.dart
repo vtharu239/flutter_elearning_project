@@ -18,6 +18,7 @@ import 'package:flutter_elearning_project/features/personalization/screens/profi
 import 'package:flutter_elearning_project/features/personalization/screens/profile/component/update_email_screen.dart';
 import 'package:flutter_elearning_project/features/personalization/screens/profile/component/update_phone_screen.dart';
 import 'package:flutter_elearning_project/features/personalization/screens/profile/widgets/profile_menu.dart';
+import 'package:flutter_elearning_project/features/personalization/screens/settings/settings.dart';
 import 'package:flutter_elearning_project/utils/constants/image_strings.dart';
 import 'package:flutter_elearning_project/utils/constants/sizes.dart';
 import 'package:get/get.dart';
@@ -34,6 +35,7 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   final ProfileController profileController = Get.put(ProfileController());
   final AuthController authController = Get.find();
+  bool _isPasswordChangeInitiated = false; // Flag để kiểm soát
 
   void _showEditDialog(BuildContext context, String field) {
     final user = authController.user.value;
@@ -134,10 +136,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _initiatePasswordChange() {
+    if (_isPasswordChangeInitiated) return; // Ngăn gọi lại khi rebuild
+    _isPasswordChangeInitiated = true;
+
     final user = authController.user.value;
     if (user == null) return;
 
-    // Ưu tiên số điện thoại nếu có, nếu không thì dùng email
     if (user.phoneNo != null && user.phoneNo!.isNotEmpty) {
       Get.to(() =>
           InitiatePhoneOtpForPasswordChangeScreen(phoneNo: user.phoneNo!));
@@ -146,6 +150,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     } else {
       Get.snackbar('Lỗi', 'Không có email hoặc số điện thoại để gửi OTP!');
     }
+
+    // Reset flag sau khi hoàn thành
+    Future.delayed(const Duration(milliseconds: 500), () {
+      _isPasswordChangeInitiated = false;
+    });
   }
 
   // Show image options bottom sheet
@@ -192,9 +201,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     return GetBuilder<ProfileController>(
       builder: (controller) => Scaffold(
-        appBar: const TAppBar(
+        appBar: TAppBar(
           showBackArrow: true,
-          title: Text('Hồ sơ cá nhân'),
+          title: const Text('Hồ sơ cá nhân'),
+          padding: const EdgeInsets.symmetric(horizontal: 6.0),
+          leadingOnPressed: () {
+            Get.offUntil(
+          GetPageRoute(page: () => const SettingScreen()),
+          (route) => route.isFirst,
+        );
+          },
         ),
         backgroundColor: isDarkMode ? Colors.grey[850] : Colors.white,
 

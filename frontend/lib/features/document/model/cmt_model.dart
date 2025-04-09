@@ -5,6 +5,7 @@ class Comment {
   final String fullName;
   final String content;
   final String date;
+  final String? avatarUrl;
   final int? parentId;
   final List<Comment> replies;
 
@@ -15,6 +16,7 @@ class Comment {
     required this.fullName,
     required this.content,
     required this.date,
+    this.avatarUrl, // Có thể null
     this.parentId,
     this.replies = const [],
   });
@@ -27,6 +29,7 @@ class Comment {
       fullName: json['fullName'],
       content: json['content'],
       date: json['date'],
+      avatarUrl: json['avatarUrl'],
       parentId: json['parentId'],
       replies: (json['replies'] ?? [])
           .map<Comment>((r) => Comment.fromJson(r))

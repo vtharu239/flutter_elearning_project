@@ -62,12 +62,17 @@ const verifyOTPAndSetPassword = async (req, res) => {
 
   console.log('Received request:', req.body); // Debug
 
-  if (!otp || !password || !confirmPassword || !type) {
+  if (!otp || !type) {
     return res.status(400).json({ message: 'Thiếu thông tin bắt buộc!' });
   }
-  if (password !== confirmPassword) {
-    return res.status(400).json({ message: 'Mật khẩu không khớp!' });
+
+  // Nếu có password và confirmPassword, kiểm tra khớp
+  if (password || confirmPassword) {
+    if (password !== confirmPassword) {
+      return res.status(400).json({ message: 'Mật khẩu không khớp!' });
+    }
   }
+
   if (type === 'email' && !email) {
     return res.status(400).json({ message: 'Email là bắt buộc cho loại email!' });
   }
@@ -89,30 +94,49 @@ const verifyOTPAndSetPassword = async (req, res) => {
       }
 
       user = await User.findOne({ where: { email } });
+      if (!password) {
+        // Chỉ xác minh OTP, không tạo tài khoản
+        return res.status(200).json({ message: 'Mã OTP hợp lệ!' });
+      }
+
       if (!user) {
         user = await User.create({
           email,
-          password,
+          password: await bcrypt.hash(password, 10),
           username,
           fullName,
-          isEmailVerified: true
+          isEmailVerified: true,
         });
       } else {
-        await user.update({ password, isEmailVerified: true, username, fullName });
+        await user.update({
+          password: await bcrypt.hash(password, 10),
+          isEmailVerified: true,
+          username,
+          fullName,
+        });
       }
     } else if (type === 'phone') {
-      // Không cần otpToken từ Firebase, chỉ kiểm tra phoneNo đã tồn tại chưa
       user = await User.findOne({ where: { phoneNo } });
+      if (!password) {
+        // Chỉ xác minh OTP, không tạo tài khoản
+        return res.status(200).json({ message: 'Mã OTP hợp lệ!' });
+      }
+
       if (!user) {
         user = await User.create({
           phoneNo,
-          password,
+          password: await bcrypt.hash(password, 10),
           username,
           fullName,
-          isPhoneVerified: true
+          isPhoneVerified: true,
         });
       } else {
-        await user.update({ password, isPhoneVerified: true, username, fullName });
+        await user.update({
+          password: await bcrypt.hash(password, 10),
+          isPhoneVerified: true,
+          username,
+          fullName,
+        });
       }
     }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_elearning_project/utils/helpers/helper_functions.dart';
 
 class DetailedAnalysisSection extends StatelessWidget {
   final List<dynamic> parts;
@@ -16,6 +17,8 @@ class DetailedAnalysisSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final darkMode = THelperFunctions.isDarkMode(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -36,7 +39,9 @@ class DetailedAnalysisSection extends StatelessWidget {
                   label: Text(
                     part['title'],
                     style: TextStyle(
-                      color: currentPartIndex == index ? Colors.white : Colors.black,
+                      color: currentPartIndex == index
+                          ? Colors.white
+                          : Colors.black,
                     ),
                   ),
                   selected: currentPartIndex == index,
@@ -54,7 +59,7 @@ class DetailedAnalysisSection extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         Card(
-          color: Colors.white,
+          color: darkMode ? Colors.grey[800] : Colors.white,
           elevation: 1,
           shadowColor: Colors.blue,
           child: SingleChildScrollView(
@@ -76,11 +81,12 @@ class DetailedAnalysisSection extends StatelessWidget {
                   (entry) {
                     final tag = entry.key;
                     final stats = entry.value;
-                    final accuracy =
-                        (stats['correct'] / stats['total'] * 100).toStringAsFixed(2);
+                    final accuracy = (stats['correct'] / stats['total'] * 100)
+                        .toStringAsFixed(2);
 
-                    final sequentialQuestionIds =
-                        stats['questionIds'].map((id) => id.toString()).join(', ');
+                    final sequentialQuestionIds = stats['questionIds']
+                        .map((id) => id.toString())
+                        .join(', ');
 
                     return DataRow(
                       cells: [
@@ -95,16 +101,19 @@ class DetailedAnalysisSection extends StatelessWidget {
                   },
                 ),
                 () {
-                  final filteredStats = tagStats.entries.where(
-                      (entry) => entry.key.contains(parts[currentPartIndex]['title']));
+                  final filteredStats = tagStats.entries.where((entry) =>
+                      entry.key.contains(parts[currentPartIndex]['title']));
                   final totalStats = filteredStats.fold<Map<String, int>>(
                     {'correct': 0, 'wrong': 0, 'skipped': 0, 'total': 0},
                     (acc, entry) {
-                      acc['correct'] = acc['correct']! + (entry.value['correct'] as int);
-                      acc['wrong'] = acc['wrong']! + (entry.value['wrong'] as int);
+                      acc['correct'] =
+                          acc['correct']! + (entry.value['correct'] as int);
+                      acc['wrong'] =
+                          acc['wrong']! + (entry.value['wrong'] as int);
                       acc['skipped'] =
                           acc['skipped']! + (entry.value['skipped'] as int);
-                      acc['total'] = acc['total']! + (entry.value['total'] as int);
+                      acc['total'] =
+                          acc['total']! + (entry.value['total'] as int);
                       return acc;
                     },
                   );

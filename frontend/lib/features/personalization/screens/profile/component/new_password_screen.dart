@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'package:flutter_elearning_project/common/widgets/appbar/appbar.dart';
+import 'package:flutter_elearning_project/features/personalization/screens/profile/profile.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_elearning_project/config/api_constants.dart';
@@ -47,7 +49,7 @@ class NewPasswordScreenState extends State<NewPasswordScreen> {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('token');
 
-      log('idToken: ${widget.idToken}'); // Log để kiểm tra idToken
+      log('idToken: ${widget.idToken}');
 
       final response = await http.post(
         Uri.parse(ApiConstants.getUrl('/profile/update-password')),
@@ -63,9 +65,7 @@ class NewPasswordScreenState extends State<NewPasswordScreen> {
       );
 
       if (response.statusCode == 200) {
-        Get.back(); // Quay lại ProfileScreen
-        Get.back(); // Quay lại ProfileScreen
-        Get.back(); // Quay lại ProfileScreen
+        Get.offAll(() => const ProfileScreen());
         Get.snackbar('Thành công', 'Thay đổi mật khẩu thành công!');
       } else {
         Get.snackbar('Lỗi', jsonDecode(response.body)['message']);
@@ -90,19 +90,13 @@ class NewPasswordScreenState extends State<NewPasswordScreen> {
 
     return Scaffold(
       backgroundColor: darkMode ? Colors.grey[850] : Colors.white,
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            color: darkMode ? Colors.white : Colors.black,
-          ),
-          onPressed: () {
-            Get.back();
-            Get.back();
-            Get.back();
-          },
-        ),
+      appBar: TAppBar(
         title: const Text('Tạo mật khẩu mới'),
+        showBackArrow: true,
+        padding: const EdgeInsets.symmetric(horizontal: 6.0),
+        leadingOnPressed: () {
+          Get.offAll(() => const ProfileScreen());
+        },
       ),
       body: Padding(
         padding: const EdgeInsets.all(TSizes.defaultSpace),
@@ -162,19 +156,20 @@ class NewPasswordScreenState extends State<NewPasswordScreen> {
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        const Color(0xFF00A2FF), // Màu xanh #00A2FF
-                    foregroundColor: Colors.white, // Màu chữ trắng
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 10), // Điều chỉnh padding nếu cần
+                    backgroundColor: const Color(0xFF00A2FF),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 10),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12), // Bo góc
+                      borderRadius: BorderRadius.circular(12),
                     ),
                   ),
                   onPressed: _isLoading ? null : _updatePassword,
                   child: _isLoading
                       ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text('Cập nhật'),
+                      : const Text(
+                          'Cập nhật',
+                          style: TextStyle(fontSize: 18),
+                        ),
                 ),
               ),
             ],

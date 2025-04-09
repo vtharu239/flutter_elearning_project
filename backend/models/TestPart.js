@@ -18,7 +18,7 @@ const TestPart = sequelize.define('TestPart', {
   },
   questionCount: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    allowNull: true,
     defaultValue: 0
   },
   partType: { // Loại part: Listening Part 1, Reading Part 5,...

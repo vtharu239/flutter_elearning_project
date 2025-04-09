@@ -1,10 +1,10 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_elearning_project/common/styles/section_heading.dart';
+import 'package:flutter_elearning_project/common/widgets/appbar/appbar.dart';
 import 'package:flutter_elearning_project/config/api_constants.dart';
 import 'package:flutter_elearning_project/features/document/model/doc_category_model.dart';
 import 'package:flutter_elearning_project/features/personalization/controllers/auth_controller.dart';
-import 'package:flutter_elearning_project/common/widgets/custom_shapes/container/rounded_container.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -95,90 +95,95 @@ class _CreateDocumentScreenState extends State<CreateDocumentScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final darkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
-      appBar: AppBar(
-        title: const Text("Tạo tài liệu"),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Get.back(),
-        ),
-        backgroundColor: Colors.indigo,
-        foregroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: true,
+      appBar: TAppBar(
+        showBackArrow: true,
+        title: Text("Tạo tài liệu"),
       ),
+      backgroundColor: darkMode ? Colors.grey[850] : Colors.white,
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: TRoundedContainer(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      "Điền thông tin bài viết",
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const TSectionHeading(
+                    title: 'Điền thông tin chi tiết',
+                    showActionButton: false,
+                  ),
+                  const SizedBox(height: 20),
+                  TextField(
+                    controller: _titleController,
+                    decoration: const InputDecoration(
+                      labelText: "Tiêu đề",
+                      border: OutlineInputBorder(),
                     ),
-                    const SizedBox(height: 20),
-                    TextField(
-                      controller: _titleController,
-                      decoration: const InputDecoration(
-                        labelText: "Tiêu đề",
-                        border: OutlineInputBorder(),
-                      ),
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: _descController,
+                    maxLines: 4,
+                    decoration: const InputDecoration(
+                      labelText: "Mô tả",
+                      border: OutlineInputBorder(),
                     ),
-                    const SizedBox(height: 12),
-                    TextField(
-                      controller: _descController,
-                      maxLines: 4,
-                      decoration: const InputDecoration(
-                        labelText: "Mô tả",
-                        border: OutlineInputBorder(),
-                      ),
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: _imageUrlController,
+                    decoration: const InputDecoration(
+                      labelText: "Ảnh (URL hoặc assets)",
+                      border: OutlineInputBorder(),
                     ),
-                    const SizedBox(height: 12),
-                    TextField(
-                      controller: _imageUrlController,
-                      decoration: const InputDecoration(
-                        labelText: "Ảnh (URL hoặc assets)",
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    DropdownButtonFormField<int>(
-                      value: selectedCategoryId,
-                      items: categories.map((cat) {
-                        return DropdownMenuItem<int>(
-                          value: cat.id,
-                          child: Text(cat.name),
-                        );
-                      }).toList(),
-                      onChanged: (value) =>
-                          setState(() => selectedCategoryId = value),
-                      decoration: const InputDecoration(
-                        labelText: "Danh mục",
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    ElevatedButton.icon(
-                      onPressed: submitDocument,
-                      icon: const Icon(Icons.send),
-                      label: const Text("Gửi bài viết"),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.indigo,
-                        foregroundColor: Colors.white,
-                        minimumSize: const Size(double.infinity, 48),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                  ),
+                  const SizedBox(height: 12),
+                  DropdownButtonHideUnderline(
+                    child: ButtonTheme(
+                      alignedDropdown: true,
+                      child: DropdownButtonFormField<int>(
+                        value: selectedCategoryId,
+                        items: categories.map((cat) {
+                          return DropdownMenuItem<int>(
+                            value: cat.id,
+                            child: Text(cat.name),
+                          );
+                        }).toList(),
+                        onChanged: (value) =>
+                            setState(() => selectedCategoryId = value),
+                        decoration: const InputDecoration(
+                          labelText: "Danh mục",
+                          border: OutlineInputBorder(),
                         ),
+                        dropdownColor: darkMode ? Colors.black : Colors.white,
+                        isExpanded:
+                            false,
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: 50),
+                  ElevatedButton.icon(
+                    onPressed: submitDocument,
+                    icon: const Icon(
+                      Icons.send,
+                      color: Colors.white,
+                    ),
+                    label: const Text(
+                      "Gửi bài viết",
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFF00A2FF),
+                      foregroundColor: Colors.white,
+                      minimumSize: const Size(double.infinity, 48),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
     );

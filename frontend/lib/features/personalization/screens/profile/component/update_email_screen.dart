@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_elearning_project/common/widgets/appbar/appbar.dart';
 import 'package:flutter_elearning_project/features/personalization/screens/profile/component/verify_email_otp_screen.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -58,8 +59,10 @@ class UpdateEmailScreenState extends State<UpdateEmailScreen> {
 
     return Scaffold(
       backgroundColor: isDarkMode ? Colors.grey[850] : Colors.white,
-      appBar: AppBar(
+      appBar: TAppBar(
         title: const Text('Nhập email'),
+        showBackArrow: true,
+        padding: EdgeInsets.symmetric(horizontal: 6.0),
       ),
       body: Padding(
         padding: const EdgeInsets.all(TSizes.defaultSpace),

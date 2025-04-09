@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_elearning_project/features/exam/screens/wigets/detailed_answer_screen.dart';
+import 'package:flutter_elearning_project/utils/helpers/helper_functions.dart';
 import 'package:get/get.dart';
 
 class AnswersSection extends StatelessWidget {
@@ -30,6 +31,8 @@ class AnswersSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final darkMode = THelperFunctions.isDarkMode(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -79,6 +82,7 @@ class AnswersSection extends StatelessWidget {
             ),
           ],
         ),
+        SizedBox(height: 16),
         const Text(
           'Chú ý: Khi làm lại các câu sai, điểm trung bình của bạn sẽ không bị ảnh hưởng.',
           style: TextStyle(
@@ -87,7 +91,7 @@ class AnswersSection extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 16),
         ...parts.map((part) {
           final partQuestions = questions
               .where((q) => (part['Questions'] as List<dynamic>)
@@ -95,7 +99,7 @@ class AnswersSection extends StatelessWidget {
               .toList();
 
           return Card(
-            color: Colors.white,
+            color: darkMode ? Colors.grey[800] : Colors.white,
             elevation: 2,
             shadowColor: Colors.blue,
             child: ExpansionTile(

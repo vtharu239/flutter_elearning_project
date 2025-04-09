@@ -141,7 +141,12 @@ class _DiscussionSectionState extends State<DiscussionSection> {
           ),
           const SizedBox(height: 8),
           Text(content),
-          TextButton(onPressed: () {}, child: const Text('Trả lời')),
+          TextButton(
+              onPressed: () {},
+              child: const Text(
+                'Trả lời',
+                style: TextStyle(color: Color(0xFF00A2FF)),
+              )),
           const Divider(),
         ],
       ),

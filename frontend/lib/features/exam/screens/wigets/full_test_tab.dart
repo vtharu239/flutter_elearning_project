@@ -18,12 +18,12 @@ class FullTestTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: Colors.yellow[50],
@@ -42,8 +42,11 @@ class FullTestTab extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 24),
-            SizedBox(
+          ),
+          const SizedBox(height: 24),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () async {
@@ -71,15 +74,12 @@ class FullTestTab extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 24),
-            const Divider(),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16.0),
-              child: DiscussionSection(
-                  comments: test['Comments'], onAddComment: (_) async {}),
-            ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 24),
+          const Divider(),
+          DiscussionSection(
+              comments: test['Comments'], onAddComment: (_) async {}),
+        ],
       ),
     );
   }

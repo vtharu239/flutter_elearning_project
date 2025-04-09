@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_elearning_project/common/widgets/appbar/appbar.dart';
 import 'package:flutter_elearning_project/features/personalization/controllers/auth_controller.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -140,19 +141,15 @@ class VerifyEmailOtpScreenState extends State<VerifyEmailOtpScreen> {
 
     return Scaffold(
       backgroundColor: darkMode ? Colors.grey[850] : Colors.white,
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            color: darkMode ? Colors.white : Colors.black,
-          ),
-          onPressed: () {
-            Get.back();
-            Get.back();
-            Get.back();
-          },
-        ),
+      appBar: TAppBar(
         title: const Text('Xác minh OTP'),
+        showBackArrow: true,
+        padding: EdgeInsets.symmetric(horizontal: 6.0),
+        leadingOnPressed: () {
+          Get.back();
+          Get.back();
+          Get.back();
+        },
       ),
       body: Padding(
         padding: const EdgeInsets.all(TSizes.defaultSpace),
