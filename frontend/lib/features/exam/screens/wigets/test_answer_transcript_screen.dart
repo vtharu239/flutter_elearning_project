@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_elearning_project/config/api_constants.dart';
+import 'package:flutter_elearning_project/utils/helpers/helper_functions.dart';
 
 class TestAnswerTranscriptScreen extends StatefulWidget {
   final Map<String, dynamic> test;
@@ -40,6 +41,8 @@ class TestAnswerTranscriptScreenState
     final questions = List<Map<String, dynamic>>.from(currentPart['Questions']);
     final isListeningPart =
         currentPart['partType']?.toLowerCase().contains('listening') ?? false;
+
+    final darkMode = THelperFunctions.isDarkMode(context);
 
     _questionKeys.clear();
     for (int i = 0; i < questions.length; i++) {
@@ -166,12 +169,16 @@ class TestAnswerTranscriptScreenState
                                 width: double.infinity,
                                 padding: const EdgeInsets.all(12),
                                 decoration: BoxDecoration(
-                                  color: Colors.blue[50],
+                                  color: Colors.blue[300],
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Text(
                                   question['transcript'],
-                                  style: const TextStyle(fontSize: 15),
+                                  style: TextStyle(
+                                      fontSize: 15,
+                                      color: darkMode
+                                          ? Colors.black
+                                          : Colors.white),
                                 ),
                               ),
                           ],
@@ -333,6 +340,7 @@ class TestAnswerReviewScreen extends StatelessWidget {
                         // color: Colors.blue,
                         border: Border.all(color: Colors.grey),
                         borderRadius: BorderRadius.circular(8),
+                        color: Colors.white,
                       ),
                       child: Center(
                         child: Text(

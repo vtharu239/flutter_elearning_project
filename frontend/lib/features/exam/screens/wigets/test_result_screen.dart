@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_elearning_project/features/exam/screens/wigets/test_detail_screen.dart';
 import 'package:flutter_elearning_project/navigation_menu.dart';
-import 'package:flutter_elearning_project/utils/helpers/helper_functions.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_elearning_project/config/api_constants.dart';
@@ -312,8 +311,6 @@ class TestResultScreenState extends State<TestResultScreen> {
     if (resultData!['examType'] == 'TOEIC') {
       toeicScores = calculateToeicScores(parts, resultData!['answers']);
     }
-
-    final darkMode = THelperFunctions.isDarkMode(context);
 
     return Scaffold(
       appBar: AppBar(
