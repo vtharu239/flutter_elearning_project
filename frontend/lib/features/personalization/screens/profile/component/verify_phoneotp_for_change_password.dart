@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/material.dart';
+import 'package:flutter_elearning_project/common/widgets/appbar/appbar.dart';
 import 'package:flutter_elearning_project/features/personalization/screens/profile/component/new_password_screen.dart';
+import 'package:flutter_elearning_project/features/personalization/screens/profile/profile.dart';
 import 'package:flutter_elearning_project/utils/constants/colors.dart';
 import 'package:flutter_elearning_project/utils/constants/sizes.dart';
 import 'package:get/get.dart';
@@ -97,7 +99,7 @@ class VerifyPhoneOtpForPasswordChangeScreenState
           await fb.FirebaseAuth.instance.signInWithCredential(credential);
       final idToken = await userCredential.user!.getIdToken();
 
-      Get.to(() => NewPasswordScreen(idToken: idToken!));
+      Get.off(() => NewPasswordScreen(idToken: idToken!));
     } catch (e) {
       Get.snackbar('Lỗi', 'Không thể xác minh OTP: $e');
     } finally {
@@ -117,18 +119,14 @@ class VerifyPhoneOtpForPasswordChangeScreenState
 
     return Scaffold(
       backgroundColor: darkMode ? TColors.dark : TColors.white,
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            color: darkMode ? Colors.white : Colors.black,
-          ),
-          onPressed: () {
-            Get.back();
-            Get.back();
-          },
-        ),
+      appBar: TAppBar(
         title: const Text('Xác minh OTP'),
+        showBackArrow: true,
+        padding: EdgeInsets.symmetric(horizontal: 6.0),
+        leadingOnPressed: () {
+          Get.offUntil(GetPageRoute(page: () => const ProfileScreen()),
+              (route) => route.isFirst);
+        },
       ),
       body: Padding(
         padding: const EdgeInsets.all(TSizes.defaultSpace),
@@ -141,12 +139,13 @@ class VerifyPhoneOtpForPasswordChangeScreenState
                 style: Theme.of(context).textTheme.labelLarge, // Kiểu chữ chung
                 children: [
                   const TextSpan(
-                    text: 'Nhập mã OTP đã gửi đến ',
-                  ),
+                      text: 'Nhập mã OTP đã gửi đến ',
+                      style: TextStyle(fontSize: 18)),
                   TextSpan(
                     text: widget.phoneNo, // Phần có màu xanh
                     style: const TextStyle(
-                        color: Color(0xFF00A2FF)), // Đổi màu của identifier
+                        color: Color(0xFF00A2FF),
+                        fontSize: 16), // Đổi màu của identifier
                   ),
                 ],
               ),
@@ -200,7 +199,10 @@ class VerifyPhoneOtpForPasswordChangeScreenState
                 onPressed: isLoading ? null : _verifyOtp,
                 child: isLoading
                     ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text('Xác nhận'),
+                    : const Text(
+                        'Xác nhận',
+                        style: TextStyle(fontSize: 18),
+                      ),
               ),
             ),
           ],

@@ -121,8 +121,11 @@ class TestDetailScreenState extends State<TestDetailScreen>
     }
 
     return Scaffold(
-      appBar:
-          const TAppBar(showBackArrow: true, title: Text('Chi tiết đề thi')),
+      appBar: const TAppBar(
+        showBackArrow: true,
+        title: Text('Chi tiết đề thi'),
+        padding: EdgeInsets.symmetric(horizontal: 1.0),
+      ),
       backgroundColor: darkMode ? Colors.grey[850] : Colors.white,
       body: _testData == null
           ? const Center(child: CircularProgressIndicator())

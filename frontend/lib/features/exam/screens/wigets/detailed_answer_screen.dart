@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_elearning_project/config/api_constants.dart';
 import 'package:flutter_elearning_project/features/exam/screens/wigets/audio_player.dart';
 import 'package:flutter_elearning_project/features/exam/screens/wigets/full_audio_player.dart';
+import 'package:flutter_elearning_project/utils/helpers/helper_functions.dart';
 import 'package:get/get.dart';
 
 class DetailedAnswerScreen extends StatefulWidget {
@@ -73,6 +74,8 @@ class DetailedAnswerScreenState extends State<DetailedAnswerScreen> {
     final answers = widget.resultData['answers'] as Map<String, dynamic>;
     final currentPart = testParts[currentPartIndex];
     final questions = List<Map<String, dynamic>>.from(currentPart['Questions']);
+
+    final darkMode = THelperFunctions.isDarkMode(context);
 
     _questionKeys.clear();
     for (int i = 0; i < questions.length; i++) {
@@ -268,12 +271,16 @@ class DetailedAnswerScreenState extends State<DetailedAnswerScreen> {
                                 width: double.infinity,
                                 padding: const EdgeInsets.all(12),
                                 decoration: BoxDecoration(
-                                  color: Colors.blue[50],
+                                  color: Colors.blue[100],
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Text(
                                   question['transcript'],
-                                  style: const TextStyle(fontSize: 15),
+                                  style: TextStyle(
+                                      fontSize: 15,
+                                      color: darkMode
+                                          ? Colors.black
+                                          : Colors.white),
                                 ),
                               ),
                           ],
@@ -292,8 +299,10 @@ class DetailedAnswerScreenState extends State<DetailedAnswerScreen> {
                             child: Center(
                               child: Text(
                                 '$questionNumber',
-                                style: const TextStyle(
-                                  color: Colors.blue,
+                                style: TextStyle(
+                                  color: darkMode
+                                      ? Colors.blueAccent
+                                      : Colors.blue,
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -306,19 +315,22 @@ class DetailedAnswerScreenState extends State<DetailedAnswerScreen> {
                       ...options.entries.map((option) {
                         final isOptionCorrect = option.key == correctAnswer;
                         final isUserChoice = option.key == userAnswer;
-                        Color textColor = Colors.black;
+                        Color? textColor =
+                            darkMode ? Colors.white : Colors.black;
                         Color? backgroundColor;
 
                         if (isUserChoice && isCorrect) {
                           textColor = Colors.green;
-                          backgroundColor = Colors.green[50];
+                          backgroundColor =
+                              darkMode ? Colors.green[100] : Colors.green[50];
                         } else if (isUserChoice && !isCorrect) {
                           textColor = Colors.red;
-                          backgroundColor = Colors.red[50];
+                          backgroundColor = Colors.red[100];
                         }
 
                         return Padding(
-                          padding: const EdgeInsets.only(left: 12.0, bottom: 8),
+                          padding: const EdgeInsets.only(
+                              left: 32.0, bottom: 8, right: 24),
                           child: Container(
                             width: double.infinity,
                             padding: const EdgeInsets.symmetric(
@@ -385,13 +397,17 @@ class DetailedAnswerScreenState extends State<DetailedAnswerScreen> {
                                 width: double.infinity,
                                 padding: const EdgeInsets.all(12),
                                 decoration: BoxDecoration(
-                                  color: Colors.blue[50],
+                                  color: Colors.blue[100],
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Text(
                                   question['explanation'] ??
                                       'Không có giải thích.',
-                                  style: const TextStyle(fontSize: 15),
+                                  style: TextStyle(
+                                      fontSize: 15,
+                                      color: darkMode
+                                          ? Colors.black
+                                          : Colors.white),
                                 ),
                               ),
                           ],

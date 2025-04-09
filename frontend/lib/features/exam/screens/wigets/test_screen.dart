@@ -248,6 +248,7 @@ class TestScreenState extends State<TestScreen> {
                 attemptId: responseData['attemptId'].toString(),
                 testId: widget.testId,
                 isFullTest: widget.isFullTest,
+                previousScreen: 'TestScreen',
               ),
             ),
           );

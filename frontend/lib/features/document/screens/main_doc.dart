@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_elearning_project/common/styles/section_heading.dart';
 import 'package:flutter_elearning_project/features/document/model/category_model.dart';
 import 'package:flutter_elearning_project/features/document/screens/cate_detail.dart';
 import 'package:flutter_elearning_project/features/document/screens/doc_list_view.dart';
 import 'package:flutter_elearning_project/features/document/screens/doc_detailview.dart';
 import 'package:flutter_elearning_project/features/document/screens/document_appbar.dart';
 import 'package:flutter_elearning_project/utils/constants/sizes.dart';
+import 'package:flutter_elearning_project/utils/helpers/helper_functions.dart';
 import 'package:get/get.dart';
 import 'package:flutter_elearning_project/features/document/controller/document_controller.dart';
 import 'package:flutter_elearning_project/common/widgets/custom_shapes/container/primary_header_container.dart';
@@ -31,156 +33,144 @@ class _MainDocScreenState extends State<MainDocScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final darkMode = THelperFunctions.isDarkMode(context);
+
     return Scaffold(
-      body: Column(
-        children: [
-          // Header section
-          const TPrimaryHeaderContainer(
-            child: Column(
-              children: [
-                TDocumentAppBar(),
-                SizedBox(height: TSizes.spaceBtwSections),
-              ],
-            ),
-          ),
-
-          // Nội dung bo góc trắng
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.only(top: 20),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(24),
-                  topRight: Radius.circular(24),
-                ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            // Header section
+            const TPrimaryHeaderContainer(
+              child: Column(
+                children: [
+                  TDocumentAppBar(),
+                  SizedBox(height: TSizes.spaceBtwSections),
+                ],
               ),
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.all(16),
-                      child: Text(
-                        "TỔNG HỢP TÀI LIỆU",
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    Obx(() {
-                      if (docController.isLoading.value) {
-                        return const Center(child: CircularProgressIndicator());
-                      }
+            ),
 
-                      if (docController.documents.isEmpty) {
-                        return const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 16),
-                          child: Text('Không có tài liệu nào.'),
-                        );
-                      }
+            // Nội dung bo góc trắng
+            Padding(
+              padding: const EdgeInsets.all(TSizes.defaultSpace),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const TSectionHeading(
+                    title: 'Tổng hợp tài liệu',
+                    showActionButton: false,
+                  ),
+                  Obx(() {
+                    if (docController.isLoading.value) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
 
-                      return Column(
-                        children: [
-                          ListView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            itemCount: showAllDocuments
-                                ? docController.documents.length
-                                : (docController.documents.length > 5
-                                    ? 5
-                                    : docController.documents.length),
-                            itemBuilder: (context, index) {
-                              final doc = docController.documents[index];
-                              return GestureDetector(
-                                onTap: () async {
-                                  await Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          DocumentDetailScreen(document: doc),
-                                    ),
-                                  );
-                                  docController.fetchDocuments();
-                                },
-                                child: DocumentsListView(item: doc),
-                              );
-                            },
-                          ),
-                          if (docController.documents.length > 5)
-                            Center(
-                              child: TextButton(
-                                onPressed: () {
-                                  setState(() {
-                                    showAllDocuments = !showAllDocuments;
-                                  });
-                                },
-                                child: Text(
-                                  showAllDocuments ? "Ẩn bớt ▲" : "Xem thêm ▼",
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ),
-                        ],
-                      );
-                    }),
-                    const SizedBox(height: 16),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
-                      child: Text(
-                        "Chuyên mục",
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      padding: const EdgeInsets.only(top: 8),
-                      itemCount: categories.length,
-                      itemBuilder: (context, index) {
-                        final category = categories[index];
-                        final isExpanded =
-                            expandedCategories[category.title] ?? false;
-
-                        return Column(
+                    if (docController.documents.isEmpty) {
+                      return Center(
+                        child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 16),
-                              child: ListTile(
-                                dense: true,
-                                contentPadding: EdgeInsets.zero,
-                                title: Text(
-                                  category.title,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
+                            Text(
+                              'Không có tài liệu nào.',
+                              style: TextStyle(fontSize: 20),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: showAllDocuments
+                              ? docController.documents.length
+                              : (docController.documents.length > 5
+                                  ? 5
+                                  : docController.documents.length),
+                          itemBuilder: (context, index) {
+                            final doc = docController.documents[index];
+                            return GestureDetector(
+                              onTap: () async {
+                                await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        DocumentDetailScreen(document: doc),
                                   ),
-                                ),
-                                trailing: Icon(
-                                  isExpanded
-                                      ? Icons.expand_less
-                                      : Icons.expand_more,
-                                  color: Colors.black,
-                                ),
-                                onTap: () {
-                                  setState(() {
-                                    expandedCategories[category.title] =
-                                        !isExpanded;
-                                  });
-                                },
+                                );
+                                docController.fetchDocuments();
+                              },
+                              child: DocumentsListView(item: doc),
+                            );
+                          },
+                        ),
+                        if (docController.documents.length > 5)
+                          Center(
+                            child: TextButton(
+                              onPressed: () {
+                                setState(() {
+                                  showAllDocuments = !showAllDocuments;
+                                });
+                              },
+                              child: Text(
+                                showAllDocuments ? "Ẩn bớt ▲" : "Xem thêm ▼",
+                                style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF00A2FF)),
                               ),
+                            ),
+                          ),
+                      ],
+                    );
+                  }),
+                  const SizedBox(height: 16),
+                  const TSectionHeading(
+                    title: 'Chuyên mục',
+                    showActionButton: false,
+                  ),
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: categories.length,
+                    itemBuilder: (context, index) {
+                      final category = categories[index];
+                      final isExpanded =
+                          expandedCategories[category.title] ?? false;
+
+                      return Padding(
+                        padding: const EdgeInsets.only(left: 8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ListTile(
+                              dense: true,
+                              contentPadding: EdgeInsets.zero,
+                              title: Text(
+                                category.title,
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              trailing: Icon(
+                                isExpanded
+                                    ? Icons.expand_less
+                                    : Icons.expand_more,
+                                color: darkMode ? Colors.white : Colors.black,
+                              ),
+                              onTap: () {
+                                setState(() {
+                                  expandedCategories[category.title] =
+                                      !isExpanded;
+                                });
+                              },
                             ),
                             if (isExpanded)
                               Padding(
-                                padding: const EdgeInsets.only(left: 32),
+                                padding: const EdgeInsets.only(left: 16),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children:
@@ -189,7 +179,7 @@ class _MainDocScreenState extends State<MainDocScreen> {
                                       contentPadding: EdgeInsets.zero,
                                       title: Text(
                                         subCat,
-                                        style: const TextStyle(fontSize: 14),
+                                        style: const TextStyle(fontSize: 16),
                                       ),
                                       onTap: () {
                                         Navigator.push(
@@ -205,17 +195,17 @@ class _MainDocScreenState extends State<MainDocScreen> {
                                   }).toList(),
                                 ),
                               ),
-                            const Divider(indent: 16, endIndent: 16),
+                            const Divider(),
                           ],
-                        );
-                      },
-                    ),
-                  ],
-                ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

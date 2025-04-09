@@ -52,7 +52,10 @@ class UnlinkPhoneScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: const TAppBar(
-          showBackArrow: true, title: Text('Hủy liên kết số điện thoại?')),
+        showBackArrow: true,
+        title: Text('Hủy liên kết số điện thoại?'),
+        padding: EdgeInsets.symmetric(horizontal: 6.0),
+      ),
       backgroundColor: isDarkMode ? TColors.dark : TColors.white,
       body: Padding(
         padding: const EdgeInsets.all(TSizes.defaultSpace),

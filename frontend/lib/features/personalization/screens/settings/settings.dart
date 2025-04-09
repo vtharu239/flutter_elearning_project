@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_elearning_project/common/styles/section_heading.dart';
 import 'package:flutter_elearning_project/common/widgets/custom_shapes/container/primary_header_container.dart';
@@ -7,8 +6,9 @@ import 'package:flutter_elearning_project/common/widgets/list_tiles/settings_men
 import 'package:flutter_elearning_project/config/api_constants.dart';
 import 'package:flutter_elearning_project/features/personalization/controllers/auth_controller.dart';
 import 'package:flutter_elearning_project/features/personalization/screens/course/my_courses.dart';
-import 'package:flutter_elearning_project/features/personalization/screens/course/test_result.dart';
+import 'package:flutter_elearning_project/features/personalization/screens/test/test_result.dart';
 import 'package:flutter_elearning_project/features/personalization/screens/profile/profile.dart';
+import 'package:flutter_elearning_project/features/personalization/screens/test/test_statistics_screen.dart';
 import 'package:flutter_elearning_project/providers/theme_provider.dart';
 import 'package:flutter_elearning_project/utils/constants/image_strings.dart';
 import 'package:flutter_elearning_project/utils/constants/sizes.dart';
@@ -31,6 +31,11 @@ class _SettingScreenState extends State<SettingScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(() {
+      if (_tabController.indexIsChanging) {
+        setState(() {}); // Buộc rebuild khi tab thay đổi
+      }
+    });
   }
 
   @override
@@ -227,14 +232,9 @@ class _SettingScreenState extends State<SettingScreen>
                   ],
                 ),
 
-                // Tab Bar View
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.5,
-                  child: TabBarView(
-                    controller: _tabController,
-                    children: [
-                      // Courses Tab
-                      SingleChildScrollView(
+                // Tab Content
+                _tabController.index == 0
+                    ? Padding(
                         padding: const EdgeInsets.all(TSizes.defaultSpace),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -271,32 +271,46 @@ class _SettingScreenState extends State<SettingScreen>
                             ),
                           ],
                         ),
-                      ),
-
-                      // Test Results Tab
-                      SingleChildScrollView(
+                      )
+                    : Padding(
                         padding: const EdgeInsets.all(TSizes.defaultSpace),
                         child: Column(
                           children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  'Kết quả các bài luyện thi',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleMedium
-                                      ?.copyWith(fontWeight: FontWeight.bold),
+                            OutlinedButton.icon(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const TestStatisticsScreen(),
+                                  ),
+                                );
+                              },
+                              icon: const Icon(Icons.bar_chart,
+                                  color: Colors.blue),
+                              label: const Text(
+                                'Tới trang thống kê Kết quả Luyện thi',
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.blue),
+                              ),
+                              style: OutlinedButton.styleFrom(
+                                side: const BorderSide(
+                                    color: Colors.blue, width: 1),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 14),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius:
+                                      BorderRadius.circular(6), // Bo góc
                                 ),
-                              ],
+                              ),
                             ),
+                            SizedBox(height: 16),
                             const LatestTestResultsSection(),
                           ],
                         ),
                       ),
-                    ],
-                  ),
-                ),
 
                 // Settings Section
                 Padding(
@@ -315,6 +329,8 @@ class _SettingScreenState extends State<SettingScreen>
                         title: 'Ngôn ngữ',
                         subTitle: 'Thay đổi ngôn ngữ của ứng dụng',
                         trailing: DropdownButton<String>(
+                          dropdownColor:
+                              isDarkMode ? Colors.grey[850] : Colors.white,
                           value: 'Vietnamese',
                           items: const [
                             DropdownMenuItem(
@@ -332,6 +348,8 @@ class _SettingScreenState extends State<SettingScreen>
                         title: 'Chế độ sáng, tối',
                         subTitle: 'Chọn chế độ giao diện',
                         trailing: DropdownButton<ThemeModeType>(
+                          dropdownColor:
+                              isDarkMode ? Colors.grey[850] : Colors.white,
                           value: Provider.of<ThemeProvider>(context).themeMode,
                           items: const [
                             DropdownMenuItem(
@@ -363,12 +381,11 @@ class _SettingScreenState extends State<SettingScreen>
                         width: double.infinity,
                         child: OutlinedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white, // Màu xanh #00A2FF
-                            foregroundColor: Colors.black, // Màu chữ trắng
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 12), // Điều chỉnh padding nếu cần
+                            backgroundColor: Colors.white,
+                            foregroundColor: Colors.black,
+                            padding: const EdgeInsets.symmetric(vertical: 12),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12), // Bo góc
+                              borderRadius: BorderRadius.circular(12),
                             ),
                           ),
                           onPressed: () => AuthController.instance.logout(),

@@ -30,14 +30,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.11.0"
-  ansicolor:
-    dependency: transitive
-    description:
-      name: ansicolor
-      sha256: "50e982d500bc863e1d703448afdbf9e5a72eb48840a4f766fa361ffd6877055f"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.3"
   app_links:
     dependency: "direct main"
     description:
@@ -214,22 +206,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.4.0"
-  checked_yaml:
-    dependency: transitive
-    description:
-      name: checked_yaml
-      sha256: feb6bed21949061731a7a75fc5d2aa727cf160b91af9a3e464c5e3a32e28b5ff
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.3"
-  cli_util:
-    dependency: transitive
-    description:
-      name: cli_util
-      sha256: ff6785f7e9e3c38ac98b2fb035701789de90154024a75b6cb926445e83197d1c
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.4.2"
   clock:
     dependency: transitive
     description:
@@ -350,6 +326,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.0"
+  equatable:
+    dependency: transitive
+    description:
+      name: equatable
+      sha256: "567c64b3cb4cf82397aac55f4f0cbd3ca20d77c6c03bedbc4ceaddc08904aef7"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.7"
   facebook_auth_desktop:
     dependency: transitive
     description:
@@ -470,6 +454,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.1"
+  fl_chart:
+    dependency: "direct main"
+    description:
+      name: fl_chart
+      sha256: "5276944c6ffc975ae796569a826c38a62d2abcf264e26b88fa6f482e107f4237"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.70.2"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -507,14 +499,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.1.2"
-  flutter_launcher_icons:
-    dependency: "direct main"
-    description:
-      name: flutter_launcher_icons
-      sha256: bfa04787c85d80ecb3f8777bde5fc10c3de809240c48fa061a2c2bf15ea5211c
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.14.3"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -528,14 +512,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_native_splash:
-    dependency: "direct main"
-    description:
-      name: flutter_native_splash
-      sha256: "1152ab0067ca5a2ebeb862fe0a762057202cceb22b7e62692dcbabf6483891bb"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.4.3"
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:
@@ -605,6 +581,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_tts:
+    dependency: "direct main"
+    description:
+      name: flutter_tts
+      sha256: baa3cb6b4990318460fe28bfa8c7869399e97223971532c02bd97c5e876aa3c5
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.2.2"
   flutter_web_plugins:
     dependency: transitive
     description: flutter
@@ -738,14 +722,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.0.8"
-  image:
-    dependency: transitive
-    description:
-      name: image
-      sha256: f31d52537dc417fdcde36088fdf11d191026fd5e4fae742491ebd40e5a8bea7d
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.3.0"
   image_cropper:
     dependency: "direct main"
     description:
@@ -858,14 +834,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.6.7"
-  json_annotation:
-    dependency: transitive
-    description:
-      name: json_annotation
-      sha256: "1ce844379ca14835a50d2f019a3099f419082cfdd231cd86a142af94dd5c6bb1"
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.9.0"
   jwt_decoder:
     dependency: "direct main"
     description:

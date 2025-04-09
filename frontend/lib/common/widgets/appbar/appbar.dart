@@ -12,6 +12,7 @@ class TAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.leadingIcon,
     this.leadingOnPressed,
     this.showBackArrow = false,
+    this.padding = const EdgeInsets.symmetric(horizontal: TSizes.iconXs),
   });
 
   final Widget? title;
@@ -19,15 +20,14 @@ class TAppBar extends StatelessWidget implements PreferredSizeWidget {
   final IconData? leadingIcon;
   final List<Widget>? actions;
   final VoidCallback? leadingOnPressed;
+   final EdgeInsetsGeometry padding;
 
   @override
   Widget build(BuildContext context) {
     final darkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(
-          horizontal:
-              TSizes.iconXs), // symetric horizontal: đối xứng theo chiều ngang
+      padding: padding, // symetric horizontal: đối xứng theo chiều ngang
       child: AppBar(
         automaticallyImplyLeading: false, //// Ngăn mũi tên quay lại
         toolbarHeight: 100, // Tăng chiều cao của AppBar

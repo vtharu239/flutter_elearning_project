@@ -63,7 +63,7 @@ async function startServer() {
     await initializeDatabase();
     
     // 2. Then sync models
-    await db.sequelize.sync({ force: false, alter: true });
+    await db.sequelize.sync({ force: false });
     console.log('Cơ sở dữ liệu đã được đồng bộ thành công');
     
     // 3. Finally start the server

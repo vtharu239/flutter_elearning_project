@@ -37,7 +37,8 @@ class PracticeTestScreen extends StatelessWidget {
               child: Column(
                 children: [
                   // Test Categories Section
-                  const TSectionHeading(title: 'Thể loại thi'),
+                  const TSectionHeading(
+                      title: 'Thể loại thi', showActionButton: false),
                   const SizedBox(height: TSizes.spaceBtwItems),
                   TestCategoriesSection(controller: controller),
                   const SizedBox(height: TSizes.spaceBtwSections),
@@ -47,7 +48,8 @@ class PracticeTestScreen extends StatelessWidget {
                   const SizedBox(height: TSizes.spaceBtwSections),
 
                   // Test List Section
-                  const TSectionHeading(title: 'Đề thi'),
+                  const TSectionHeading(
+                      title: 'Đề thi', showActionButton: false),
                   TestListSection(controller: controller),
                   const SizedBox(height: TSizes.spaceBtwSections),
                 ],

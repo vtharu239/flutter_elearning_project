@@ -35,7 +35,7 @@ class CourseScreen extends StatelessWidget {
 
             // Body content
             Padding(
-              padding: const EdgeInsets.all(TSizes.spaceBtwItems),
+              padding: const EdgeInsets.all(TSizes.defaultSpace),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

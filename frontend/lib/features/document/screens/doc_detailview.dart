@@ -1,18 +1,14 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_elearning_project/common/widgets/appbar/appbar.dart';
 import 'package:flutter_elearning_project/features/document/model/RelatedArticle_model.dart';
 import 'package:flutter_elearning_project/features/document/model/doc_list_model.dart';
 import 'package:flutter_elearning_project/features/document/screens/cmt_section.dart';
 import 'package:flutter_elearning_project/features/document/screens/related_article_list.dart';
-import 'package:flutter_elearning_project/utils/constants/colors.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_elearning_project/config/api_constants.dart';
 import 'package:intl/intl.dart';
-
-// ✅ Import widget bo góc style đẹp
-import 'package:flutter_elearning_project/common/widgets/custom_shapes/container/primary_header_container.dart';
 
 class DocumentDetailScreen extends StatefulWidget {
   final DocumentsListItem document;
@@ -75,75 +71,75 @@ class _DocumentDetailScreenState extends State<DocumentDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final doc = widget.document;
+    final darkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: TAppBar(
+        showBackArrow: true,
         title: Text(doc.title),
-        backgroundColor: TColors.primary,
-        foregroundColor: Colors.white,
       ),
-      body: TPrimaryHeaderContainer(
-        child: Container(
-          margin: const EdgeInsets.only(top: 16),
-          padding: const EdgeInsets.all(16),
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(24),
-              topRight: Radius.circular(24),
+      backgroundColor: darkMode ? Colors.grey[850] : Colors.white,
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.person,
+                          size: 22,
+                          color: darkMode ? Colors.white : Colors.black),
+                      const SizedBox(width: 6),
+                      Text(
+                        doc.author,
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                            color: darkMode ? Colors.white : Colors.black),
+                      ),
+                      const SizedBox(width: 36),
+                      Icon(Icons.calendar_today,
+                          size: 20,
+                          color: darkMode ? Colors.white : Colors.black),
+                      const SizedBox(width: 6),
+                      Text(formatVietnamDate(doc.date),
+                          style: TextStyle(
+                              color: darkMode ? Colors.white : Colors.black,
+                              fontSize: 16)),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  Center(
+                    child: doc.imageUrl.startsWith('http')
+                        ? Image.network(
+                            doc.imageUrl,
+                            width: MediaQuery.of(context).size.width * 4.5,
+                            height: 400,
+                            fit: BoxFit.cover,
+                          )
+                        : Image.asset(
+                            doc.imageUrl,
+                            width: MediaQuery.of(context).size.width * 4.5,
+                            height: 400,
+                            fit: BoxFit.cover,
+                          ),
+                  ),
+                  const SizedBox(height: 20),
+                  Text(doc.description, style: const TextStyle(fontSize: 16)),
+                  const SizedBox(height: 24),
+                  isLoadingRelated
+                      ? const Center(child: CircularProgressIndicator())
+                      : RelatedArticleList(relatedArticles: relatedArticles),
+                  const SizedBox(height: 20),
+                  CommentSection(documentId: doc.id),
+                ],
+              ),
             ),
-          ),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(doc.title,
-                    style: const TextStyle(
-                        fontSize: 22, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    const Icon(Icons.person, size: 18, color: Colors.black54),
-                    const SizedBox(width: 4),
-                    Text(doc.author,
-                        style: const TextStyle(fontWeight: FontWeight.bold)),
-                    const SizedBox(width: 12),
-                    const Icon(Icons.calendar_today,
-                        size: 16, color: Colors.black54),
-                    const SizedBox(width: 4),
-                    Text(formatVietnamDate(doc.date),
-                        style: const TextStyle(color: Colors.black54)),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                Center(
-                  child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: doc.imageUrl.startsWith('http')
-                          ? Image.network(
-                              doc.imageUrl,
-                              width: MediaQuery.of(context).size.width * 0.9,
-                              height: 200,
-                              fit: BoxFit.cover,
-                            )
-                          : Image.asset(
-                              doc.imageUrl,
-                              width: MediaQuery.of(context).size.width * 0.5,
-                              height: 200,
-                              fit: BoxFit.cover,
-                            )),
-                ),
-                const SizedBox(height: 16),
-                Text(doc.description, style: const TextStyle(fontSize: 16)),
-                const SizedBox(height: 24),
-                isLoadingRelated
-                    ? const Center(child: CircularProgressIndicator())
-                    : RelatedArticleList(relatedArticles: relatedArticles),
-                const SizedBox(height: 24),
-                CommentSection(documentId: doc.id),
-              ],
-            ),
-          ),
+          ],
         ),
       ),
     );

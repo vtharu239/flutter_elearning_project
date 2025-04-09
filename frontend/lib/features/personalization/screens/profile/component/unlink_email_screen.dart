@@ -56,7 +56,10 @@ class UnlinkEmailScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: isDarkMode ? Colors.grey[850] : Colors.white,
       appBar: const TAppBar(
-          showBackArrow: true, title: Text('Hủy liên kết email?')),
+        showBackArrow: true,
+        title: Text('Hủy liên kết email?'),
+        padding: EdgeInsets.symmetric(horizontal: 6.0),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(TSizes.defaultSpace),
         child: Column(

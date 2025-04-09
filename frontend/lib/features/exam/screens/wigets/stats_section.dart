@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_elearning_project/utils/helpers/helper_functions.dart';
 
 class StatsSection extends StatelessWidget {
   final int correctCount;
@@ -22,7 +23,7 @@ class StatsSection extends StatelessWidget {
     required Color labelColor,
     required String value,
     required String unit,
-    required Color backgroundColor,
+    required Color? backgroundColor,
   }) {
     return SizedBox(
       height: 150,
@@ -49,7 +50,8 @@ class StatsSection extends StatelessWidget {
               const SizedBox(height: 2),
               Text(
                 value,
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               if (unit.isNotEmpty)
                 Text(
@@ -66,6 +68,8 @@ class StatsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final darkMode = THelperFunctions.isDarkMode(context);
+
     return SizedBox(
       width: double.infinity,
       child: Wrap(
@@ -78,7 +82,7 @@ class StatsSection extends StatelessWidget {
             labelColor: Colors.green,
             value: '$correctCount',
             unit: 'câu hỏi',
-            backgroundColor: Colors.white,
+            backgroundColor: darkMode ? Colors.grey[800] : Colors.white,
           ),
           _buildStatCard(
             icon: const Icon(Icons.cancel, color: Colors.red, size: 32),
@@ -86,7 +90,7 @@ class StatsSection extends StatelessWidget {
             labelColor: Colors.red,
             value: '$wrongCount',
             unit: 'câu hỏi',
-            backgroundColor: Colors.white,
+            backgroundColor: darkMode ? Colors.grey[800] : Colors.white,
           ),
           _buildStatCard(
             icon: const Icon(Icons.remove_circle, color: Colors.grey, size: 32),
@@ -94,7 +98,7 @@ class StatsSection extends StatelessWidget {
             labelColor: Colors.grey,
             value: '$skippedCount',
             unit: 'câu hỏi',
-            backgroundColor: Colors.white,
+            backgroundColor: darkMode ? Colors.grey[800] : Colors.white,
           ),
           if (isFullTest)
             _buildStatCard(
@@ -103,7 +107,7 @@ class StatsSection extends StatelessWidget {
               label: 'Điểm',
               value: scaledScore != null ? '$scaledScore' : 'N/A',
               unit: '',
-              backgroundColor: Colors.white,
+              backgroundColor: darkMode ? Colors.grey[800] : Colors.white,
             ),
         ],
       ),

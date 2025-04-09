@@ -74,7 +74,7 @@ class TSocialButtons extends StatelessWidget {
           permissions: ['public_profile', 'email'],
         );
 
-        log('Login result: ${result.status} - ${result.message}');
+        // log('Login result: ${result.status} - ${result.message}');
 
         if (result.status != LoginStatus.success) {
           log('Facebook login failed: ${result.status} - ${result.message}');
@@ -86,7 +86,7 @@ class TSocialButtons extends StatelessWidget {
         final userCredential =
             await fb.FirebaseAuth.instance.signInWithCredential(credential);
         final idToken = await userCredential.user!.getIdToken();
-        log('Facebook login successful, idToken: $idToken');
+        // log('Facebook login successful, idToken: $idToken');
         await Get.find<AuthController>().socialLogin(idToken!, 'facebook');
       }
     } catch (e) {

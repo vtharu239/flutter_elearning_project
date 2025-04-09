@@ -59,8 +59,8 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
         fetchCourseObjectives();
         fetchCourseTeachers();
         fetchCourseCurriculum();
-        fetchCourseReviews();
-        fetchCourseRatingStats();
+        // fetchCourseReviews();
+        // fetchCourseRatingStats();
         fetchPurchaseStatus();
 // Ưu tiên trạng thái từ cache
         setState(() {
