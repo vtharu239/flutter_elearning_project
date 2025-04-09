@@ -20,6 +20,8 @@ class CategoryCoursesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final courseController = Get.find<CourseController>();
     final darkMode = Theme.of(context).brightness == Brightness.dark;
+    Map<int, int> studentCounts = {};
+    bool isLoadingStudentCount = true;
 
     return Scaffold(
       appBar: AppBar(
@@ -99,13 +101,14 @@ class CategoryCoursesScreen extends StatelessWidget {
                     title: course.title,
                     rating: course.rating,
                     ratingCount: course.ratingCount,
-                    students: course.studentCount,
+                    students: studentCounts[course.id] ?? 0,
                     originalPrice: course.originalPrice,
                     discountPercentage: course.discountPercentage.toInt(),
                     imageUrl: course.imageUrl ??
                         (darkMode
                             ? TImages.productImage1Dark
                             : TImages.productImage1),
+                    isLoadingStudentCount: isLoadingStudentCount,
                   );
                 },
               ),

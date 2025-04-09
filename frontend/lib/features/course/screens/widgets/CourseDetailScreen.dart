@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:flutter_elearning_project/common/widgets/texts/price_format.dart';
 import 'package:flutter_elearning_project/config/api_constants.dart';
 import 'package:flutter_elearning_project/features/course/controller/CourseCurriculumItem.dart';
 import 'package:flutter_elearning_project/features/course/controller/PaymentService.dart';
@@ -36,7 +37,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
   List<CourseCurriculumItem> curriculumItems = [];
   List<CourseReview> reviews = [];
   RatingStats? ratingStats;
-
+  double rating = 0;
   bool isLoading = true;
   bool isLoadingObjectives = true;
   bool isLoadingTeachers = true;
@@ -46,6 +47,8 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
   bool hasPurchased = false;
   bool isLoadingPurchaseStatus = true;
   List<bool> _expandedItems = [];
+  bool isLoadingStudentCount = true;
+  int studentCount = 0;
   @override
   void initState() {
     super.initState();
@@ -62,11 +65,8 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
         fetchCourseReviews();
         fetchCourseRatingStats();
         fetchPurchaseStatus();
-// Ưu tiên trạng thái từ cache
-        setState(() {
-          hasPurchased = cachedStatus ?? false;
-          isLoadingPurchaseStatus = cachedStatus != null ? false : true;
-        });
+        fetchStudentCount();
+
         // Kiểm tra paymentSuccess từ PaymentWebView
         if (widget.paymentSuccess == true) {
           setState(() {
@@ -98,11 +98,40 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
           // Nếu không có paymentSuccess, dùng cached status hoặc fetch từ backend
           setState(() {
             hasPurchased = cachedStatus ?? false;
+            isLoadingPurchaseStatus = true;
           });
           fetchPurchaseStatus();
         }
       });
     });
+  }
+
+  Future<void> fetchStudentCount() async {
+    try {
+      setState(() {
+        isLoadingStudentCount = true;
+      });
+      final response = await http.get(
+        Uri.parse(ApiConstants.getUrl(ApiConstants.getOrderCount,
+            courseId: widget.courseId)),
+        headers: ApiConstants.getHeaders(),
+      );
+      if (response.statusCode == 200) {
+        final jsonData = jsonDecode(response.body);
+        print('Student Count Response: $jsonData');
+        setState(() {
+          studentCount = jsonData['studentCount'] ?? 0;
+          isLoadingStudentCount = false;
+        });
+      } else {
+        throw Exception('Failed to load student count: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching student count: $e');
+      setState(() {
+        isLoadingStudentCount = false;
+      });
+    }
   }
 
   Future<bool?> _checkCachedPurchaseStatus() async {
@@ -600,7 +629,6 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
   Future<void> fetchCourseRatingStats() async {
     try {
       setState(() => isLoadingRatingStats = true);
-
       final response = await http.get(
         Uri.parse(
             '${ApiConstants.baseUrl}${ApiConstants.courseRatingStats}/${widget.courseId}'),
@@ -613,14 +641,25 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
           isLoadingRatingStats = false;
         });
       } else {
-        throw Exception('Failed to load rating stats: ${response.statusCode}');
+        log('Failed to load rating stats: ${response.statusCode} - ${response.body}');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content:
+                Text('Không thể tải thống kê đánh giá: ${response.statusCode}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        setState(() => isLoadingRatingStats = false);
       }
     } catch (e) {
+      log('Error fetching rating stats: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Đã xảy ra lỗi khi tải thống kê đánh giá!'),
+          backgroundColor: Colors.red,
+        ),
+      );
       setState(() => isLoadingRatingStats = false);
-      if (mounted) {
-        // Kiểm tra mounted
-        //  showErrorSnackbar('Error loading rating stats: $e');
-      }
     }
   }
 
@@ -636,6 +675,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
         ),
         elevation: 0,
         backgroundColor: Colors.transparent,
+        title: const Text('Chi tiết khóa học'),
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -755,10 +795,8 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            courseData?.title ?? 'Loading...',
+            courseData?.title ?? 'Khóa học',
             style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
           ),
           const SizedBox(height: 8),
           Row(
@@ -801,19 +839,19 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
               Icons.star,
               color: index < (courseData?.rating ?? 0).floor()
                   ? Colors.amber
-                  : Colors.amber.shade200,
+                  : const Color.fromARGB(255, 228, 227, 225),
               size: 20,
             ),
           ),
         ),
         const SizedBox(width: 8),
         Text(
-          '(${courseData?.ratingCount ?? 0} Đánh giá)',
+          '(${ratingStats?.totalReviews ?? 0} Đánh giá)',
           style: TextStyle(color: Colors.grey.shade600),
         ),
         const SizedBox(width: 16),
         Text(
-          '${courseData?.studentCount ?? 0} Học viên',
+          isLoadingStudentCount ? 'Đang tải...' : '$studentCount Học viên',
           style: TextStyle(color: Colors.grey.shade600),
         ),
       ],
@@ -821,10 +859,11 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
   }
 
   Widget _buildPricingAndRegistration() {
-    final discountedPrice = courseData?.originalPrice != null
+// Calculate the discounted price
+    final double? discountPrice = courseData?.discountPercentage != null
         ? courseData!.originalPrice *
-            (1 - (courseData!.discountPercentage / 100))
-        : 0.0;
+            (1 - (courseData!.discountPercentage! / 100))
+        : null;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
@@ -853,42 +892,11 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Text(
-                      '${discountedPrice.toStringAsFixed(0)}đ',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.green[700],
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Text(
-                      '${courseData?.originalPrice.toStringAsFixed(0)}đ',
-                      style: TextStyle(
-                        fontSize: 16,
-                        decoration: TextDecoration.lineThrough,
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: Colors.red[50],
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Text(
-                        '-${courseData?.discountPercentage.toStringAsFixed(0)}%',
-                        style: TextStyle(
-                          color: Colors.red[700],
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
+                // Use the CoursePrice widget
+                CoursePrice(
+                  originalPrice: courseData?.originalPrice ?? 0.0,
+                  discountPrice: discountPrice,
+                  discountPercentage: courseData?.discountPercentage?.toInt(),
                 ),
                 const SizedBox(height: 24),
                 // Check if loading purchase status
@@ -939,7 +947,12 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
                                 style: OutlinedButton.styleFrom(
                                   minimumSize: const Size(double.infinity, 48),
                                 ),
-                                child: const Text('Học thử miễn phí'),
+                                child: const Text(
+                                  'Học thử miễn phí',
+                                  style: TextStyle(
+                                    color: Colors.blue,
+                                  ),
+                                ),
                               ),
                             ],
                           ),
@@ -949,17 +962,18 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
                 Row(
                   children: [
                     Text(
-                      'Chưa chắc chắn khóa học này dành cho bạn? ',
+                      'Chưa chắc chắn khóa học này dành cho bạn?',
                       style: TextStyle(color: Colors.grey[700]),
                     )
                   ],
                 ),
+                const SizedBox(height: 16),
                 Row(
                   children: [
-                    TextButton(
-                      onPressed: () {},
-                      child: const Text('Liên hệ để nhận tư vấn miễn phí!'),
-                    )
+                    Text(
+                      'Liên hệ để nhận tư vấn miễn phí!',
+                      style: TextStyle(color: Colors.blue),
+                    ),
                   ],
                 ),
               ],
@@ -1121,11 +1135,11 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
       _startLearning();
       return;
     }
-
-    final discountedPrice = courseData?.originalPrice != null
+// Calculate the discounted price
+    final double? discountPrice = courseData?.discountPercentage != null
         ? courseData!.originalPrice *
-            (1 - (courseData!.discountPercentage / 100))
-        : 0.0;
+            (1 - (courseData!.discountPercentage! / 100))
+        : null;
 
     showDialog(
       context: context,
@@ -1313,42 +1327,11 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
                         const SizedBox(height: 16),
                         const Divider(),
                         const SizedBox(height: 16),
-                        Row(
-                          children: [
-                            Text(
-                              '${discountedPrice.toStringAsFixed(0)}đ',
-                              style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.green[700],
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Text(
-                              '${courseData?.originalPrice.toStringAsFixed(0)}đ',
-                              style: TextStyle(
-                                fontSize: 16,
-                                decoration: TextDecoration.lineThrough,
-                                color: Colors.grey[600],
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: Colors.red[50],
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              child: Text(
-                                '-${courseData?.discountPercentage.toStringAsFixed(0)}%',
-                                style: TextStyle(
-                                  color: Colors.red[700],
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ],
+                        CoursePrice(
+                          originalPrice: courseData?.originalPrice ?? 0.0,
+                          discountPrice: discountPrice,
+                          discountPercentage:
+                              courseData?.discountPercentage?.toInt(),
                         ),
                         const SizedBox(height: 8),
                         Text(
@@ -1402,7 +1385,12 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
                           style: OutlinedButton.styleFrom(
                             minimumSize: const Size(double.infinity, 48),
                           ),
-                          child: const Text('HỌC THỬ MIỄN PHÍ'),
+                          child: const Text(
+                            'HỌC THỬ MIỄN PHÍ',
+                            style: TextStyle(
+                              color: Colors.blue,
+                            ),
+                          ),
                         ),
                       ] else ...[
                         ElevatedButton(
@@ -1453,8 +1441,11 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
       ),
       child: Column(
         children: [
-          _buildStatItem(Icons.people,
-              '${courseData?.studentCount ?? 0} học viên đã đăng ký'),
+          _buildStatItem(
+              Icons.people,
+              isLoadingStudentCount
+                  ? 'Đang tải...'
+                  : '$studentCount học viên đã đăng ký'),
           _buildStatItem(Icons.book,
               '${courseData?.topics ?? 0} chủ đề, ${courseData?.lessons ?? 0} bài học'),
           _buildStatItem(Icons.assignment,
@@ -1557,62 +1548,242 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
   }
 
   Widget _buildReviews() {
-    if (isLoadingReviews || isLoadingRatingStats) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    if (reviews.isEmpty || ratingStats == null) {
-      return const Center(
-          child: Text('Chưa có đánh giá nào cho khóa học này.'));
-    }
-
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildReviewStats(),
-          const SizedBox(height: 16),
-          const Divider(),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              const Text(
-                'Tất cả đánh giá',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+          if (isLoadingReviews || isLoadingRatingStats)
+            const Center(child: CircularProgressIndicator())
+          else ...[
+            if (ratingStats != null) _buildReviewStats(),
+            const SizedBox(height: 16),
+            const Divider(),
+            const SizedBox(height: 16),
+            hasPurchased ? _buildReviewForm() : _buildPurchasePrompt(),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                const Text(
+                  'Tất cả đánh giá',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
-              ),
-              const Spacer(),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey.shade300),
-                  borderRadius: BorderRadius.circular(20),
+                const Spacer(),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey.shade300),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    children: [
+                      const Text('Mới nhất'),
+                      const SizedBox(width: 4),
+                      Icon(Icons.keyboard_arrow_down, color: Colors.grey[600]),
+                    ],
+                  ),
                 ),
-                child: Row(
-                  children: [
-                    const Text('Mới nhất'),
-                    const SizedBox(width: 4),
-                    Icon(Icons.keyboard_arrow_down, color: Colors.grey[600]),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          ListView.separated(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: reviews.length,
-            separatorBuilder: (context, index) => const SizedBox(height: 16),
-            itemBuilder: (context, index) => _buildReviewCard(reviews[index]),
-          ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            reviews.isEmpty
+                ? const Center(
+                    child: Text('Chưa có đánh giá nào cho khóa học này.'))
+                : ListView.separated(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: reviews.length,
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(height: 16),
+                    itemBuilder: (context, index) =>
+                        _buildReviewCard(reviews[index]),
+                  ),
+          ],
         ],
       ),
     );
+  }
+
+// Form để người dùng nhập đánh giá
+  Widget _buildReviewForm() {
+    print('Building review form with rating: $rating');
+    final TextEditingController commentController = TextEditingController();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Đánh giá của bạn',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: List.generate(5, (index) {
+            return IconButton(
+              icon: Icon(
+                index < rating
+                    ? Icons.star
+                    : Icons.star_border, // Sử dụng rating từ trạng thái
+                color: Colors.amber,
+              ),
+              onPressed: () {
+                setState(() {
+                  rating = index + 1.0; // Cập nhật rating toàn cục
+                  print('New rating: $rating'); // Debug
+                });
+              },
+            );
+          }),
+        ),
+        const SizedBox(height: 8),
+        TextField(
+          controller: commentController,
+          maxLines: 3,
+          decoration: const InputDecoration(
+            border: OutlineInputBorder(),
+            hintText: 'Nhập nhận xét của bạn...',
+          ),
+        ),
+        const SizedBox(height: 8),
+        ElevatedButton(
+          onPressed: () async {
+            if (rating == 0 || commentController.text.isEmpty) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Vui lòng chọn số sao và nhập nhận xét!'),
+                  backgroundColor: Colors.red,
+                ),
+              );
+              return;
+            }
+            await _submitReview(commentController.text, rating);
+            commentController.clear();
+            setState(() => rating = 0);
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.blue,
+            minimumSize: const Size(double.infinity, 48),
+          ),
+          child: const Text(
+            'Gửi đánh giá',
+            style: TextStyle(color: Colors.white),
+          ),
+        ),
+      ],
+    );
+  }
+
+// Thông báo nếu chưa mua khóa học
+  Widget _buildPurchasePrompt() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Đánh giá khóa học',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 8),
+        const Text('Bạn cần mua khóa học để có thể đánh giá.'),
+        const SizedBox(height: 8),
+        ElevatedButton(
+          onPressed: () {
+            _tabController.animateTo(0); // Chuyển về tab "Giá & Đăng ký"
+          },
+          style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+          child:
+              const Text('Mua khóa học', style: TextStyle(color: Colors.white)),
+        ),
+      ],
+    );
+  }
+
+// Hàm gửi đánh giá lên backend
+  Future<void> _submitReview(String comment, double rating) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+      final userId = await _getUserId();
+      final userName = prefs.getString('userName') ?? 'Người dùng';
+      print('Token from SharedPreferences: $token'); // Debug
+      print('UserId extracted: $userId'); // Debug
+
+      if (token == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Không tìm thấy token đăng nhập!'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+
+      if (userId == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Không tìm thấy ID người dùng!'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+
+      final response = await http.post(
+        Uri.parse('${ApiConstants.baseUrl}/course-reviews'),
+        headers: {
+          ...ApiConstants.getHeaders(),
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({
+          'courseId': widget.courseId,
+          'userId': userId, // Thêm userId vào body
+          'userName': userName, // Thay bằng tên thật nếu có API profile
+          'userInfo': 'Học viên',
+          'comment': comment,
+          'rating': rating,
+        }),
+      );
+
+      // Thêm log để xem phản hồi từ server
+      print('Server response: ${response.statusCode} - ${response.body}');
+
+      if (response.statusCode == 201) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Đánh giá đã được gửi thành công!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        fetchCourseReviews(); // Cập nhật danh sách review
+        fetchCourseRatingStats(); // Cập nhật thống kê rating
+      } else if (response.statusCode == 401) {
+        // Xử lý khi token hết hạn hoặc không hợp lệ
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content:
+                Text('Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại!'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        // Có thể thêm code để đăng xuất và chuyển người dùng về màn hình đăng nhập
+      } else {
+        log('Failed to submit review: ${response.statusCode} - ${response.body}');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Gửi đánh giá thất bại: ${response.body}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      log('Error submitting review: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Đã xảy ra lỗi khi gửi đánh giá: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   Widget _buildReviewCard(CourseReview review) {
@@ -1652,12 +1823,47 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
                   ],
                 ),
               ),
+              // Hiển thị số sao
+              Row(
+                children: [
+                  Text(
+                    review.rating.toStringAsFixed(1),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Icon(Icons.star, color: Colors.amber[400], size: 18),
+                ],
+              ),
             ],
+          ),
+          const SizedBox(height: 8),
+          // Hiển thị các sao
+          Row(
+            children: List.generate(5, (index) {
+              return Icon(
+                index < review.rating ? Icons.star : Icons.star_border,
+                color: Colors.amber,
+                size: 16,
+              );
+            }),
           ),
           const SizedBox(height: 12),
           Text(
             review.comment,
             style: const TextStyle(height: 1.5),
+          ),
+          // Hiển thị thời gian
+          const SizedBox(height: 8),
+          Text(
+            review
+                .createdAt, // Sử dụng trực tiếp createdAt nếu đã được định dạng
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.grey[600],
+            ),
           ),
         ],
       ),
@@ -1682,7 +1888,9 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
                     const Icon(Icons.groups_outlined, size: 24),
                     const SizedBox(width: 8),
                     Text(
-                      '${ratingStats!.totalStudents}',
+                      isLoadingStudentCount
+                          ? 'Đang tải...'
+                          : '$studentCount Học viên',
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -1807,6 +2015,14 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
   }
 
   Future<void> fetchPurchaseStatus() async {
+    // Skip fetching if paymentSuccess is already true
+    if (widget.paymentSuccess == true) {
+      setState(() {
+        hasPurchased = true;
+        isLoadingPurchaseStatus = false;
+      });
+      return;
+    }
     try {
       setState(() => isLoadingPurchaseStatus = true);
 
@@ -1877,9 +2093,22 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
   Future<int?> _getUserId() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      return prefs.getInt('userId');
+      final token = prefs.getString('token');
+
+      if (token == null) return null;
+
+      // Decode JWT token để lấy userId
+      final parts = token.split('.');
+      if (parts.length != 3) return null;
+
+      // Decode phần payload của JWT
+      String normalizedPayload = base64Url.normalize(parts[1]);
+      final payloadMap =
+          json.decode(utf8.decode(base64Url.decode(normalizedPayload)));
+
+      return payloadMap['userId'] as int?;
     } catch (e) {
-      log('Error getting user ID: $e');
+      log('Error extracting userId from token: $e');
       return null;
     }
   }

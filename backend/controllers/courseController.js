@@ -42,35 +42,38 @@ const courseController = {
   },
 
   // POST create course
-  createCourse: async (req, res) => {
-    try {
-      const {
-        title, description, rating, ratingCount, studentCount, originalPrice,
-        discountPercentage, discountedPrice, categoryId, topics, lessons,
-        exercises, validity
-      } = req.body;
-      const course = await Course.create({
-        title, description, rating, ratingCount, studentCount, originalPrice,
-        discountPercentage, discountedPrice, categoryId, topics, lessons,
-        exercises, validity
-      });
-      res.status(201).json(course);
-    } catch (error) {
-      res.status(500).json({ message: 'Lỗi server!', error: error.message });
-    }
-  },
+createCourse: async (req, res) => {
+  try {
+    const {
+      title, description, rating, ratingCount, studentCount, originalPrice,
+      discountPercentage, discountedPrice, categoryId, topics, lessons,
+      exercises, validity, imageUrl // Thêm imageUrl vào đây
+    } = req.body;
 
-  // PUT update course
-  updateCourse: async (req, res) => {
-    try {
-      const course = await Course.findByPk(req.params.id);
-      if (!course) return res.status(404).json({ message: 'Không tìm thấy khóa học' });
-      await course.update(req.body);
-      res.json(course);
-    } catch (error) {
-      res.status(500).json({ message: 'Lỗi server!', error: error.message });
-    }
-  },
+    const course = await Course.create({
+      title, description, rating, ratingCount, studentCount, originalPrice,
+      discountPercentage, discountedPrice, categoryId, topics, lessons,
+      exercises, validity, imageUrl // Lưu imageUrl từ req.body
+    });
+    res.status(201).json(course);
+  } catch (error) {
+    res.status(500).json({ message: 'Lỗi server!', error: error.message });
+  }
+},
+  // PUT update course=
+updateCourse: async (req, res) => {
+  try {
+    const course = await Course.findByPk(req.params.id);
+    if (!course) return res.status(404).json({ message: 'Không tìm thấy khóa học' });
+
+    // Cập nhật dữ liệu, bao gồm imageUrl nếu được gửi từ req.body
+    await course.update(req.body);
+
+    res.json(course);
+  } catch (error) {
+    res.status(500).json({ message: 'Lỗi server!', error: error.message });
+  }
+},
 
   // DELETE course
   deleteCourse: async (req, res) => {

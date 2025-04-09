@@ -10,11 +10,13 @@ import 'package:iconsax/iconsax.dart';
 class VerticalCourseCardList extends StatelessWidget {
   final int itemCount;
   final List<VerticalCourseCard> items;
+  final bool isLoadingStudentCount;
 
   const VerticalCourseCardList({
     super.key,
     required this.itemCount,
     required this.items,
+    required this.isLoadingStudentCount,
   });
 
   @override
@@ -41,7 +43,7 @@ class VerticalCourseCard extends StatelessWidget {
   final double originalPrice;
   final int? discountPercentage;
   final String imageUrl;
-
+  final bool isLoadingStudentCount;
   const VerticalCourseCard({
     super.key,
     required this.courseId, // Thêm vào constructor
@@ -52,12 +54,28 @@ class VerticalCourseCard extends StatelessWidget {
     required this.originalPrice,
     required this.discountPercentage,
     required this.imageUrl,
+    required this.isLoadingStudentCount,
   });
-
+  factory VerticalCourseCard.fromJson(Map<String, dynamic> json) {
+    return VerticalCourseCard(
+      courseId: json['courseId'] ?? 0, // Giá trị mặc định nếu không có
+      title: json['title'] ?? 'Không có tiêu đề',
+      rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
+      ratingCount: json['ratingCount'] ?? 0,
+      students: json['students'] ?? 0,
+      originalPrice: (json['originalPrice'] as num?)?.toDouble() ?? 0.0,
+      discountPercentage: json['discountPercentage'],
+      imageUrl: json['imageUrl'] ?? '', // Fallback nếu null
+      isLoadingStudentCount: json['isLoadingStudentCount'] ?? false,
+    );
+  }
   @override
   Widget build(BuildContext context) {
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
-
+// Calculate the discounted price
+    final double? discountPrice = discountPercentage != null
+        ? originalPrice * (1 - (discountPercentage! / 100))
+        : null;
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -70,6 +88,7 @@ class VerticalCourseCard extends StatelessWidget {
               const begin = Offset(1.0, 0.0);
               const end = Offset.zero;
               const curve = Curves.ease;
+              print("VerticalCourseCard - Image URL: '$imageUrl'");
               var tween =
                   Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
               return SlideTransition(
@@ -90,13 +109,20 @@ class VerticalCourseCard extends StatelessWidget {
         child: Row(
           children: [
             ClipRRect(
-              borderRadius: BorderRadius.circular(TSizes.cardRadiusMd),
-              child: Image.asset(
-                imageUrl,
-                width: MediaQuery.of(context).size.width * 0.25,
-                height: MediaQuery.of(context).size.width * 0.25,
-                fit: BoxFit.cover,
-              ),
+              borderRadius: BorderRadius.circular(10),
+              child: imageUrl.startsWith('http')
+                  ? Image.network(
+                      imageUrl,
+                      width: 80,
+                      height: 80,
+                      fit: BoxFit.cover,
+                    )
+                  : Image.asset(
+                      imageUrl,
+                      width: 80,
+                      height: 80,
+                      fit: BoxFit.cover,
+                    ),
             ),
             const SizedBox(width: TSizes.spaceBtwItems),
             Expanded(
@@ -132,7 +158,9 @@ class VerticalCourseCard extends StatelessWidget {
                                         : Colors.grey[600]),
                                 const SizedBox(width: TSizes.xs),
                                 Text(
-                                  '$students học viên',
+                                  isLoadingStudentCount
+                                      ? 'Đang tải...'
+                                      : '$students Học viên',
                                   style: TextStyle(
                                     color: isDarkMode
                                         ? Colors.grey[400]
@@ -163,7 +191,9 @@ class VerticalCourseCard extends StatelessWidget {
                                         : Colors.grey[600]),
                                 const SizedBox(width: TSizes.xs),
                                 Text(
-                                  '$students học viên',
+                                  isLoadingStudentCount
+                                      ? 'Đang tải...'
+                                      : '$students Học viên',
                                   style: TextStyle(
                                     color: isDarkMode
                                         ? Colors.grey[400]
@@ -180,6 +210,8 @@ class VerticalCourseCard extends StatelessWidget {
                   const SizedBox(height: TSizes.sm),
                   CoursePrice(
                     originalPrice: originalPrice,
+                    discountPrice:
+                        discountPrice, // Pass the calculated discountPrice
                     discountPercentage: discountPercentage,
                   ),
                 ],

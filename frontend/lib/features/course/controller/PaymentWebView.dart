@@ -164,18 +164,33 @@ class _PaymentWebViewState extends State<PaymentWebView> {
           },
           onPageFinished: (String url) async {
             setState(() {
-              _isLoading = true;
+              _isLoading = false;
             });
-            log('Redirect URL: $url'); // Log URL để kiểm tra
-
-            if (url.contains('vnpay-return') && !_hasNavigated) {
+            log('Redirect URL: $url');
+            if (url.contains('vnpayment.vn/paymentv2/Payment/Error.html') &&
+                !_hasNavigated) {
+              final uri = Uri.parse(url);
+              log('Error details: ${uri.queryParameters}');
+              log('VNPay payment error detected');
+              if (mounted) {
+                _hasNavigated = true;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                        'Thanh toán thất bại: ${uri.queryParameters['message'] ?? 'Dữ liệu không đúng định dạng'}'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+                _processPaymentFallback(widget.orderId); // Chuyển sang polling
+              }
+            } else if (url.contains('vnpay-return') && !_hasNavigated) {
+              log('Payment return detected');
               try {
                 final uri = Uri.parse(url);
                 final responseCode = uri.queryParameters['vnp_ResponseCode'];
                 final orderId =
                     int.tryParse(uri.queryParameters['vnp_TxnRef'] ?? '');
                 log('Response Code: $responseCode, Order ID: $orderId');
-
                 if (orderId != null && orderId == widget.orderId) {
                   final paymentService = PaymentService();
                   final orderInfo =
@@ -184,20 +199,21 @@ class _PaymentWebViewState extends State<PaymentWebView> {
                   if (orderInfo['status'] == 'completed' ||
                       responseCode == '00') {
                     if (mounted && !_hasNavigated) {
-                      _hasNavigated = true; // Đánh dấu đã chuyển màn hình
+                      _hasNavigated = true;
                       _navigateToCourseDetailScreen(true);
                     }
                   } else {
                     if (mounted) {
-                      _hasNavigated = true; // Đánh dấu đã chuyển màn hình
-                      _navigateToCourseDetailScreen(false);
+                      _hasNavigated = true;
+                      _processPaymentFallback(widget.orderId);
                     }
                   }
                 }
               } catch (e) {
                 log('Error processing payment return: $e');
                 if (mounted) {
-                  _navigateToCourseDetailScreen(false);
+                  _hasNavigated = true;
+                  _processPaymentFallback(widget.orderId);
                 }
               }
             }
@@ -216,6 +232,29 @@ class _PaymentWebViewState extends State<PaymentWebView> {
         ),
       )
       ..loadRequest(Uri.parse(widget.paymentUrl));
+  }
+
+  Future<void> _processPaymentFallback(int orderId) async {
+    try {
+      final paymentService = PaymentService();
+      for (int i = 0; i < 5; i++) {
+        if (!mounted) return; // Kiểm tra mounted trước khi tiếp tục
+        final orderInfo = await paymentService.getOrderInfo(orderId);
+        log('Polling order status ($i): $orderInfo');
+        if (orderInfo['status'] == 'completed') {
+          if (mounted) _navigateToCourseDetailScreen(true);
+          return;
+        } else if (orderInfo['status'] == 'failed') {
+          if (mounted) _navigateToCourseDetailScreen(false);
+          return;
+        }
+        await Future.delayed(Duration(seconds: 2));
+      }
+      if (mounted) _navigateToCourseDetailScreen(false);
+    } catch (e) {
+      log('Error polling order status: $e');
+      if (mounted) _navigateToCourseDetailScreen(false);
+    }
   }
 
 // Hàm retry để chờ backend cập nhật

@@ -27,7 +27,7 @@ class CoursePrice extends StatelessWidget {
           children: [
             if (discountPrice != null) ...[
               Text(
-                '${formatPrice(discountPrice!)} VNĐ',
+                '${formatPrice(discountPrice!)} ₫',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       color: darkMode ? Colors.green[200] : Colors.green,
                       fontWeight: FontWeight.bold,
@@ -40,7 +40,7 @@ class CoursePrice extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          '${formatPrice(originalPrice)} VNĐ',
+                          '${formatPrice(originalPrice)} ₫',
                           style:
                               Theme.of(context).textTheme.bodyMedium?.copyWith(
                                     decoration: TextDecoration.lineThrough,
@@ -75,7 +75,7 @@ class CoursePrice extends StatelessWidget {
                       runSpacing: TSizes.xs,
                       children: [
                         Text(
-                          '${formatPrice(originalPrice)} VNĐ',
+                          '${formatPrice(originalPrice)} ₫',
                           style:
                               Theme.of(context).textTheme.bodyMedium?.copyWith(
                                     decoration: TextDecoration.lineThrough,
@@ -104,7 +104,7 @@ class CoursePrice extends StatelessWidget {
                     ),
             ] else
               Text(
-                '${formatPrice(originalPrice)} VNĐ',
+                '${formatPrice(originalPrice)} ₫',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       color: Colors.blue,
                       fontWeight: FontWeight.bold,
@@ -118,13 +118,9 @@ class CoursePrice extends StatelessWidget {
 
 // Hàm tiện ích để định dạng số
   String formatPrice(double price) {
-    // Chuyển số thành chuỗi và tách phần nguyên
-    String priceStr = price.toStringAsFixed(0);
-
-    // Thêm dấu chấm phân cách mỗi 3 chữ số từ phải qua
+    String priceStr = price.toStringAsFixed(0); // Loại bỏ phần thập phân
     String result = '';
     int count = 0;
-
     for (int i = priceStr.length - 1; i >= 0; i--) {
       if (count == 3 && i != 0) {
         result = '.$result';
@@ -133,7 +129,6 @@ class CoursePrice extends StatelessWidget {
       result = priceStr[i] + result;
       count++;
     }
-
     return result;
   }
 }
