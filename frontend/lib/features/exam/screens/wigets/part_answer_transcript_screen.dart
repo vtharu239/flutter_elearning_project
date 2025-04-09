@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_elearning_project/config/api_constants.dart';
+import 'package:flutter_elearning_project/utils/helpers/helper_functions.dart';
 
 class PartAnswerTranscriptScreen extends StatefulWidget {
   final Map<String, dynamic> part;
@@ -26,6 +27,8 @@ class PartAnswerTranscriptScreenState
 
   @override
   Widget build(BuildContext context) {
+    final darkMode = THelperFunctions.isDarkMode(context);
+
     final questions = List<Map<String, dynamic>>.from(widget.part['Questions']);
     final isListeningPart =
         widget.part['partType']?.toLowerCase().contains('listening') ?? false;
@@ -115,12 +118,16 @@ class PartAnswerTranscriptScreenState
                                 width: double.infinity,
                                 padding: const EdgeInsets.all(12),
                                 decoration: BoxDecoration(
-                                  color: Colors.blue[50],
+                                  color: Colors.blue[300],
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Text(
                                   question['transcript'],
-                                  style: const TextStyle(fontSize: 15),
+                                  style: TextStyle(
+                                      fontSize: 15,
+                                      color: darkMode
+                                          ? Colors.black
+                                          : Colors.white),
                                 ),
                               ),
                           ],
@@ -261,6 +268,7 @@ class PartAnswerReviewScreen extends StatelessWidget {
                   },
                   child: Container(
                     decoration: BoxDecoration(
+                      color:  Colors.white,
                       // color: Colors.blue,
                       border: Border.all(color: Colors.grey),
                       borderRadius: BorderRadius.circular(8),

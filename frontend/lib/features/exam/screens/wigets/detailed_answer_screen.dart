@@ -271,7 +271,7 @@ class DetailedAnswerScreenState extends State<DetailedAnswerScreen> {
                                 width: double.infinity,
                                 padding: const EdgeInsets.all(12),
                                 decoration: BoxDecoration(
-                                  color: Colors.blue[100],
+                                  color: Colors.blue[300],
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Text(
@@ -397,7 +397,7 @@ class DetailedAnswerScreenState extends State<DetailedAnswerScreen> {
                                 width: double.infinity,
                                 padding: const EdgeInsets.all(12),
                                 decoration: BoxDecoration(
-                                  color: Colors.blue[100],
+                                  color: Colors.blue[300],
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Text(
