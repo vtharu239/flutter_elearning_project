@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter_elearning_project/common/widgets/appbar/appbar.dart';
 import 'package:flutter_elearning_project/features/personalization/screens/profile/component/new_password_screen.dart';
+import 'package:flutter_elearning_project/features/personalization/screens/profile/profile.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_elearning_project/config/api_constants.dart';
@@ -115,7 +117,7 @@ class VerifyEmailOtpForPasswordChangeScreenState
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        Get.to(() => NewPasswordScreen(idToken: data['idToken']));
+        Get.off(() => NewPasswordScreen(idToken: data['idToken']));
       } else {
         Get.snackbar('Lỗi', jsonDecode(response.body)['message']);
       }
@@ -138,18 +140,14 @@ class VerifyEmailOtpForPasswordChangeScreenState
 
     return Scaffold(
       backgroundColor: darkMode ? Colors.grey[850] : Colors.white,
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            color: darkMode ? Colors.white : Colors.black,
-          ),
-          onPressed: () {
-            Get.back();
-            Get.back();
-          },
-        ),
+      appBar: TAppBar(
         title: const Text('Xác minh OTP'),
+        showBackArrow: true,
+        padding: EdgeInsets.symmetric(horizontal: 6.0),
+        leadingOnPressed: () {
+          Get.offUntil(GetPageRoute(page: () => const ProfileScreen()),
+              (route) => route.isFirst);
+        },
       ),
       body: Padding(
         padding: const EdgeInsets.all(TSizes.defaultSpace),
@@ -162,12 +160,13 @@ class VerifyEmailOtpForPasswordChangeScreenState
                 style: Theme.of(context).textTheme.labelLarge, // Kiểu chữ chung
                 children: [
                   const TextSpan(
-                    text: 'Nhập mã OTP đã gửi đến ',
-                  ),
+                      text: 'Nhập mã OTP đã gửi đến ',
+                      style: TextStyle(fontSize: 18)),
                   TextSpan(
                     text: widget.email, // Phần có màu xanh
                     style: const TextStyle(
-                        color: Color(0xFF00A2FF)), // Đổi màu của identifier
+                        color: Color(0xFF00A2FF),
+                        fontSize: 16), // Đổi màu của identifier
                   ),
                 ],
               ),
@@ -221,7 +220,10 @@ class VerifyEmailOtpForPasswordChangeScreenState
                 onPressed: isLoading ? null : _verifyOtp,
                 child: isLoading
                     ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text('Xác nhận'),
+                    : const Text(
+                        'Xác nhận',
+                        style: TextStyle(fontSize: 18),
+                      ),
               ),
             ),
           ],

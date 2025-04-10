@@ -12,8 +12,8 @@ const addDocumentComment = async (req, res) => {
       documentId,
       userId,
       content,
-      parentId, // để hỗ trợ reply
-      date: new Date().toISOString(),
+      parentId,
+      date: new Date(),
     });
 
     res.status(201).json(comment);
@@ -31,37 +31,44 @@ const getDocumentComments = async (req, res) => {
       include: [{
         model: User,
         as: 'User',
-        attributes: ['id', 'username', 'fullName']
+        attributes: ['id', 'username', 'fullName', 'avatarUrl']
       }],
       order: [['date', 'ASC']],
     });
 
-    const parents = allComments.filter(c => !c.parentId);
-    const replies = allComments.filter(c => c.parentId);
+    // Helper: Đệ quy để xây dựng cây replies
+    const buildReplies = (commentId) => {
+      const replies = allComments
+        .filter(r => r.parentId === commentId)
+        .map(r => ({
+          id: r.id,
+          content: r.content,
+          date: r.date, 
+          userId: r.userId,
+          username: r.User?.username || 'Ẩn danh',
+          fullName: r.User?.fullName || 'Ẩn danh',
+          avatarUrl: r.User?.avatarUrl || null,
+          parentId: r.parentId,
+          replies: buildReplies(r.id), // Đệ quy để lấy replies của reply
+        }));
+      return replies;
+    };
 
-    // Helper: Gắn replies vào parent
-    const buildReplies = (parent) => {
-      const children = replies.filter(r => r.parentId === parent.id).map(r => ({
-        id: r.id,
-        content: r.content,
-        date: r.date,
-        userId: r.userId,
-        username: r.User?.username || 'Ẩn danh',
-        fullName: r.User?.fullName || 'Ẩn danh',
-        replies: [], // nếu cần đệ quy sâu hơn
-      }));
-      return {
+    // Lấy các comment cha (parentId = null) và gắn replies
+    const structured = allComments
+      .filter(c => !c.parentId)
+      .map(parent => ({
         id: parent.id,
         content: parent.content,
         date: parent.date,
         userId: parent.userId,
         username: parent.User?.username || 'Ẩn danh',
         fullName: parent.User?.fullName || 'Ẩn danh',
-        replies: children,
-      };
-    };
+        avatarUrl: parent.User?.avatarUrl || null,
+        parentId: parent.parentId,
+        replies: buildReplies(parent.id),
+      }));
 
-    const structured = parents.map(buildReplies);
     res.json(structured);
   } catch (error) {
     res.status(500).json({ message: 'Lỗi khi lấy bình luận', error: error.message });

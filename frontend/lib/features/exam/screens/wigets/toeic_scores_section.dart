@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_elearning_project/utils/helpers/helper_functions.dart';
 
 class ToeicScoresSection extends StatelessWidget {
   final Map<String, dynamic> toeicScores;
@@ -11,14 +12,16 @@ class ToeicScoresSection extends StatelessWidget {
     required String maxScore,
     required String correct,
     required String total,
+    Color? color,
+
   }) {
     return Card(
       elevation: 2,
       shadowColor: Colors.blue,
+      color: color,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
-      color: Colors.white,
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 28),
         child: Column(
@@ -46,6 +49,8 @@ class ToeicScoresSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final darkMode = THelperFunctions.isDarkMode(context);
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
@@ -55,6 +60,7 @@ class ToeicScoresSection extends StatelessWidget {
           maxScore: '${toeicScores['listening']['maxScore']}',
           correct: '${toeicScores['listening']['correct']}',
           total: '${toeicScores['listening']['total']}',
+          color: darkMode ? Colors.grey[800] : Colors.white,
         ),
         _buildToeicScoreCard(
           title: 'Reading',
@@ -62,6 +68,7 @@ class ToeicScoresSection extends StatelessWidget {
           maxScore: '${toeicScores['reading']['maxScore']}',
           correct: '${toeicScores['reading']['correct']}',
           total: '${toeicScores['reading']['total']}',
+          color: darkMode ? Colors.grey[800] : Colors.white,
         ),
       ],
     );

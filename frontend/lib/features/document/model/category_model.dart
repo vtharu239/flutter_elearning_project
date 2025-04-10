@@ -7,11 +7,11 @@ class Category {
 
 final List<Category> categories = [
   Category(
-    title: "Tìm hiểu về STUDY4",
-    subCategories: ["Tính năng trên STUDY4", "Khóa học trên STUDY4"],
+    title: "Tìm hiểu về StudyMate",
+    subCategories: ["Tính năng trên StudyMate", "Khóa học trên StudyMate"],
   ),
   Category(
-    title: "Review của học viên STUDY4",
+    title: "Review của học viên StudyMate",
     subCategories: ["Học viên IELTS", "Học viên TOEIC"],
   ),
   Category(

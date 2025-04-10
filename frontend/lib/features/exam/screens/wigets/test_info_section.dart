@@ -180,8 +180,7 @@ class TestInfoSection extends StatelessWidget {
                   const SizedBox(height: 10),
                   IntrinsicHeight(
                     child: Table(
-                      border: TableBorder.all(
-                          color: Colors.grey.shade300, width: 1),
+                      border: TableBorder.all(color: Colors.grey, width: 1),
                       columnWidths: const {
                         0: FractionColumnWidth(0.5),
                         1: FractionColumnWidth(0.30),
@@ -189,8 +188,10 @@ class TestInfoSection extends StatelessWidget {
                       },
                       children: [
                         TableRow(
-                          decoration:
-                              BoxDecoration(color: Colors.grey.shade200),
+                          decoration: BoxDecoration(
+                              color: darkMode
+                                  ? Colors.grey[800]
+                                  : Colors.grey.shade200),
                           children: const [
                             TableCell(
                               child: Padding(
@@ -284,6 +285,8 @@ class TestInfoSection extends StatelessWidget {
                                               isFullTest:
                                                   attempt['isFullTest'] ??
                                                       false,
+                                              previousScreen:
+                                                  'TestDetailScreen',
                                             ),
                                           ),
                                         );

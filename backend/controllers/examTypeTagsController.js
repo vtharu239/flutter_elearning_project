@@ -35,7 +35,19 @@ const examTypeTagsController = {
     } catch (error) {
       res.status(500).json({ message: 'Lỗi khi xóa tags!', error: error.message });
     }
-  }
+  },
+
+  getAllExamTypes: async (req, res) => {
+    try {
+      const examTypes = await ExamTypeTags.findAll({
+        attributes: ['examType'],
+        order: [['id', 'ASC']], // Sắp xếp theo ID tăng dần
+      });
+      res.json(examTypes);
+    } catch (error) {
+      res.status(500).json({ message: 'Lỗi khi lấy danh sách examTypes!', error: error.message });
+    }
+  },
 };
 
 module.exports = { examTypeTagsController };

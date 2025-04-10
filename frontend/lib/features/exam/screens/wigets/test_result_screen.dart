@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_elearning_project/features/exam/screens/wigets/test_detail_screen.dart';
 import 'package:flutter_elearning_project/navigation_menu.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -19,6 +20,7 @@ class TestResultScreen extends StatefulWidget {
   final String testId;
   final bool isFullTest;
   final String? fullAudioUrl;
+  final String? previousScreen;
 
   const TestResultScreen({
     super.key,
@@ -26,6 +28,7 @@ class TestResultScreen extends StatefulWidget {
     required this.testId,
     required this.isFullTest,
     this.fullAudioUrl,
+    this.previousScreen, // Có thể là 'SettingScreen', 'TestScreen', hoặc 'TestDetailScreen'
   });
 
   @override
@@ -315,12 +318,33 @@ class TestResultScreenState extends State<TestResultScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.popUntil(context, (route) => route.isFirst);
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => const PracticeTestScreen()),
-            );
+            switch (widget.previousScreen) {
+              case 'SettingScreen':
+                Navigator.pop(context); // Quay lại SettingScreen
+                break;
+              case 'TestScreen':
+                Navigator.popUntil(context, (route) => route.isFirst);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        TestDetailScreen(testId: widget.testId),
+                  ),
+                );
+                break;
+              case 'TestDetailScreen':
+                Navigator.pop(context); // Quay lại TestDetailScreen
+                break;
+              default:
+                // Trường hợp mặc định: Quay về màn hình đầu tiên (Home)
+                Navigator.popUntil(context, (route) => route.isFirst);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const PracticeTestScreen(),
+                  ),
+                );
+            }
           },
         ),
       ),

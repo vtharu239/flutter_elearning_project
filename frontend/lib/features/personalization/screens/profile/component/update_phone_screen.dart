@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_elearning_project/common/widgets/appbar/appbar.dart';
 import 'package:flutter_elearning_project/features/personalization/screens/profile/component/verify_phone_otp_screen.dart';
 import 'package:flutter_elearning_project/utils/constants/colors.dart';
 import 'package:get/get.dart';
@@ -75,8 +76,10 @@ class UpdatePhoneScreenState extends State<UpdatePhoneScreen> {
 
     return Scaffold(
       backgroundColor: isDarkMode ? TColors.dark : TColors.white,
-      appBar: AppBar(
+      appBar: TAppBar(
         title: const Text('Nhập số điện thoại'),
+        showBackArrow: true,
+        padding: EdgeInsets.symmetric(horizontal: 6.0),
       ),
       body: Padding(
         padding: const EdgeInsets.all(TSizes.defaultSpace),

@@ -62,8 +62,8 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
         fetchCourseObjectives();
         fetchCourseTeachers();
         fetchCourseCurriculum();
-        fetchCourseReviews();
-        fetchCourseRatingStats();
+        // fetchCourseReviews();
+        // fetchCourseRatingStats();
         fetchPurchaseStatus();
         fetchStudentCount();
 

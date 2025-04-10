@@ -4,11 +4,11 @@ class ApiConstants {
       // -- Phuong
       //   'https://equipped-living-osprey.ngrok-free.app';
 
-      // - Ngoc
-      'https://clear-tomcat-informally.ngrok-free.app';
+      // -- Ngoc
+      // 'https://clear-tomcat-informally.ngrok-free.app';
 
-  // -- Xuan
-  //'https://resolved-sawfish-equally.ngrok-free.app';
+      // -- Xuan
+      'https://devoted-lenient-rattler.ngrok-free.app';
 
   // API endpoints
 
@@ -40,6 +40,7 @@ class ApiConstants {
   static const String addComment = '/addComment';
 
   static const String getUserTestAttempts = '/getUserTestAttempts';
+  static const String getAllUserTestAttempts = '/getAllUserTestAttempts';
 
   static const String getAllCourse = '/getAllCourses';
   static const String getAllCategory = '/getAllCategories';

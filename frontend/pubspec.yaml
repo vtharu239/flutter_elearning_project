@@ -64,6 +64,7 @@ dependencies:
   country_code_picker: ^3.2.0
   platform: ^3.1.6
   audioplayers: ^5.2.1
+  fl_chart: ^0.70.2
   
   
   #--------------- ./ PACKAGES END ------------------#

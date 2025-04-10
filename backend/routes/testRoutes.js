@@ -49,5 +49,8 @@ router.get('/getExamTypeTags/:examType', authMiddleware, examTypeTagsController.
 router.delete('/deleteExamTypeTags/:examType', authMiddleware, examTypeTagsController.deleteExamTypeTags);
 
 router.get('/getUserTestAttempts/:testId', authMiddleware, userTestAttemptController.getUserTestAttempts);
+router.get('/getAllUserTestAttempts', authMiddleware, userTestAttemptController.getAllUserTestAttempts);
+router.get('/getTestStatistics', authMiddleware, userTestAttemptController.getTestStatistics);
+router.get('/getAllExamTypes', authMiddleware, examTypeTagsController.getAllExamTypes);
 
 module.exports = router;

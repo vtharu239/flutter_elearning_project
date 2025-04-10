@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_elearning_project/utils/helpers/helper_functions.dart';
 
 class SummarySection extends StatelessWidget {
   final int correctCount;
@@ -16,8 +17,10 @@ class SummarySection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final darkMode = THelperFunctions.isDarkMode(context);
+
     return Card(
-      color: Colors.white,
+      color: darkMode ? Colors.blueGrey : Colors.white,
       elevation: 2,
       shadowColor: Colors.blue,
       child: Padding(
@@ -27,41 +30,53 @@ class SummarySection extends StatelessWidget {
             Row(
               children: [
                 const Icon(Icons.check_circle_outline,
-                    color: Colors.grey, size: 24),
+                    color: Colors.blueAccent, size: 24),
                 const SizedBox(width: 8),
-                const Text('Kết quả làm bài', style: TextStyle(fontSize: 16)),
+                Text('Kết quả làm bài',
+                    style: TextStyle(
+                        fontSize: 16,
+                        color: darkMode ? Colors.white : Colors.black)),
                 const Spacer(),
                 Text(
                   '$correctCount/$totalQuestions',
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
             const SizedBox(height: 8),
             Row(
               children: [
-                const Icon(Icons.percent, color: Colors.grey, size: 24),
+                const Icon(Icons.percent, color: Colors.greenAccent, size: 24),
                 const SizedBox(width: 8),
-                const Text('Độ chính xác (#đúng/#tổng)',
-                    style: TextStyle(fontSize: 16)),
+                Text(
+                  'Độ chính xác (#đúng/#tổng)',
+                  style: TextStyle(
+                      fontSize: 16,
+                      color: darkMode ? Colors.white : Colors.black),
+                ),
                 const Spacer(),
                 Text(
                   '$accuracy%',
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
             const SizedBox(height: 8),
             Row(
               children: [
-                const Icon(Icons.timer, color: Colors.grey, size: 24),
+                const Icon(Icons.timer, color: Colors.yellowAccent, size: 24),
                 const SizedBox(width: 8),
-                const Text('Thời gian hoàn thành',
-                    style: TextStyle(fontSize: 16)),
+                Text('Thời gian hoàn thành',
+                    style: TextStyle(
+                        fontSize: 16,
+                        color: darkMode ? Colors.white : Colors.black)),
                 const Spacer(),
                 Text(
                   completionTime,
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ],
             ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_elearning_project/config/api_constants.dart';
+import 'package:flutter_elearning_project/utils/helpers/helper_functions.dart';
 import 'package:get/get.dart';
 import '../wigets/audio_player.dart';
 
@@ -33,12 +34,14 @@ class _QuestionDetailDialogState extends State<QuestionDetailDialog> {
     final isCorrect = userAnswer == correctAnswer;
     final isUnanswered = userAnswer == null;
 
+    final darkMode = THelperFunctions.isDarkMode(context);
+
     return Dialog(
       insetPadding: const EdgeInsets.symmetric(vertical: 20),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
-      backgroundColor: Colors.white,
+      backgroundColor: darkMode ? Colors.grey[800] : Colors.white,
       child: Container(
         width: MediaQuery.of(context).size.width * 0.9,
         constraints: BoxConstraints(
@@ -157,12 +160,16 @@ class _QuestionDetailDialogState extends State<QuestionDetailDialog> {
                                 width: double.infinity,
                                 padding: const EdgeInsets.all(12),
                                 decoration: BoxDecoration(
-                                  color: Colors.blue[50],
+                                  color: Colors.blue[300],
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Text(
                                   widget.question['transcript'],
-                                  style: const TextStyle(fontSize: 15),
+                                  style: TextStyle(
+                                      fontSize: 15,
+                                      color: darkMode
+                                          ? Colors.black
+                                          : Colors.white),
                                 ),
                               ),
                           ],
@@ -182,8 +189,10 @@ class _QuestionDetailDialogState extends State<QuestionDetailDialog> {
                             child: Center(
                               child: Text(
                                 '${widget.questionNumber}',
-                                style: const TextStyle(
-                                  color: Colors.blueAccent,
+                                style: TextStyle(
+                                  color: darkMode
+                                      ? Colors.blue
+                                      : Colors.blueAccent,
                                   fontSize: 14,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -196,19 +205,22 @@ class _QuestionDetailDialogState extends State<QuestionDetailDialog> {
                       ...widget.question['options'].entries.map((option) {
                         final isOptionCorrect = option.key == correctAnswer;
                         final isUserChoice = option.key == userAnswer;
-                        Color textColor = Colors.black;
+                        Color? textColor =
+                            darkMode ? Colors.white : Colors.black;
                         Color? backgroundColor;
 
                         if (isUserChoice && isCorrect) {
                           textColor = Colors.green;
-                          backgroundColor = Colors.green[50];
+                          backgroundColor =
+                              darkMode ? Colors.green[100] : Colors.green[50];
                         } else if (isUserChoice && !isCorrect) {
                           textColor = Colors.red;
                           backgroundColor = Colors.red[50];
                         }
 
                         return Padding(
-                          padding: const EdgeInsets.only(left: 12.0, bottom: 8),
+                          padding: const EdgeInsets.only(
+                              left: 32.0, bottom: 8, right: 16),
                           child: Container(
                             width: double.infinity,
                             padding: const EdgeInsets.symmetric(
@@ -234,16 +246,17 @@ class _QuestionDetailDialogState extends State<QuestionDetailDialog> {
                       Container(
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
-                          color: Colors.green[50],
+                          color:
+                              darkMode ? Colors.green[100] : Colors.green[50],
                           borderRadius: BorderRadius.circular(6),
                           border: Border.all(color: Colors.green[300]!),
                         ),
                         child: Text(
                           'Đáp án đúng: $correctAnswer',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: Colors.green,
+                            color: darkMode ? Colors.green[400] : Colors.green,
                           ),
                         ),
                       ),
@@ -278,13 +291,15 @@ class _QuestionDetailDialogState extends State<QuestionDetailDialog> {
                           width: double.infinity,
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: Colors.blue[50],
+                           color: Colors.blue[300],
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
                             widget.question['explanation'] ??
                                 'Không có giải thích.',
-                            style: const TextStyle(fontSize: 15),
+                            style: TextStyle(
+                                fontSize: 15,
+                                color: darkMode ? Colors.black : Colors.white),
                           ),
                         ),
                     ],
@@ -305,7 +320,7 @@ class _QuestionDetailDialogState extends State<QuestionDetailDialog> {
                     },
                     child: const Text(
                       'Đóng',
-                      style: TextStyle(fontSize: 16),
+                      style: TextStyle(fontSize: 16, color: Color(0xFF00A2FF)),
                     ),
                   ),
                 ],

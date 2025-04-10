@@ -69,13 +69,17 @@ class TTexts {
 
   // -- Home
   static const String homeAppbarTitle = "Mừng bạn quay lại, Palm.";
-  static const String homeAppbarSubTitle = "Hãy cùng học ngay nào!";
+  static const String homeAppbarSubTitle = "Hành trình tri thức đang chờ đợi bạn!";
 
   // -- Exam
   static const String examAppbarTitle = "Thư viện luyện thi";
-  static const String examAppbarSubTitle = "Ôn luyện kiến thức qua các đề thi";
+  static const String examAppbarSubTitle = "Rèn luyện kỹ năng qua các bộ đề thực tế - Chinh phục mọi kỳ thi";
 
    // -- Course
   static const String courseAppbarTitle = "Khóa học trực tuyến";
   static const String courseAppbarSubTitle = "Nắm vững kiến thức từ cơ bản đến chuyên sâu";
+
+  // -- Document
+  static const String documentAppbarTitle = "Chi sẻ tài liệu";
+  static const String documentAppbarSubTitle = "Tiếp cận tri thức không giới hạn với Kho tài liệu phong phú";
 }

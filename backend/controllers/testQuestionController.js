@@ -65,7 +65,7 @@ const testQuestionController = {
       const imageUrl = req.files && req.files['image'] ? `/uploads/test_images/${req.files['image'][0].filename}` : null;
       const audioUrl = req.files && req.files['audio'] ? `/uploads/test_audio/question/${req.files['audio'][0].filename}` : null;
 
-      if (!testPartId || !content || !options || !answer) {
+      if (!testPartId || !options || !answer) {
         return res.status(400).json({ message: 'Thiếu các trường bắt buộc!' });
       }
 
