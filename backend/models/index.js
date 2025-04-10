@@ -23,7 +23,6 @@ const VocabularyWord = require('./VocabularyWord');
 const Document = require('./Document');
 const DocumentComment = require('./DocumentComment');
 const DocumentCategory = require('./DocumentCategory'); 
-
 module.exports = {
   sequelize,
   User,
@@ -107,4 +106,7 @@ User.hasMany(DocumentComment, { foreignKey: 'userId', as: 'DocumentComments' });
 
 Document.hasMany(DocumentComment, { as: 'comments', foreignKey: 'documentId' });
 DocumentComment.belongsTo(Document, { foreignKey: 'documentId' });
+
+User.hasMany(CourseReview, { foreignKey: 'userId', as: 'Reviews', onDelete: 'CASCADE' });
+CourseReview.belongsTo(User, { foreignKey: 'userId', as: 'User' });
 

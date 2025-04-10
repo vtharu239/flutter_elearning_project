@@ -2,9 +2,9 @@ class ApiConstants {
   static const String baseUrl =
 
       // -- Phuong
-      // 'https://equipped-living-osprey.ngrok-free.app';
+      //   'https://equipped-living-osprey.ngrok-free.app';
 
-      // - Ngoc
+      // -- Ngoc
       // 'https://clear-tomcat-informally.ngrok-free.app';
 
       // -- Xuan
@@ -63,6 +63,8 @@ class ApiConstants {
   static const String postDocumentComment = '/api/document-comments';
   static const String getAllDocCategories = '/api/categories';
 
+  static const String getOrderCount = '/orders/count';
+  static const String getOrderCountBatch = '/orders/count/batch';
   // Headers mặc địnhs
   static Map<String, String> getHeaders({bool isImage = false}) {
     final headers = {

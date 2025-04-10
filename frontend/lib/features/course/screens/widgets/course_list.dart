@@ -4,10 +4,39 @@ import 'package:flutter_elearning_project/features/course/screens/widgets/course
 import 'package:flutter_elearning_project/utils/constants/image_strings.dart';
 import 'package:flutter_elearning_project/utils/constants/sizes.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:flutter_elearning_project/config/api_constants.dart';
+
+class VerticalCourseCardList extends StatelessWidget {
+  final int itemCount;
+  final List<VerticalCourseCard> items;
+  final bool isLoadingStudentCount;
+
+  const VerticalCourseCardList({
+    super.key,
+    required this.itemCount,
+    required this.items,
+    required this.isLoadingStudentCount,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.separated(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: itemCount,
+      separatorBuilder: (_, __) => const SizedBox(height: TSizes.xs),
+      itemBuilder: (context, index) {
+        return items[index];
+      },
+    );
+  }
+}
 
 // Section hiển thị danh sách khóa học
-class CourseListSection extends StatelessWidget {
-  final String? categoryId; // Optional, if null will show all courses
+class CourseListSection extends StatefulWidget {
+  final String? categoryId;
 
   const CourseListSection({
     super.key,
@@ -15,8 +44,73 @@ class CourseListSection extends StatelessWidget {
   });
 
   @override
+  State<CourseListSection> createState() => _CourseListSectionState();
+}
+
+class _CourseListSectionState extends State<CourseListSection> {
+  final CourseController controller = Get.find<CourseController>();
+  Map<int, int> studentCounts = {};
+  bool isLoadingStudentCount = true;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      fetchStudentCounts();
+    });
+  }
+
+  Future<void> fetchStudentCounts() async {
+    try {
+      setState(() {
+        isLoadingStudentCount = true;
+      });
+
+      final filteredCourses = widget.categoryId != null
+          ? controller.courses
+              .where(
+                  (course) => course.categoryId.toString() == widget.categoryId)
+              .toList()
+          : controller.courses;
+
+      if (filteredCourses.isEmpty) {
+        setState(() {
+          isLoadingStudentCount = false;
+        });
+        return;
+      }
+
+      final courseIds = filteredCourses.map((course) => course.id).toList();
+      final response = await http.post(
+        Uri.parse(ApiConstants.getUrl(ApiConstants.getOrderCountBatch)),
+        headers: ApiConstants.getHeaders(),
+        body: jsonEncode({'courseIds': courseIds}),
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> counts = jsonDecode(response.body);
+        setState(() {
+          for (var count in counts) {
+            studentCounts[count['courseId']] = count['studentCount'] ?? 0;
+          }
+          isLoadingStudentCount = false;
+        });
+      } else {
+        print('Failed to load batch student counts: ${response.statusCode}');
+        setState(() {
+          isLoadingStudentCount = false;
+        });
+      }
+    } catch (e) {
+      print('Error fetching batch student counts: $e');
+      setState(() {
+        isLoadingStudentCount = false;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final controller = Get.find<CourseController>();
     final darkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Obx(() {
@@ -27,10 +121,10 @@ class CourseListSection extends StatelessWidget {
         );
       }
 
-      // Filter courses theo categoryId nếu có specified
-      final filteredCourses = categoryId != null
+      final filteredCourses = widget.categoryId != null
           ? controller.courses
-              .where((course) => course.categoryId.toString() == categoryId)
+              .where(
+                  (course) => course.categoryId.toString() == widget.categoryId)
               .toList()
           : controller.courses;
 
@@ -70,15 +164,17 @@ class CourseListSection extends StatelessWidget {
                       title: course.title,
                       rating: course.rating,
                       ratingCount: course.ratingCount,
-                      students: course.studentCount,
+                      students: studentCounts[course.id] ?? 0,
                       originalPrice: course.originalPrice,
                       discountPercentage: course.discountPercentage.toInt(),
                       imageUrl: course.imageUrl ??
                           (darkMode
                               ? TImages.productImage1Dark
                               : TImages.productImage1),
+                      isLoadingStudentCount: isLoadingStudentCount,
                     ))
                 .toList(),
+            isLoadingStudentCount: isLoadingStudentCount,
           ),
         ],
       );

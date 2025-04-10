@@ -21,4 +21,7 @@ router.get('/api/user/orders', authenticateUser, vnpayController.getUserOrders);
 
 router.get('/check-purchase/:userId/:courseId', authenticateUser, vnpayController.checkPurchaseStatus);
 
+router.get('/orders/count/:courseId', vnpayController.getStudentCountByCourseId);
+
+router.post('/orders/count/batch', vnpayController.getStudentCountByCourseIds);
 module.exports = router;
