@@ -34,40 +34,46 @@ class _WeeklyScheduleTabState extends State<WeeklyScheduleTab> {
           final tasks = widget.tasksByDate[date]!;
           final checks = checkStatus[date]!;
 
-          return Container(
+          return SizedBox(
             width: 240,
-            margin: const EdgeInsets.only(right: 12),
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: isDark ? Colors.blueGrey[800] : Colors.blue[50],
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  _formatDate(date),
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 14),
-                ),
-                const SizedBox(height: 8),
-                ...tasks.asMap().entries.map((entry) {
-                  final i = entry.key;
-                  final task = entry.value;
+            height: 320, //  giới hạn chiều cao cố định
+            child: Container(
+              margin: const EdgeInsets.only(right: 12),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: isDark ? Colors.blueGrey[800] : Colors.blue[50],
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: SingleChildScrollView(
+                //  thêm scroll dọc để không tràn
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      _formatDate(date),
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 14),
+                    ),
+                    const SizedBox(height: 8),
+                    ...tasks.asMap().entries.map((entry) {
+                      final i = entry.key;
+                      final task = entry.value;
 
-                  return CheckboxListTile(
-                    contentPadding: EdgeInsets.zero,
-                    dense: true,
-                    title: Text(task, style: const TextStyle(fontSize: 13)),
-                    value: checks[i],
-                    onChanged: (val) {
-                      setState(() {
-                        checks[i] = val ?? false;
-                      });
-                    },
-                  );
-                }),
-              ],
+                      return CheckboxListTile(
+                        contentPadding: EdgeInsets.zero,
+                        dense: true,
+                        title: Text(task, style: const TextStyle(fontSize: 13)),
+                        value: checks[i],
+                        onChanged: (val) {
+                          setState(() {
+                            checks[i] = val ?? false;
+                          });
+                        },
+                      );
+                    }).toList(),
+                  ],
+                ),
+              ),
             ),
           );
         }).toList(),

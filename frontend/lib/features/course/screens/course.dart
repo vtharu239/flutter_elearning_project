@@ -49,8 +49,10 @@ class CourseScreen extends StatelessWidget {
                   // ),
                   PopularCategoriesGrid(controller: categoryController),
                   // Featured Courses
+                  SizedBox(height: TSizes.spaceBtwSections),
                   const TSectionHeading(title: 'Khóa học nổi bật'),
                   const FeaturedCoursesSection(),
+                  SizedBox(height: TSizes.spaceBtwSections),
 
                   // Hiển thị khóa học dựa theo category đã chọn hoặc tất cả khóa học
                   Obx(() {
@@ -76,6 +78,7 @@ class CourseScreen extends StatelessWidget {
                                     title: 'Khóa học ${category.name}'),
                                 CourseListSection(
                                     categoryId: category.id.toString()),
+                                SizedBox(height: TSizes.spaceBtwSections),
                               ],
                             );
                           }).toList(),

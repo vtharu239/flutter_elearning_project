@@ -7,6 +7,7 @@ import 'package:flutter_elearning_project/features/exam/screens/wigets/audio_pla
 import 'package:flutter_elearning_project/features/exam/screens/wigets/full_audio_player.dart';
 import 'package:flutter_elearning_project/features/exam/screens/wigets/review_screen.dart';
 import 'package:flutter_elearning_project/features/exam/screens/wigets/test_result_screen.dart';
+import 'package:flutter_elearning_project/utils/helpers/helper_functions.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -172,7 +173,6 @@ class TestScreenState extends State<TestScreen> {
       final bool? confirmSubmit = await showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
-          backgroundColor: Colors.white,
           title: const Text('Xác nhận nộp bài'),
           content: const Text(
             'Bạn có chắc chắn muốn nộp bài? Hành động này sẽ tổng kết bài làm.',
@@ -268,7 +268,6 @@ class TestScreenState extends State<TestScreen> {
     final bool? shouldExit = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: Colors.white,
         title: const Text('Xác nhận thoát'),
         content: const Text(
           'Bạn có chắc chắn muốn thoát? Bài làm của bạn sẽ không được lưu.',
@@ -361,6 +360,8 @@ class TestScreenState extends State<TestScreen> {
     for (int i = 0; i < questions.length; i++) {
       _questionKeys[i] = GlobalKey();
     }
+
+    final darkMode = THelperFunctions.isDarkMode(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -485,7 +486,7 @@ class TestScreenState extends State<TestScreen> {
                 final isMarked = markedForReview[questionId] == true;
 
                 return Container(
-                  color: Colors.white,
+                  color: darkMode ? Colors.grey[800] : Colors.white,
                   key: _questionKeys[index],
                   child: Padding(
                     padding: const EdgeInsets.only(
